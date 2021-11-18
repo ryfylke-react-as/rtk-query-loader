@@ -78,3 +78,5 @@ const App = () => {
     return "Loading...";
 }
 ```
+
+This unfortunately only supports **one** concurring loading state per slice. This means that if you call two async thunks that both have `:load` appended - they will both mutate the same loading state. 
