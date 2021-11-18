@@ -23,10 +23,9 @@ import {
 const initialState = {
   ...baseInitialState,
   state: StateStatus.IDLE,
-} as PostDescription;
+};
 
-// Type is inferred, but you can optionally supply
-const postSlice = createAPISlice<PostDescription>({
+const postSlice = createAPISlice({
   name: "post",
   initialState,
   reducers: {},
