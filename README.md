@@ -1,5 +1,7 @@
 # @ryfylke-react/create-api-slice
 
+Adds automatic loading state to async thunks. Used as a drop-in replacement for [`@reduxjs/toolkit`](https://github.com/reduxjs/redux-toolkit)'s `createSlice`.
+
 ## **Usage**
 
 ```bash
