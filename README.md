@@ -58,7 +58,13 @@ To simplify checking loading state, you can `import { StateStatus } from "@ryfyl
 import { StateStatus } from "@ryfylke-react/create-api-slice";
 
 const App = () => {
+    const { id } = useParams();
+    const dispatch = useDispatch();
     const { state, post } = useSelector((state) => state.post);
+
+    useEffect(() => {
+        dispatch(getPost(id));
+    }, []);
 
     if (state === StateStatus.REJECTED) {
         return "Error from server";
