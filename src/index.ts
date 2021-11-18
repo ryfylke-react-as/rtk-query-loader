@@ -1,27 +1,12 @@
 import {
   AnyAction,
-  AsyncThunk,
   createSlice,
   CreateSliceOptions,
 } from "@reduxjs/toolkit";
-
 import { BaseDescription, StateStatus } from "./types";
+import { isFunction_, includesAll } from "./utils";
 
 export { StateStatus } from "./types";
-
-type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>;
-type PendingAction = ReturnType<GenericAsyncThunk["pending"]>;
-type RejectedAction = ReturnType<GenericAsyncThunk["rejected"]>;
-type FulfilledAction = ReturnType<
-  GenericAsyncThunk["fulfilled"]
->;
-
-const includesAll = (
-  textToCheck: string,
-  ...texts: string[]
-) => {
-  return texts.every((text) => textToCheck.includes(text));
-};
 
 export const createAPISlice = <T extends BaseDescription>(
   options: CreateSliceOptions<T>
@@ -31,21 +16,20 @@ export const createAPISlice = <T extends BaseDescription>(
     extraReducers: (builder) => {
       if (
         options.extraReducers &&
-        {}.toString.call(options.extraReducers) ===
-          "[object Function]"
+        isFunction_(options.extraReducers)
       ) {
-        (options.extraReducers as any)?.(builder);
+        options.extraReducers(builder);
       } else if (options.extraReducers) {
-        Object.keys(options.extraReducers).forEach((key) => {
+        Object.keys(options.extraReducers).forEach((key) =>
           builder.addCase(
             key,
             (options.extraReducers as any)[key]
-          );
-        });
+          )
+        );
       }
       builder
         .addMatcher(
-          (action: AnyAction): action is PendingAction =>
+          (action: AnyAction) =>
             includesAll(
               action.type,
               "/pending",
@@ -57,7 +41,7 @@ export const createAPISlice = <T extends BaseDescription>(
           }
         )
         .addMatcher(
-          (action: AnyAction): action is FulfilledAction =>
+          (action: AnyAction) =>
             includesAll(
               action.type,
               "/fulfilled",
@@ -69,7 +53,7 @@ export const createAPISlice = <T extends BaseDescription>(
           }
         )
         .addMatcher(
-          (action: AnyAction): action is RejectedAction =>
+          (action: AnyAction) =>
             includesAll(
               action.type,
               "/rejected",
