@@ -2,6 +2,12 @@
 
 ## **Usage**
 
+```bash
+yarn add @ryfylke-react/create-api-slice
+# or
+npm i @ryfylke-react/create-api-slice
+```
+
 Create the slice as you normally would, but use our `createAPISlice` function instead of `createSlice` from redux toolkit. 
 
 _slices/postSlice.ts_
