@@ -2,6 +2,8 @@
 
 ## **Usage**
 
+Create the slice as you normally would, but use our `createAPISlice` function instead of `createSlice` from redux toolkit. 
+
 _slices/postSlice.ts_
 
 ```typescript
@@ -34,6 +36,8 @@ const postSlice = createAPISlice<PostDescription>({
 export const postReducer = postSlice.reducer;
 ```
 
+Then, when you create thunks that require loading state, make sure to append `:load` to the thunk name. 
+
 _slices/postThunks.ts_
 
 ```typescript
@@ -48,9 +52,9 @@ export const getPost = createAsyncThunk(
 );
 ```
 
-Calling `dispatch(getPost("..."))` will automatically set the loading state to `1` (PENDING), which will again automatically change to `2` (FULFILLED) or `3` (REJECTED).
+Calling `dispatch(getPost("..."))` will now automatically set the loading state to `1` (PENDING), which will again automatically change to `2` (FULFILLED) or `3` (REJECTED).
 
-To simplify checking loading state, you can `import { StateStatus } from "@ryfylke-react/create-api-slice` and do something like this:
+Here's how you'd implement this logic on the UI:
 
 ```typescript
 // ...
