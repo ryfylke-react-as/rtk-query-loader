@@ -5,13 +5,14 @@
 _slices/postSlice.ts_
 
 ```typescript
+import {
+  createAPISlice,
+  StateStatus,
+} from "@ryfylke-react/create-api-slice";
+
 const initialState = {
   ...baseInitialState,
-  state: 0,
-  // 0 = IDLE
-  // 1 = PENDING
-  // 2 = FULFILLED
-  // 3 = REJECTED
+  state: StateStatus.IDLE,
 } as PostDescription;
 
 // Type is inferred, but you can optionally supply
@@ -40,9 +41,7 @@ export const getPost = createAsyncThunk(
   `post/getPost:load`,
   async (slug: string, { rejectWithValue }) => {
     return axios
-      .get<PostData[]>(
-        `${API_URL}/wp-json/wp/v2/posts?_embed&slug=${slug}`
-      )
+      .get<PostData[]>(`${API_URL}/posts?slug=${slug}`)
       .then((res) => res.data[0])
       .catch((err) => rejectWithValue(err));
   }
