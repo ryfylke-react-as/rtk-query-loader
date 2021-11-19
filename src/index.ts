@@ -2,16 +2,22 @@ import {
   AnyAction,
   createSlice,
   CreateSliceOptions,
+  SliceCaseReducers,
 } from "@reduxjs/toolkit";
-import { BaseDescription, StateStatus } from "./types";
+import { APISliceOpts, StateStatus } from "./types";
 import { isFunction_, includesAll } from "./utils";
 
 export { StateStatus } from "./types";
 
-export const createAPISlice = <T extends BaseDescription>(
-  options: CreateSliceOptions<T>
-) =>
-  createSlice({
+export const createAPISlice = <T extends Record<string, any>>(
+  options: CreateSliceOptions<T>,
+  apiSliceOptions?: APISliceOpts<T>
+) => {
+  const key = apiSliceOptions?.key ?? "state";
+  const createSliceFunc =
+    apiSliceOptions?.createSliceOverwrite ?? createSlice;
+  const identifier = apiSliceOptions?.identifier ?? ":load";
+  return createSliceFunc({
     ...options,
     extraReducers: (builder) => {
       if (
@@ -34,10 +40,10 @@ export const createAPISlice = <T extends BaseDescription>(
               action.type,
               "/pending",
               options.name,
-              ":load"
+              identifier
             ),
           (state) => {
-            state.state = StateStatus.PENDING;
+            (state as any)[key] = StateStatus.PENDING;
           }
         )
         .addMatcher(
@@ -46,10 +52,10 @@ export const createAPISlice = <T extends BaseDescription>(
               action.type,
               "/fulfilled",
               options.name,
-              ":load"
+              identifier
             ),
           (state) => {
-            state.state = StateStatus.FULFILLED;
+            (state as any)[key] = StateStatus.FULFILLED;
           }
         )
         .addMatcher(
@@ -58,13 +64,14 @@ export const createAPISlice = <T extends BaseDescription>(
               action.type,
               "/rejected",
               options.name,
-              ":load"
+              identifier
             ),
           (state) => {
-            state.state = StateStatus.REJECTED;
+            (state as any)[key] = StateStatus.REJECTED;
           }
         );
     },
   });
+};
 
 export default createAPISlice;
