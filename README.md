@@ -10,7 +10,7 @@ yarn add @ryfylke-react/create-api-slice
 npm i @ryfylke-react/create-api-slice
 ```
 
-Create the slice as you normally would, but use our `createAPISlice` function instead of `createSlice` from redux toolkit. 
+Create the slice as you normally would, but make sure `state` is part of your schema. It should take a type of `StateStatus`. Use our `createAPISlice` function instead of `createSlice` from redux toolkit. 
 
 _slices/postSlice.ts_
 
@@ -23,10 +23,9 @@ import {
 const initialState = {
   ...baseInitialState,
   state: StateStatus.IDLE,
-} as PostDescription;
+};
 
-// Type is inferred, but you can optionally supply
-const postSlice = createAPISlice<PostDescription>({
+const postSlice = createAPISlice({
   name: "post",
   initialState,
   reducers: {},
