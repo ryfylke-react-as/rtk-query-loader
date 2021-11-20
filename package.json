@@ -1,6 +1,6 @@
 {
   "name": "@ryfylke-react/create-api-slice",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Lets you create slices that handle loading state for async thunks automatically",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,5 +17,6 @@
   "homepage": "https://github.com/ryfylke-react-as/create-api-slice#readme",
   "dependencies": {
     "@reduxjs/toolkit": "^1.6.2"
-  }
+  },
+  "devDependencies": {}
 }

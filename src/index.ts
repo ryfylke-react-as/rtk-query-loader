@@ -9,6 +9,8 @@ import { isFunction_, includesAll } from "./utils";
 
 export { StateStatus } from "./types";
 
+const { PENDING, FULFILLED, REJECTED } = StateStatus;
+
 export const createAPISlice = <T extends Record<string, any>>(
   options: CreateSliceOptions<T>,
   apiSliceOptions?: APISliceOpts<T>
@@ -17,58 +19,45 @@ export const createAPISlice = <T extends Record<string, any>>(
   const createSliceFunc =
     apiSliceOptions?.createSliceOverwrite ?? createSlice;
   const identifier = apiSliceOptions?.identifier ?? ":load";
+
+  const createMatch = (status: string) => (action: AnyAction) =>
+    includesAll(action.type, status, options.name, identifier);
+
+  const createStateSet =
+    (status: StateStatus) => (state: any) => {
+      state[key] = status;
+    };
+
   return createSliceFunc({
     ...options,
     extraReducers: (builder) => {
+      // Enrich final builder with the one the user created
       if (
         options.extraReducers &&
         isFunction_(options.extraReducers)
       ) {
         options.extraReducers(builder);
       } else if (options.extraReducers) {
-        Object.keys(options.extraReducers).forEach((key) =>
+        for (const key in Object.keys(options.extraReducers)) {
           builder.addCase(
             key,
             (options.extraReducers as any)[key]
-          )
-        );
+          );
+        }
       }
+      // Add matches for automatic loading state
       builder
         .addMatcher(
-          (action: AnyAction) =>
-            includesAll(
-              action.type,
-              "/pending",
-              options.name,
-              identifier
-            ),
-          (state) => {
-            (state as any)[key] = StateStatus.PENDING;
-          }
+          createMatch("/pending"),
+          createStateSet(PENDING)
         )
         .addMatcher(
-          (action: AnyAction) =>
-            includesAll(
-              action.type,
-              "/fulfilled",
-              options.name,
-              identifier
-            ),
-          (state) => {
-            (state as any)[key] = StateStatus.FULFILLED;
-          }
+          createMatch("/fulfilled"),
+          createStateSet(FULFILLED)
         )
         .addMatcher(
-          (action: AnyAction) =>
-            includesAll(
-              action.type,
-              "/rejected",
-              options.name,
-              identifier
-            ),
-          (state) => {
-            (state as any)[key] = StateStatus.REJECTED;
-          }
+          createMatch("/rejected"),
+          createStateSet(REJECTED)
         );
     },
   });
