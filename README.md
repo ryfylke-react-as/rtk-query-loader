@@ -87,3 +87,20 @@ const App = () => {
 ```
 
 This unfortunately only supports **one** concurring loading state per slice. This means that if you call two async thunks that both have `:load` appended - they will both mutate the same loading state. 
+
+## Options
+
+If you want, you can add a second parameter to `createAPISlice`, which is an options object of type APISliceOpts:
+
+```typescript
+type APISliceOpts<T> = {
+  /** The key that stores the StateStatus in the slice. Default `state`. */
+  key?: string;
+  /** The identifier used to add loading state. Default `:load` */
+  identifier?: string;
+  /** Replaces the createSlice function used internally */
+  createSliceOverwrite?: (
+    options: CreateSliceOptions<T, SliceCaseReducers<T>, string>
+  ) => any;
+};
+```
