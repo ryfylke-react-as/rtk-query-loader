@@ -1,4 +1,3 @@
-import { RTKLoader as RTKLoaderComponent } from "./RTKLoader";
 import * as Types from "./types";
 
 export const aggregateToQuery = <JoinedResponse>(
@@ -77,6 +76,7 @@ export const createLoader = <
   };
 };
 
+export { RTKLoader } from "./RTKLoader";
 export type {
   CreateLoaderArgs,
   CreateLoaderType,
@@ -85,5 +85,5 @@ export type {
   UseLoader,
   UseQueryResult,
 } from "./types";
-
-export const RTKLoader = RTKLoaderComponent;
+export { withLoader } from "./withLoader";
+export type { WithLoaderArgs } from "./withLoader";
