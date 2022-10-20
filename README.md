@@ -2,6 +2,8 @@
 
 Lets you create loaders that contain multiple RTK queries.
 
+[Live demo / Playground](https://stackblitz.com/edit/react-ts-bwcrzm)
+
 ## **Usage**
 
 ```bash
