@@ -25,14 +25,15 @@ export function RTKLoader<T>(
       props.query.error
     );
     return (
-      props.onError?.(props.query.error) ?? <React.Fragment />
+      props.onError?.(props.query.error as SerializedError) ?? (
+        <React.Fragment />
+      )
     );
   }
   if (props.query.isFetching && props.onFetching) {
     return props.onFetching;
   }
   if (props.query.data !== undefined) {
-    console.log("Got data", props.query.data);
     return props.onSuccess(props.query.data);
   }
   return <React.Fragment />;

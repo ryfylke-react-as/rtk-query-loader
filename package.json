@@ -1,10 +1,15 @@
 {
   "name": "@ryfylke-react/rtk-query-loader",
-  "version": "1.0.6",
+  "version": "0.1.0",
   "description": "Lets you create loaders that contain multiple RTK queries.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "scripts": {},
+  "scripts": {
+    "build": "yarn build:esm && yarn build:cjs",
+    "build:esm": "tsc",
+    "build:cjs": "tsc --module commonjs --outDir dist/cjs",
+    "prepare": "yarn build"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/imp-dance/rtk-query-loader.git"
@@ -20,5 +25,7 @@
     "@types/react": "^18.0.21",
     "react": "^18.2.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "tslib": "^2.4.0"
+  }
 }
