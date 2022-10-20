@@ -1,5 +1,8 @@
 import {
   CreateLoaderArgs,
+  CreateLoaderType,
+  LoaderTransformFunction,
+  OptionalGenericArg,
   UseLoader,
   UseQueryResult,
 } from "./types";
@@ -78,4 +81,14 @@ export const createLoader = <
 
     return aggregatedQuery as UseQueryResult<R>;
   };
+};
+
+export { RTKLoader } from "./RTKLoader";
+export {
+  CreateLoaderArgs,
+  UseLoader,
+  UseQueryResult,
+  CreateLoaderType,
+  LoaderTransformFunction,
+  OptionalGenericArg,
 };
