@@ -86,4 +86,4 @@ export type {
   UseQueryResult,
 } from "./types";
 export { withLoader } from "./withLoader";
-export type { WithLoaderArgs } from "./withLoader";
+export type { Component, WithLoaderArgs } from "./withLoader";
