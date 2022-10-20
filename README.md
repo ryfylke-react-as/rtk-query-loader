@@ -1,106 +1,104 @@
-# @ryfylke-react/create-api-slice
+# @ryfylke-react/rtk-query-loader
 
-Adds automatic loading state to async thunks. Used as a drop-in replacement for [`@reduxjs/toolkit`](https://github.com/reduxjs/redux-toolkit)'s `createSlice`.
+Lets you create loaders that contain multiple RTK queries.
 
 ## **Usage**
 
 ```bash
-yarn add @ryfylke-react/create-api-slice
+yarn add @ryfylke-react/rtk-query-loader
 # or
-npm i @ryfylke-react/create-api-slice
+npm i @ryfylke-react/rtk-query-loader
 ```
 
-Create the slice as you normally would, but make sure `state` is part of your schema. It should take a type of `StateStatus`. Use our `createAPISlice` function instead of `createSlice` from redux toolkit. 
+Here's a simple example of a component using rtk-query-loader:
 
-_slices/postSlice.ts_
-
-```typescript
+```tsx
 import {
-  createAPISlice,
-  StateStatus,
-} from "@ryfylke-react/create-api-slice";
+  createLoader,
+  RTKLoader,
+} from "@ryfylke-react/rtk-query-loader";
 
-const initialState = {
-  ...baseInitialState,
-  state: StateStatus.IDLE,
-};
-
-const postSlice = createAPISlice({
-  name: "post",
-  initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder
-      .addCase(getPost.fulfilled, (state, { payload }) => {
-        state.post = payload;
-      })
-      .addCase(getPost.rejected, (state) => {
-        state.post = null;
-      });
+const useLoader = createLoader({
+  queries: () => {
+    const user = useQueryA();
+    const posts = useQueryB();
+    return [user, posts];
   },
 });
 
-export const postReducer = postSlice.reducer;
-```
+const Component = () => {
+  const query = useLoader();
 
-Then, when you create thunks that require loading state, make sure to append `:load` to the thunk name. 
-
-_slices/postThunks.ts_
-
-```typescript
-export const getPost = createAsyncThunk(
-  `post/getPost:load`,
-  async (slug: string, { rejectWithValue }) => {
-    return axios
-      .get<PostData[]>(`${API_URL}/posts?slug=${slug}`)
-      .then((res) => res.data[0])
-      .catch((err) => rejectWithValue(err));
-  }
-);
-```
-
-Calling `dispatch(getPost("..."))` will now automatically set the loading state to `1` (PENDING), which will again automatically change to `2` (FULFILLED) or `3` (REJECTED).
-
-Here's how you'd implement this logic on the UI:
-
-```typescript
-// ...
-import { StateStatus } from "@ryfylke-react/create-api-slice";
-
-const App = () => {
-    const { id } = useParams();
-    const dispatch = useDispatch();
-    const { state, post } = useSelector((state) => state.post);
-
-    useEffect(() => {
-        dispatch(getPost(id));
-    }, []);
-
-    if (state === StateStatus.REJECTED) {
-        return "Error from server";
-    }
-    if (state === StateStatus.FULFILLED) {
-        return (...);
-    }
-    return "Loading...";
-}
-```
-
-This unfortunately only supports **one** concurring loading state per slice. This means that if you call two async thunks that both have `:load` appended - they will both mutate the same loading state. 
-
-## Options
-
-If you want, you can add a second parameter to `createAPISlice`, which is an options object of type APISliceOpts:
-
-```typescript
-type APISliceOpts<T> = {
-  /** The key that stores the StateStatus in the slice. Default `state`. */
-  key?: string;
-  /** The identifier used to add loading state. Default `:load` */
-  identifier?: string;
-  /** Replaces the createSlice function used internally */
-  createSliceOverwrite?: (
-    options: CreateSliceOptions<T, SliceCaseReducers<T>, string>
-  ) => any;
+  return (
+    <RTKLoader
+      query={query}
+      onSuccess={([user, posts]) => (
+        <ComponentWithData user={user.data} posts={posts.data} />
+      )}
+    />
+  );
 };
+
+const ComponentWithData = (props) => {
+  // Can safely assume that loader data exists.
+  return (
+    <div>
+      {props.user.firstName} {props.user.lastName}
+    </div>
+  );
+};
+```
+
+## Passing arguments
+
+If you want to pass arguments to the queries, you can do so by using the first argument of `queries` (typescript will pick this up automatically):
+
+```typescript
+type LoaderArgs = {
+  userArgs: UserArgs;
+  postArgs: PostArgs;
+}
+
+const useLoader = createLoader({
+  queries: (args: LoaderArgs) => {
+    const user = useQueryA(args.userArgs);
+    const posts = useQueryB(args.postArgs);
+    return [user, posts];
+  }
+})
+//...
+const query = useLoader({ // Expects one required argument of type LoaderArgs
+  userArgs: {...},
+  postArgs: {...}
+});
+```
+
+## Loading state
+
+Althrough you could definitely use your own `RTKLoader`-like component to handle the loading state, we have exposed a simple function that does the switching for you.
+
+```tsx
+<RTKLoader
+  query={query}
+  loader={<div>isLoading...</div>}
+  onFetching={<div>isFetching (reloading)...</div>}
+  onError={(error) => <div>Something bad happened...</div>}
+  onSuccess={(data) => <div>Finished loading</div>}
+/>
+```
+
+You could also implement the loading state manually, of course.
+
+```tsx
+function Component() {
+  const query = useLoader();
+
+  if (query.isLoading) {
+    return "Loading...";
+  }
+  if (!query.isSuccess) {
+    return "Something happened...";
+  }
+  //...
+}
 ```
