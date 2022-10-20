@@ -196,3 +196,17 @@ const UsernameWithData = (props) => {
 ```
 
 - `extendLoader` - Creates a new loader that extends an existing loader
+- Better type resolving:
+
+```typescript
+createLoader({
+   queries: () => {
+      return [useGetUsers(), useGetPosts()] as const;
+   },
+   transform: function(queries){ // queries here are guaranteed to have .data, but currently the type resolves data as optional.
+      return {...}
+   }
+})
+```
+
+
