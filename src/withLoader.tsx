@@ -18,7 +18,7 @@ type Component<P extends Record<string, unknown>> = (
 
 export const withLoader = <
   P extends Record<string, unknown>,
-  R extends unknown,
+  R extends unknown = unknown,
   A = never
 >(
   args: WithLoaderArgs<P, R, A>,
