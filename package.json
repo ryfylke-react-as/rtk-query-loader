@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/imp-dance/rtk-query-loader.git"
+    "url": "git+https://github.com/ryfylke-react-as/rtk-query-loader.git"
   },
   "author": "Ryfylke React AS",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/imp-dance/rtk-query-loader/issues"
+    "url": "https://github.com/ryfylke-react-as/rtk-query-loader/issues"
   },
-  "homepage": "https://github.com/imp-dance/rtk-query-loader#readme",
+  "homepage": "https://github.com/ryfylke-react-as/rtk-query-loader#readme",
   "dependencies": {
     "@reduxjs/toolkit": "^1.6.2",
     "@types/react": "^18.0.21",
