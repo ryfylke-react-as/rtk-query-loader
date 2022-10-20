@@ -1,7 +1,7 @@
 {
-  "name": "@ryfylke-react/create-api-slice",
+  "name": "@ryfylke-react/rtk-query-loader",
   "version": "1.0.6",
-  "description": "Lets you create slices that handle loading state for async thunks automatically",
+  "description": "Lets you create loaders that contain multiple RTK queries.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {},
@@ -16,7 +16,9 @@
   },
   "homepage": "https://github.com/ryfylke-react-as/create-api-slice#readme",
   "dependencies": {
-    "@reduxjs/toolkit": "^1.6.2"
+    "@reduxjs/toolkit": "^1.6.2",
+    "@types/react": "^18.0.21",
+    "react": "^18.2.0"
   },
   "devDependencies": {}
 }

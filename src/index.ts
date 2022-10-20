@@ -1,66 +1,81 @@
 import {
-  AnyAction,
-  createSlice,
-  CreateSliceOptions,
-  SliceCaseReducers,
-} from "@reduxjs/toolkit";
-import { APISliceOpts, StateStatus } from "./types";
-import { isFunction_, includesAll } from "./utils";
+  CreateLoaderArgs,
+  UseLoader,
+  UseQueryResult,
+} from "./types";
 
-export { StateStatus } from "./types";
+export const aggregateToQuery = <JoinedResponse>(
+  queries: readonly UseQueryResult<unknown>[]
+): UseQueryResult<JoinedResponse> => {
+  const isLoading = queries.some((query) => query.isLoading);
+  const isError = queries.some((query) => query.isError);
+  const isFetching = queries.some((query) => query.isFetching);
+  const isUninitialized = queries.some(
+    (query) => query.isUninitialized
+  );
+  const isSuccess = !isUninitialized && !isLoading && !isError;
+  const error = queries.find(
+    (query) => query.error !== undefined
+  )?.error;
+  const fulfilledTimeStamp = Math.max(
+    ...queries
+      .filter(
+        (query) => typeof query.fulfilledTimeStamp === "number"
+      )
+      .map((query) => query.fulfilledTimeStamp as number)
+  );
+  const startedTimeStamp = Math.max(
+    ...queries
+      .filter(
+        (query) => typeof query.startedTimeStamp === "number"
+      )
+      .map((query) => query.startedTimeStamp as number)
+  );
+  const requestId = queries
+    .filter((query) => typeof query.requestId === "string")
+    .map((query) => query.requestId)
+    .join("");
 
-const { PENDING, FULFILLED, REJECTED } = StateStatus;
+  const refetch = () => {
+    queries.forEach((query) => query.refetch());
+  };
 
-export const createAPISlice = <T extends Record<string, any>>(
-  options: CreateSliceOptions<T>,
-  apiSliceOptions?: APISliceOpts<T>
-) => {
-  const key = apiSliceOptions?.key ?? "state";
-  const createSliceFunc =
-    apiSliceOptions?.createSliceOverwrite ?? createSlice;
-  const identifier = apiSliceOptions?.identifier ?? ":load";
-
-  const createMatch = (status: string) => (action: AnyAction) =>
-    includesAll(action.type, status, options.name, identifier);
-
-  const createStateSet =
-    (status: StateStatus) => (state: any) => {
-      state[key] = status;
-    };
-
-  return createSliceFunc({
-    ...options,
-    extraReducers: (builder) => {
-      // Enrich final builder with the one the user created
-      if (
-        options.extraReducers &&
-        isFunction_(options.extraReducers)
-      ) {
-        options.extraReducers(builder);
-      } else if (options.extraReducers) {
-        for (const key in Object.keys(options.extraReducers)) {
-          builder.addCase(
-            key,
-            (options.extraReducers as any)[key]
-          );
-        }
-      }
-      // Add matches for automatic loading state
-      builder
-        .addMatcher(
-          createMatch("/pending"),
-          createStateSet(PENDING)
-        )
-        .addMatcher(
-          createMatch("/fulfilled"),
-          createStateSet(FULFILLED)
-        )
-        .addMatcher(
-          createMatch("/rejected"),
-          createStateSet(REJECTED)
-        );
-    },
-  });
+  return {
+    isLoading,
+    isError,
+    isFetching,
+    isSuccess,
+    isUninitialized,
+    refetch,
+    error,
+    fulfilledTimeStamp,
+    startedTimeStamp,
+    requestId,
+  };
 };
 
-export default createAPISlice;
+export const createLoader = <
+  QRU extends readonly UseQueryResult<unknown>[],
+  R extends unknown = QRU,
+  A = never
+>(
+  createLoaderArgs: CreateLoaderArgs<QRU, R, A>
+): UseLoader<A, R> => {
+  return (...args) => {
+    const createdQueries = createLoaderArgs.queries(...args);
+    const aggregatedQuery = aggregateToQuery(createdQueries);
+
+    if (aggregatedQuery.isSuccess) {
+      const data = createLoaderArgs.transform
+        ? createLoaderArgs.transform(createdQueries)
+        : createdQueries;
+
+      return {
+        ...aggregatedQuery,
+        data,
+      } as UseQueryResult<R>;
+    }
+
+    return aggregatedQuery as UseQueryResult<R>;
+  };
+};
