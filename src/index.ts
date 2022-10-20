@@ -1,15 +1,9 @@
-import {
-  CreateLoaderArgs,
-  CreateLoaderType,
-  LoaderTransformFunction,
-  OptionalGenericArg,
-  UseLoader,
-  UseQueryResult,
-} from "./types";
+import { RTKLoader as RTKLoaderComponent } from "./RTKLoader";
+import * as Types from "./types";
 
 export const aggregateToQuery = <JoinedResponse>(
-  queries: readonly UseQueryResult<unknown>[]
-): UseQueryResult<JoinedResponse> => {
+  queries: readonly Types.UseQueryResult<unknown>[]
+): Types.UseQueryResult<JoinedResponse> => {
   const isLoading = queries.some((query) => query.isLoading);
   const isError = queries.some((query) => query.isError);
   const isFetching = queries.some((query) => query.isFetching);
@@ -58,12 +52,12 @@ export const aggregateToQuery = <JoinedResponse>(
 };
 
 export const createLoader = <
-  QRU extends readonly UseQueryResult<unknown>[],
+  QRU extends readonly Types.UseQueryResult<unknown>[],
   R extends unknown = QRU,
   A = never
 >(
-  createLoaderArgs: CreateLoaderArgs<QRU, R, A>
-): UseLoader<A, R> => {
+  createLoaderArgs: Types.CreateLoaderArgs<QRU, R, A>
+): Types.UseLoader<A, R> => {
   return (...args) => {
     const createdQueries = createLoaderArgs.queries(...args);
     const aggregatedQuery = aggregateToQuery(createdQueries);
@@ -76,19 +70,20 @@ export const createLoader = <
       return {
         ...aggregatedQuery,
         data,
-      } as UseQueryResult<R>;
+      } as Types.UseQueryResult<R>;
     }
 
-    return aggregatedQuery as UseQueryResult<R>;
+    return aggregatedQuery as Types.UseQueryResult<R>;
   };
 };
 
-export { RTKLoader } from "./RTKLoader";
-export {
+export type {
   CreateLoaderArgs,
-  UseLoader,
-  UseQueryResult,
   CreateLoaderType,
   LoaderTransformFunction,
   OptionalGenericArg,
-};
+  UseLoader,
+  UseQueryResult,
+} from "./types";
+
+export const RTKLoader = RTKLoaderComponent;
