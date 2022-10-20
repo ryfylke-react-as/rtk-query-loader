@@ -1,6 +1,6 @@
 {
   "name": "@ryfylke-react/rtk-query-loader",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Lets you create loaders that contain multiple RTK queries.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
