@@ -12,19 +12,19 @@ export type WithLoaderArgs<
   onLoading?: ReactElement;
 };
 
-type Component<P extends Record<string, unknown>> = (
+export type Component<P extends Record<string, unknown>> = (
   props: P
 ) => ReactElement;
 
 export const withLoader = <
   P extends Record<string, unknown>,
-  R extends unknown = unknown,
+  R extends unknown,
   A = never
 >(
   args: WithLoaderArgs<P, R, A>,
   Component: Component<P & { loaderData: R }>
 ): Component<P> => {
-  return (props) => {
+  return (props: P) => {
     const useLoaderArgs = [];
     if (args.arg) {
       useLoaderArgs.push(args.arg(props));
