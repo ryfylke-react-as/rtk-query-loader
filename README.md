@@ -201,10 +201,12 @@ const UsernameWithData = (props) => {
 ```typescript
 createLoader({
    queries: () => {
-      return [useGetUsers(), useGetPosts()] as const;
+      return [useGetUser(), useGetPosts()] as const;
    },
    transform: function(queries){ // queries here are guaranteed to have .data, but currently the type resolves data as optional.
-      return {...}
+      return {
+         name: queries[0].data.name // is technically safe, but typescript might complain
+      }
    }
 })
 ```
