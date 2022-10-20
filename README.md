@@ -2,6 +2,8 @@
 
 Lets you create loaders that contain multiple RTK queries.
 
+[Live demo / Playground](https://stackblitz.com/edit/react-ts-bwcrzm)
+
 ## **Usage**
 
 ```bash
@@ -22,8 +24,12 @@ const useLoader = createLoader({
   queries: () => {
     const user = useQueryA();
     const posts = useQueryB();
-    return [user, posts];
+    return [user, posts] as const;
   },
+  transform: (queries) => ({ // Optional. Default is an array of the queries.
+     user: queries[0].data,
+     posts: queries[1].data,
+  })
 });
 
 const Component = () => {
@@ -32,8 +38,8 @@ const Component = () => {
   return (
     <RTKLoader
       query={query}
-      onSuccess={([user, posts]) => (
-        <ComponentWithData user={user.data} posts={posts.data} />
+      onSuccess={(data) => (
+        <ComponentWithData {...data} />
       )}
     />
   );
@@ -190,3 +196,19 @@ const UsernameWithData = (props) => {
 ```
 
 - `extendLoader` - Creates a new loader that extends an existing loader
+- Better type resolving:
+
+```typescript
+createLoader({
+   queries: () => {
+      return [useGetUser(), useGetPosts()] as const;
+   },
+   transform: function(queries){ // queries here are guaranteed to have .data, but currently the type resolves data as optional.
+      return {
+         name: queries[0].data.name // is technically safe, but typescript might complain
+      }
+   }
+})
+```
+
+
