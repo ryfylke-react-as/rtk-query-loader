@@ -24,8 +24,12 @@ const useLoader = createLoader({
   queries: () => {
     const user = useQueryA();
     const posts = useQueryB();
-    return [user, posts];
+    return [user, posts] as const;
   },
+  transform: (queries) => ({ // Optional. Default is an array of the queries.
+     user: queries[0].data,
+     posts: queries[1].data,
+  })
 });
 
 const Component = () => {
@@ -34,8 +38,8 @@ const Component = () => {
   return (
     <RTKLoader
       query={query}
-      onSuccess={([user, posts]) => (
-        <ComponentWithData user={user.data} posts={posts.data} />
+      onSuccess={(data) => (
+        <ComponentWithData {...data} />
       )}
     />
   );
