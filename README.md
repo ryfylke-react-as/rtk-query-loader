@@ -12,100 +12,37 @@ yarn add @ryfylke-react/rtk-query-loader
 npm i @ryfylke-react/rtk-query-loader
 ```
 
-Here's a simple example of a component using rtk-query-loader:
+A simple example of a component using rtk-query-loader:
 
 ```tsx
 import {
-  createLoader,
+  createUseLoader,
   RTKLoader,
 } from "@ryfylke-react/rtk-query-loader";
 
-const useLoader = createLoader({
+const loader = createLoader({
   queries: () => {
-    const user = useQueryA();
-    const posts = useQueryB();
-    return [user, posts] as const;
+    const pokemon = useGetPokemon();
+    const currentUser = useGetCurrentUser();
+    return [pokemon, currentUser] as const;
   },
-  transform: (queries) => ({
-    // Optional. Default is an array of the queries.
-    user: queries[0].data,
-    posts: queries[1].data,
-  }),
+  onLoading: () => <div>Loading pokemon...</div>,
 });
 
-const Component = () => {
-  const query = useLoader();
+const Pokemon = withLoader((props, queries) => {
+  const pokemon = queries[0].data;
+  const currentUser = queries[1].data;
 
-  return (
-    <RTKLoader
-      query={query}
-      onSuccess={(data) => <ComponentWithData {...data} />}
-    />
-  );
-};
-
-const ComponentWithData = (props) => {
-  // Can safely assume that loader data exists.
   return (
     <div>
-      {props.user.firstName} {props.user.lastName}
+      <h2>{pokemon.name}</h2>
+      <img src={pokemon.image} />
+      <a href={`/users/${currentUser.id}/pokemon`}>
+        Your pokemon
+      </a>
     </div>
   );
-};
-```
-
-## Passing arguments
-
-If you want to pass arguments to the queries, you can do so by using the first argument of `queries` (typescript will pick this up automatically):
-
-```typescript
-type LoaderArgs = {
-  userArgs: UserArgs;
-  postArgs: PostArgs;
-}
-
-const useLoader = createLoader({
-  queries: (args: LoaderArgs) => {
-    const user = useQueryA(args.userArgs);
-    const posts = useQueryB(args.postArgs);
-    return [user, posts];
-  }
-})
-//...
-const query = useLoader({ // Expects one required argument of type LoaderArgs
-  userArgs: {...},
-  postArgs: {...}
-});
-```
-
-## Loading state
-
-Althrough you could definitely use your own `RTKLoader`-like component to handle the loading state, we have exposed a simple function that does the switching for you.
-
-```tsx
-<RTKLoader
-  query={query}
-  loader={<div>isLoading...</div>}
-  onFetching={<div>isFetching (reloading)...</div>}
-  onError={(error) => <div>Something bad happened...</div>}
-  onSuccess={(data) => <div>Finished loading</div>}
-/>
-```
-
-You could also implement the loading state manually, of course.
-
-```tsx
-function Component() {
-  const query = useLoader();
-
-  if (query.isLoading) {
-    return "Loading...";
-  }
-  if (!query.isSuccess) {
-    return "Something happened...";
-  }
-  //...
-}
+}, loader);
 ```
 
 ## What problem does this solve?
@@ -144,12 +81,65 @@ What if we could instead "join" these queries into one, and then just return ear
 - [x] Better type certainty
 - [x] Easy to write re-usable loaders that can be abstracted away from the components
 
+# Exports
+
+## createLoader
+
+Creates a `Loader`.
+
+```typescript
+const loader = createLoader({
+  queries: () => [useGetUsers()] as const,
+});
+```
+
+### Argument object:
+
+**queries**: `(arg?: T) => readonly UseQueryResults<unknown>[]`
+
+Returns a `readonly` array of useQuery results.
+
+**transform**?: `(queries: readonly UseQueryResult[]) => T`
+
+Transforms the list of queries to the desired loader output format.
+
+**onLoading**?: `(props: T) => ReactElement`
+
+**onError**?: `(props: T) => ReactElement`
+
+**onFetching**?: `(props: T) => ReactElement`
+
 ## withLoader
 
-`withLoader` cuts away some copy-paste code, and makes the component file even cleaner:
+Wraps a component to provide it with loader data.
 
 ```tsx
-const useLoader = createLoader(...);
+const postsLoader = createLoader(...);
+
+const Component = withLoader(
+  (props: Props, loaderData) => {
+    // Can safely assume that loaderData and props are populated.
+     const posts = loaderData.posts;
+
+     return posts.map(,,,);
+  },
+  postsLoader
+)
+
+```
+
+### Arguments
+
+1. `(props: P, loaderData: R) => ReactElement`  
+   Component with loader-data
+2. `Loader`  
+   Return value of `createLoader`.
+
+### Extending/customizing the loader
+
+To use an existing loader but with maybe a different loading state, for example:
+
+```tsx
 
 const Component = withLoader(
   (props: Props, loaderData) => {
@@ -159,20 +149,51 @@ const Component = withLoader(
      return posts.map(,,,);
   },
   {
-    useLoader,
-    useLoaderArg: (props) => undefined, // Could fetch arg from props here
-    onLoading: (props) => <>Loading...</>,
+    ...postsLoader,
+    onLoading: (props) => <props.loader />,
+    onFetching: (props) => <props.loader />,
   }
 )
 
 ```
 
-### InferLoaderData
+## createUseLoader
+
+Creates only the hook for the loader, without the extra metadata like loading state.
+
+Basically just joins multiple queries into one, and optionally transforms the output. Returns a standard RTK useQuery hook.
+
+A good solution for when you want more control over what happens during the lifecycle of the query.
+
+```tsx
+const useLoader = createUseLoader({
+  queries: (arg: string) =>
+    [
+      useQuery(arg.query),
+      useOtherQuery(arg.otherQuery),
+    ] as const,
+  transform: (queries) => ({
+    query: queries[0].data,
+    otherQuery: queries[1].data,
+  }),
+});
+
+const Component = () => {
+  const query = useLoader();
+
+  if (query.isLoading) {
+    return <div>loading...</div>;
+  }
+  //...
+};
+```
+
+## InferLoaderData
 
 Infers the type of the data the loader returns. Use:
 
 ```typescript
-const useLoader = createLoader(...);
+const { useLoader } = createLoader(...);
 type LoaderData = InferLoaderData<typeof useLoader>;
 ```
 
@@ -180,7 +201,6 @@ Typescript should infer the loader data type automatically inside `withLoader`, 
 
 ## Future features & wants
 
-- `extendLoader` - Creates a new loader that extends an existing loader
 - Better type resolving:
 
 ```typescript
