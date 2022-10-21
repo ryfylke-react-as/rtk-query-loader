@@ -12,7 +12,7 @@ yarn add @ryfylke-react/rtk-query-loader
 npm i @ryfylke-react/rtk-query-loader
 ```
 
-Here's a simple example of a component using rtk-query-loader:
+A simple example of a component using rtk-query-loader:
 
 ```tsx
 import {
@@ -29,9 +29,9 @@ const loader = createLoader({
   onLoading: () => <div>Loading pokemon...</div>,
 });
 
-const Pokemon = withLoader((props, [pokemonQ, currentUserQ]) => {
-  const pokemon = pokemonQ.data;
-  const currentUser = pokemonQ.data;
+const Pokemon = withLoader((props, queries) => {
+  const pokemon = queries[0].data;
+  const currentUser = queries[1].data;
 
   return (
     <div>
@@ -81,12 +81,65 @@ What if we could instead "join" these queries into one, and then just return ear
 - [x] Better type certainty
 - [x] Easy to write re-usable loaders that can be abstracted away from the components
 
+# Exports
+
+## createLoader
+
+Creates a `Loader`.
+
+```typescript
+const loader = createLoader({
+  queries: () => [useGetUsers()] as const,
+});
+```
+
+### Argument object:
+
+**queries**: `(arg?: T) => readonly UseQueryResults<unknown>[]`
+
+Returns a `readonly` array of useQuery results.
+
+**transform**?: `(queries: readonly UseQueryResult[]) => T`
+
+Transforms the list of queries to the desired loader output format.
+
+**onLoading**?: `(props: T) => ReactElement`
+
+**onError**?: `(props: T) => ReactElement`
+
+**onFetching**?: `(props: T) => ReactElement`
+
 ## withLoader
 
-`withLoader` cuts away some copy-paste code, and makes the component file even cleaner:
+Wraps a component to provide it with loader data.
 
 ```tsx
-const useLoader = createLoader(...);
+const postsLoader = createLoader(...);
+
+const Component = withLoader(
+  (props: Props, loaderData) => {
+    // Can safely assume that loaderData and props are populated.
+     const posts = loaderData.posts;
+
+     return posts.map(,,,);
+  },
+  postsLoader
+)
+
+```
+
+### Arguments
+
+1. `(props: P, loaderData: R) => ReactElement`  
+   Component with loader-data
+2. `Loader`  
+   Return value of `createLoader`.
+
+### Extending/customizing the loader
+
+To use an existing loader but with maybe a different loader, for example:
+
+```tsx
 
 const Component = withLoader(
   (props: Props, loaderData) => {
@@ -96,20 +149,51 @@ const Component = withLoader(
      return posts.map(,,,);
   },
   {
-    useLoader,
-    useLoaderArg: (props) => undefined, // Could fetch arg from props here
-    onLoading: (props) => <>Loading...</>,
+    ...postsLoader,
+    onLoading: (props) => <props.loader />,
+    onFetching: (props) => <props.loader />,
   }
 )
 
 ```
 
-### InferLoaderData
+## createUseLoader
+
+Creates only the hook for the loader, without the extra metadata like loading state.
+
+Basically just joins multiple queries into one, and optionally transforms the output. Returns a standard RTK useQuery hook.
+
+A good solution for when you want more control over what happens during the lifecycle of the query.
+
+```tsx
+const useLoader = createUseLoader({
+  queries: (arg: string) =>
+    [
+      useQuery(arg.query),
+      useOtherQuery(arg.otherQuery),
+    ] as const,
+  transform: (queries) => ({
+    query: queries[0].data,
+    otherQuery: queries[1].data,
+  }),
+});
+
+const Component = () => {
+  const query = useLoader();
+
+  if (query.isLoading) {
+    return <div>loading...</div>;
+  }
+  //...
+};
+```
+
+## InferLoaderData
 
 Infers the type of the data the loader returns. Use:
 
 ```typescript
-const useLoader = createLoader(...);
+const { useLoader } = createLoader(...);
 type LoaderData = InferLoaderData<typeof useLoader>;
 ```
 
@@ -117,7 +201,6 @@ Typescript should infer the loader data type automatically inside `withLoader`, 
 
 ## Future features & wants
 
-- `extendLoader` - Creates a new loader that extends an existing loader
 - Better type resolving:
 
 ```typescript
