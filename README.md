@@ -137,7 +137,7 @@ const Component = withLoader(
 
 ### Extending/customizing the loader
 
-To use an existing loader but with maybe a different loader, for example:
+To use an existing loader but with maybe a different loading state, for example:
 
 ```tsx
 
