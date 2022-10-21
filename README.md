@@ -26,10 +26,11 @@ const useLoader = createLoader({
     const posts = useQueryB();
     return [user, posts] as const;
   },
-  transform: (queries) => ({ // Optional. Default is an array of the queries.
-     user: queries[0].data,
-     posts: queries[1].data,
-  })
+  transform: (queries) => ({
+    // Optional. Default is an array of the queries.
+    user: queries[0].data,
+    posts: queries[1].data,
+  }),
 });
 
 const Component = () => {
@@ -38,9 +39,7 @@ const Component = () => {
   return (
     <RTKLoader
       query={query}
-      onSuccess={(data) => (
-        <ComponentWithData {...data} />
-      )}
+      onSuccess={(data) => <ComponentWithData {...data} />}
     />
   );
 };
@@ -145,70 +144,55 @@ What if we could instead "join" these queries into one, and then just return ear
 - [x] Better type certainty
 - [x] Easy to write re-usable loaders that can be abstracted away from the components
 
-## Future features & wants
+## withLoader
 
-- `withLoader`: I imagine something like this:
+`withLoader` cuts away some copy-paste code, and makes the component file even cleaner:
 
 ```tsx
-import { withLoader } from "@ryfylke-react/rtk-query-loader";
-import { Loading } from "components/common";
-import { useLoader } from "./Username.loader";
+const useLoader = createLoader(...);
 
-export const Username = withLoader(
+const Component = withLoader(
+  (props: Props, loaderData) => {
+    // Can safely assume that loaderData and props are populated.
+     const posts = loaderData.posts;
+
+     return posts.map(,,,);
+  },
   {
     useLoader,
-    arg: (props) => props.userId,
-    onLoading: <Loading />,
-  },
-  (props) => {
-    const { currentUser } = props.loaderData;
-
-    return <div>{currentUser.name}</div>;
+    useLoaderArg: (props) => undefined, // Could fetch arg from props here
+    onLoading: (props) => <>Loading...</>,
   }
-);
+)
+
 ```
 
-Which would be equivalent to:
+### InferLoaderData
 
-```tsx
-import { RTKLoader } from "@ryfylke-react/rtk-query-loader";
-import { Loading } from "components/common";
-import { useLoader } from "./Username.loader";
+Infers the type of the data the loader returns. Use:
 
-const Username = (props) => {
-  const query = useLoader(prps.userId);
-  return (
-    <RTKLoader
-      query={query}
-      loader={<Loading />}
-      onSuccess={(data) => (
-        <UsernameWithData loaderData={data} />
-      )}
-    />
-  );
-};
-
-const UsernameWithData = (props) => {
-  const { currentUser } = props.loaderData;
-
-  return <div>{currentUser.name}</div>;
-};
+```typescript
+const useLoader = createLoader(...);
+type LoaderData = InferLoaderData<typeof useLoader>;
 ```
+
+Typescript should infer the loader data type automatically inside `withLoader`, but if you need the type elsewhere then this could be useful.
+
+## Future features & wants
 
 - `extendLoader` - Creates a new loader that extends an existing loader
 - Better type resolving:
 
 ```typescript
 createLoader({
-   queries: () => {
-      return [useGetUser(), useGetPosts()] as const;
-   },
-   transform: function(queries){ // queries here are guaranteed to have .data, but currently the type resolves data as optional.
-      return {
-         name: queries[0].data.name // is technically safe, but typescript might complain
-      }
-   }
-})
+  queries: () => {
+    return [useGetUser(), useGetPosts()] as const;
+  },
+  transform: function (queries) {
+    // queries here are guaranteed to have .data, but currently the type resolves data as optional.
+    return {
+      name: queries[0].data.name, // is technically safe, but typescript might complain
+    };
+  },
+});
 ```
-
-
