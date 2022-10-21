@@ -1,3 +1,5 @@
+import { ReactElement } from "react";
+
 export type UseQueryResult<T> = {
   // Base query state
   originalArgs?: unknown; // Arguments passed to the query
@@ -46,3 +48,16 @@ export type CreateLoaderType = <
 >(
   createLoaderArgs: CreateLoaderArgs<QRU, R, A>
 ) => UseLoader<A, R>;
+
+export type ComponentWithLoaderData<
+  P extends Record<string, any>,
+  R extends unknown
+> = (props: P, loaderData: R) => ReactElement;
+
+type InferQueryResult<T> = T extends UseQueryResult<infer X>
+  ? X
+  : never;
+
+export type InferLoaderData<T> = T extends UseLoader<any, any>
+  ? InferQueryResult<ReturnType<T>>
+  : never;

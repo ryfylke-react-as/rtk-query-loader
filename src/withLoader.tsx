@@ -8,8 +8,8 @@ export type WithLoaderArgs<
   A = never
 > = {
   useLoader: Types.UseLoader<A, R>;
-  arg?: (props: P) => A;
-  onLoading?: ReactElement;
+  useLoaderArg?: (props: P) => A;
+  onLoading?: (props: P) => ReactElement;
 };
 
 export type Component<P extends Record<string, unknown>> = (
@@ -21,13 +21,13 @@ export const withLoader = <
   R extends unknown,
   A = never
 >(
-  args: WithLoaderArgs<P, R, A>,
-  Component: Component<P & { loaderData: R }>
+  Component: Types.ComponentWithLoaderData<P, R>,
+  args: WithLoaderArgs<P, R, A>
 ): Component<P> => {
   return (props: P) => {
     const useLoaderArgs = [];
-    if (args.arg) {
-      useLoaderArgs.push(args.arg(props));
+    if (args.useLoaderArg) {
+      useLoaderArgs.push(args.useLoaderArg(props));
     }
     const query = args.useLoader(
       ...(useLoaderArgs as Types.OptionalGenericArg<A>)
@@ -35,10 +35,8 @@ export const withLoader = <
     return (
       <RTKLoader
         query={query}
-        loader={args.onLoading}
-        onSuccess={(data) => (
-          <Component {...props} loaderData={data} />
-        )}
+        loader={args.onLoading?.(props)}
+        onSuccess={(data) => Component(props, data)}
       />
     );
   };

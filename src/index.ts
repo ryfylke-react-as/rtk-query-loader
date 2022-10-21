@@ -78,8 +78,10 @@ export const createLoader = <
 
 export { RTKLoader } from "./RTKLoader";
 export type {
+  ComponentWithLoaderData,
   CreateLoaderArgs,
   CreateLoaderType,
+  InferLoaderData,
   LoaderTransformFunction,
   OptionalGenericArg,
   UseLoader,
