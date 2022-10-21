@@ -16,96 +16,33 @@ Here's a simple example of a component using rtk-query-loader:
 
 ```tsx
 import {
-  createLoader,
+  createUseLoader,
   RTKLoader,
 } from "@ryfylke-react/rtk-query-loader";
 
-const useLoader = createLoader({
+const loader = createLoader({
   queries: () => {
-    const user = useQueryA();
-    const posts = useQueryB();
-    return [user, posts] as const;
+    const pokemon = useGetPokemon();
+    const currentUser = useGetCurrentUser();
+    return [pokemon, currentUser] as const;
   },
-  transform: (queries) => ({
-    // Optional. Default is an array of the queries.
-    user: queries[0].data,
-    posts: queries[1].data,
-  }),
+  onLoading: () => <div>Loading pokemon...</div>,
 });
 
-const Component = () => {
-  const query = useLoader();
+const Pokemon = withLoader((props, [pokemonQ, currentUserQ]) => {
+  const pokemon = pokemonQ.data;
+  const currentUser = pokemonQ.data;
 
-  return (
-    <RTKLoader
-      query={query}
-      onSuccess={(data) => <ComponentWithData {...data} />}
-    />
-  );
-};
-
-const ComponentWithData = (props) => {
-  // Can safely assume that loader data exists.
   return (
     <div>
-      {props.user.firstName} {props.user.lastName}
+      <h2>{pokemon.name}</h2>
+      <img src={pokemon.image} />
+      <a href={`/users/${currentUser.id}/pokemon`}>
+        Your pokemon
+      </a>
     </div>
   );
-};
-```
-
-## Passing arguments
-
-If you want to pass arguments to the queries, you can do so by using the first argument of `queries` (typescript will pick this up automatically):
-
-```typescript
-type LoaderArgs = {
-  userArgs: UserArgs;
-  postArgs: PostArgs;
-}
-
-const useLoader = createLoader({
-  queries: (args: LoaderArgs) => {
-    const user = useQueryA(args.userArgs);
-    const posts = useQueryB(args.postArgs);
-    return [user, posts];
-  }
-})
-//...
-const query = useLoader({ // Expects one required argument of type LoaderArgs
-  userArgs: {...},
-  postArgs: {...}
-});
-```
-
-## Loading state
-
-Althrough you could definitely use your own `RTKLoader`-like component to handle the loading state, we have exposed a simple function that does the switching for you.
-
-```tsx
-<RTKLoader
-  query={query}
-  loader={<div>isLoading...</div>}
-  onFetching={<div>isFetching (reloading)...</div>}
-  onError={(error) => <div>Something bad happened...</div>}
-  onSuccess={(data) => <div>Finished loading</div>}
-/>
-```
-
-You could also implement the loading state manually, of course.
-
-```tsx
-function Component() {
-  const query = useLoader();
-
-  if (query.isLoading) {
-    return "Loading...";
-  }
-  if (!query.isSuccess) {
-    return "Something happened...";
-  }
-  //...
-}
+}, loader);
 ```
 
 ## What problem does this solve?

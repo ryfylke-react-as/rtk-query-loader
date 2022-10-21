@@ -1,3 +1,5 @@
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { ReactElement } from "react";
 
 export type UseQueryResult<T> = {
@@ -28,7 +30,7 @@ export type LoaderTransformFunction<
 
 export type OptionalGenericArg<T> = T extends never ? [] : [T];
 
-export type CreateLoaderArgs<
+export type CreateUseLoaderArgs<
   QRU extends readonly UseQueryResult<unknown>[],
   R extends unknown,
   A = never
@@ -46,7 +48,7 @@ export type CreateLoaderType = <
   R extends unknown = QRU,
   A = never
 >(
-  createLoaderArgs: CreateLoaderArgs<QRU, R, A>
+  createLoaderArgs: CreateUseLoaderArgs<QRU, R, A>
 ) => UseLoader<A, R>;
 
 export type ComponentWithLoaderData<
@@ -61,3 +63,28 @@ type InferQueryResult<T> = T extends UseQueryResult<infer X>
 export type InferLoaderData<T> = T extends UseLoader<any, any>
   ? InferQueryResult<ReturnType<T>>
   : never;
+
+export type WithLoaderArgs<
+  P extends unknown,
+  R extends unknown,
+  A = never
+> = {
+  useLoader: UseLoader<A, R>;
+  useLoaderArg?: (props: P) => A;
+  onLoading?: (props: P) => ReactElement;
+  onError?: (
+    props: P,
+    error: SerializedError | FetchBaseQueryError
+  ) => ReactElement;
+  onFetching?: (props: P) => ReactElement;
+};
+
+export type Component<P extends Record<string, unknown>> = (
+  props: P
+) => ReactElement;
+
+export type Loader<
+  P extends unknown,
+  R extends unknown,
+  A = never
+> = WithLoaderArgs<P, R, A>;

@@ -1,20 +1,6 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { RTKLoader } from "./RTKLoader";
 import * as Types from "./types";
-
-export type WithLoaderArgs<
-  P extends unknown,
-  R extends unknown,
-  A = never
-> = {
-  useLoader: Types.UseLoader<A, R>;
-  useLoaderArg?: (props: P) => A;
-  onLoading?: (props: P) => ReactElement;
-};
-
-export type Component<P extends Record<string, unknown>> = (
-  props: P
-) => ReactElement;
 
 export const withLoader = <
   P extends Record<string, unknown>,
@@ -22,8 +8,8 @@ export const withLoader = <
   A = never
 >(
   Component: Types.ComponentWithLoaderData<P, R>,
-  args: WithLoaderArgs<P, R, A>
-): Component<P> => {
+  args: Types.WithLoaderArgs<P, R, A>
+): Types.Component<P> => {
   return (props: P) => {
     const useLoaderArgs = [];
     if (args.useLoaderArg) {
@@ -36,7 +22,16 @@ export const withLoader = <
       <RTKLoader
         query={query}
         loader={args.onLoading?.(props)}
+        onError={
+          args.onError
+            ? (error) =>
+                args.onError?.(props, error) ?? (
+                  <React.Fragment />
+                )
+            : undefined
+        }
         onSuccess={(data) => Component(props, data)}
+        onFetching={args?.onFetching?.(props)}
       />
     );
   };
