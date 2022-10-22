@@ -23,10 +23,14 @@ export type UseQueryResult<T> = {
   refetch: () => void; // A function to force refetch the query
 };
 
+export type MakeDataRequired<T> = {
+  [K in keyof T]-?: Required<T[K]>;
+};
+
 export type LoaderTransformFunction<
   QRU extends readonly UseQueryResult<unknown>[],
   R extends unknown
-> = (queries: QRU) => R;
+> = (queries: MakeDataRequired<QRU>) => R;
 
 export type OptionalGenericArg<T> = T extends never ? [] : [T];
 
@@ -45,7 +49,7 @@ export type UseLoader<A, R> = (
 
 export type CreateLoaderType = <
   QRU extends readonly UseQueryResult<unknown>[],
-  R extends unknown = QRU,
+  R extends unknown = MakeDataRequired<QRU>,
   A = never
 >(
   createLoaderArgs: CreateUseLoaderArgs<QRU, R, A>
@@ -77,7 +81,7 @@ export type WithLoaderArgs<
 export type CreateLoaderArgs<
   P extends unknown,
   QRU extends readonly UseQueryResult<unknown>[],
-  R extends unknown = QRU,
+  R extends unknown = MakeDataRequired<QRU>,
   A = never
 > = Partial<CreateUseLoaderArgs<QRU, R, A>> & {
   queriesArg?: (props: P) => A;
@@ -108,7 +112,9 @@ export type Loader<
   extend: <
     QRUb extends readonly UseQueryResult<unknown>[],
     Pb extends unknown = P,
-    Rb extends unknown = QRUb extends unknown ? R : QRUb,
+    Rb extends unknown = QRUb extends unknown
+      ? R
+      : MakeDataRequired<QRUb>,
     Ab = A
   >(
     newLoader: Partial<CreateLoaderArgs<Pb, QRUb, Rb, Ab>>

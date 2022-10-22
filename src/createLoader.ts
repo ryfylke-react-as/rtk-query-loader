@@ -3,7 +3,7 @@ import * as Types from "./types";
 
 export const createUseLoader = <
   QRU extends readonly Types.UseQueryResult<unknown>[],
-  R extends unknown = QRU,
+  R extends unknown = Types.MakeDataRequired<QRU>,
   A = never
 >(
   createUseLoaderArgs: Types.CreateUseLoaderArgs<QRU, R, A>
@@ -15,7 +15,9 @@ export const createUseLoader = <
 
     if (aggregatedQuery.isSuccess) {
       const data = createUseLoaderArgs.transform
-        ? createUseLoaderArgs.transform(createdQueries)
+        ? createUseLoaderArgs.transform(
+            createdQueries as unknown as Types.MakeDataRequired<QRU>
+          )
         : createdQueries;
 
       return {
@@ -32,7 +34,7 @@ export const createUseLoader = <
 export const createLoader = <
   P extends unknown,
   QRU extends readonly Types.UseQueryResult<unknown>[],
-  R extends unknown = QRU,
+  R extends unknown = Types.MakeDataRequired<QRU>,
   A = never
 >(
   createLoaderArgs: Types.CreateLoaderArgs<P, QRU, R, A>

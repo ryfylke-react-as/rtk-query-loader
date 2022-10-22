@@ -202,20 +202,36 @@ type LoaderData = InferLoaderData<typeof useLoader>;
 
 Typescript should infer the loader data type automatically inside `withLoader`, but if you need the type elsewhere then this could be useful.
 
-## Future features & wants
+# Extending loaders
 
-- Better type resolving:
+You can extend a loader like such:
+
+```tsx
+const baseLoader = createLoader({
+  onLoading: () => <Loading />,
+});
+
+const pokemonLoader = baseLoader.extend({
+  queries: (name: string) => [useGetPokemon(name)],
+  queriesArg: (props: PokemonProps) => props.name.toLowerCase(),
+});
+```
+
+New properties will overwrite existing.
+
+> If the loader you extend has a `transform` function, and you are changing the `queries` function, you might need to do this to resolve the types properly:
 
 ```typescript
-createLoader({
-  queries: () => {
-    return [useGetUser(), useGetPosts()] as const;
-  },
-  transform: function (queries) {
-    // queries here are guaranteed to have .data, but currently the type resolves data as optional.
-    return {
-      name: queries[0].data.name, // is technically safe, but typescript might complain
-    };
-  },
+const baseLoader = createLoader({
+  queries: () => [...],
+  transform: () => {i_want: "this-format"},
+})
+
+const pokemonLoader = baseLoader.extend({
+  queries: () => [...],
+  transform: (q) => q, // Reapply default transform for query
 });
+
+type Test = ReturnType<typeof pokemonLoader.useLoader>;
+// { i_want: string; }
 ```
