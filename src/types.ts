@@ -26,6 +26,7 @@ export type UseQueryResult<T> = {
 export type MakeDataRequired<
   T extends readonly UseQueryResult<unknown>[]
 > = {
+  // @ts-ignore: Cannot use data to index type T[K]
   [K in keyof T]-?: T[K] & { data: NonNullable<T[K]["data"]> };
 };
 
