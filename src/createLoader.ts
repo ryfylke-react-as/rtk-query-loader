@@ -80,3 +80,21 @@ export const createLoader = <
 
   return loader;
 };
+
+/* For testing:
+const l = createLoader({
+  queries: () =>
+    [
+      {
+        isError: false,
+        isFetching: false,
+        isLoading: false,
+        isSuccess: false,
+        isUninitialized: true,
+        refetch: () => {},
+      } as Types.UseQueryResult<{ data: "exists" }>,
+    ] as const,
+  transform: (queries) => ({
+    test: queries[0].data
+  }),
+}); */
