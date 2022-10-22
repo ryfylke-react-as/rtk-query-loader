@@ -53,9 +53,3 @@ export const createLoader = <
 
   return loader;
 };
-
-const loader = createLoader({
-  queries: () => [],
-});
-
-const newLoader = loader.extend({});
