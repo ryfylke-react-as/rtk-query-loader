@@ -8,6 +8,7 @@ export const createUseLoader = <
 >(
   createUseLoaderArgs: Types.CreateUseLoaderArgs<QRU, R, A>
 ): Types.UseLoader<A, R> => {
+  // useLoader
   return (...args) => {
     const createdQueries = createUseLoaderArgs.queries(...args);
     const aggregatedQuery = aggregateToQuery(createdQueries);
@@ -25,6 +26,7 @@ export const createUseLoader = <
 
     return aggregatedQuery as Types.UseQueryResult<R>;
   };
+  //
 };
 
 export const createLoader = <
@@ -46,8 +48,30 @@ export const createLoader = <
     onError: createLoaderArgs.onError,
     onFetching: createLoaderArgs.onFetching,
     queriesArg: createLoaderArgs.queriesArg,
-    extend: function (args) {
-      return { ...this, ...args } as Types.Loader<unknown, R, A>;
+    extend: function <
+      QRUb extends readonly Types.UseQueryResult<unknown>[],
+      Pb extends unknown = P,
+      Rb = R,
+      Ab = A
+    >({
+      queries,
+      transform,
+      ...loaderArgs
+    }: Partial<Types.CreateLoaderArgs<Pb, QRUb, Rb, Ab>>) {
+      const extendedLoader = {
+        ...(this as unknown as Types.Loader<Pb, Rb, Ab>),
+        ...loaderArgs,
+      } as Types.Loader<Pb, Rb, Ab>;
+
+      if (queries) {
+        const newUseLoader = createUseLoader({
+          queries,
+          transform,
+        });
+        extendedLoader.useLoader = newUseLoader;
+      }
+
+      return extendedLoader;
     },
   };
 

@@ -68,24 +68,6 @@ export type Component<P extends Record<string, unknown>> = (
   props: P
 ) => ReactElement;
 
-export type Loader<
-  P extends unknown,
-  R extends unknown,
-  A = never
-> = {
-  useLoader: UseLoader<A, R>;
-  queriesArg?: (props: P) => A;
-  onLoading?: (props: P) => ReactElement;
-  onError?: (
-    props: P,
-    error: SerializedError | FetchBaseQueryError
-  ) => ReactElement;
-  onFetching?: (props: P) => ReactElement;
-  extend: (
-    args: Omit<Loader<unknown, R, A>, "extend">
-  ) => Loader<unknown, R, A>;
-};
-
 export type WithLoaderArgs<
   P extends unknown,
   R extends unknown,
@@ -102,4 +84,27 @@ export type CreateLoaderArgs<
   onLoading?: (props: P) => ReactElement;
   onError?: (props: P, error?: unknown) => ReactElement;
   onFetching?: (props: P) => ReactElement;
+};
+
+export type Loader<
+  P extends unknown,
+  R extends unknown,
+  A = never
+> = {
+  useLoader: UseLoader<A, R>;
+  queriesArg?: (props: P) => A;
+  onLoading?: (props: P) => ReactElement;
+  onError?: (
+    props: P,
+    error: SerializedError | FetchBaseQueryError
+  ) => ReactElement;
+  onFetching?: (props: P) => ReactElement;
+  extend: <
+    QRUb extends readonly UseQueryResult<unknown>[],
+    Pb extends unknown = P,
+    Rb extends unknown = QRUb extends unknown ? R : QRUb,
+    Ab = A
+  >(
+    newLoader: Partial<CreateLoaderArgs<Pb, QRUb, Rb, Ab>>
+  ) => Loader<Pb, Rb, Ab>;
 };
