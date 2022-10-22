@@ -95,7 +95,7 @@ const loader = createLoader({
 
 ### Argument object:
 
-**queries**: `(arg?: T) => readonly UseQueryResults<unknown>[]`
+**queries**?: `(arg?: T) => readonly UseQueryResults<unknown>[]`
 
 Returns a `readonly` array of useQuery results.
 
@@ -109,9 +109,9 @@ Creates an argument for the queries function based on expected props. Useful whe
 
 **onLoading**?: `(props: T) => ReactElement`
 
-**onError**?: `(props: T) => ReactElement`
+**onError**?: `(props: T, error: RTKError) => ReactElement`
 
-**onFetching**?: `(props: T) => ReactElement`
+**onFetching**?: `(props: T, renderBody: (() => ReactElement)) => ReactElement`
 
 ## withLoader
 

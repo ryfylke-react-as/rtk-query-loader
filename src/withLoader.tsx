@@ -31,7 +31,9 @@ export const withLoader = <
             : undefined
         }
         onSuccess={(data) => Component(props, data)}
-        onFetching={args?.onFetching?.(props)}
+        onFetching={args?.onFetching?.(props, () =>
+          Component(props, query.data as R)
+        )}
       />
     );
   };

@@ -38,7 +38,8 @@ export const createLoader = <
   createLoaderArgs: Types.CreateLoaderArgs<P, QRU, R, A>
 ): Types.Loader<P, R, A> => {
   const useLoader = createUseLoader({
-    queries: createLoaderArgs.queries,
+    queries:
+      createLoaderArgs.queries ?? (() => [] as unknown as QRU),
     transform: createLoaderArgs.transform,
   });
 

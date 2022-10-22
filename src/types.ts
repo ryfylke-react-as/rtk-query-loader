@@ -79,11 +79,14 @@ export type CreateLoaderArgs<
   QRU extends readonly UseQueryResult<unknown>[],
   R extends unknown = QRU,
   A = never
-> = CreateUseLoaderArgs<QRU, R, A> & {
+> = Partial<CreateUseLoaderArgs<QRU, R, A>> & {
   queriesArg?: (props: P) => A;
   onLoading?: (props: P) => ReactElement;
   onError?: (props: P, error?: unknown) => ReactElement;
-  onFetching?: (props: P) => ReactElement;
+  onFetching?: (
+    props: P,
+    renderBody: () => ReactElement
+  ) => ReactElement;
 };
 
 export type Loader<
@@ -98,7 +101,10 @@ export type Loader<
     props: P,
     error: SerializedError | FetchBaseQueryError
   ) => ReactElement;
-  onFetching?: (props: P) => ReactElement;
+  onFetching?: (
+    props: P,
+    renderBody: () => ReactElement
+  ) => ReactElement;
   extend: <
     QRUb extends readonly UseQueryResult<unknown>[],
     Pb extends unknown = P,
