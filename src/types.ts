@@ -82,7 +82,7 @@ export type Loader<
   ) => ReactElement;
   onFetching?: (props: P) => ReactElement;
   extend: (
-    args: Omit<Loader<unknown, R, A>, "useLoader" | "extend">
+    args: Omit<Loader<unknown, R, A>, "extend">
   ) => Loader<unknown, R, A>;
 };
 
