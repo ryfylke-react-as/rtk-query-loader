@@ -23,8 +23,10 @@ export type UseQueryResult<T> = {
   refetch: () => void; // A function to force refetch the query
 };
 
-export type MakeDataRequired<T> = {
-  [K in keyof T]-?: NonNullable<Required<T[K]>>;
+export type MakeDataRequired<
+  T extends readonly UseQueryResult<unknown>[]
+> = {
+  [K in keyof T]-?: T[K] & { data: NonNullable<T[K]["data"]> };
 };
 
 export type LoaderTransformFunction<
