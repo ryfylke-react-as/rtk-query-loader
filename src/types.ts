@@ -24,9 +24,7 @@ export type UseQueryResult<T> = {
 };
 
 export type MakeDataRequired<T> = {
-  [K in keyof T]-?: NonNullable<
-    Required<MakeDataRequired<T[K]>>
-  >;
+  [K in keyof T]-?: NonNullable<Required<T[K]>>;
 };
 
 export type LoaderTransformFunction<

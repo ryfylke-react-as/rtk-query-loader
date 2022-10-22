@@ -81,8 +81,7 @@ export const createLoader = <
   return loader;
 };
 
-/* For testing:
-const l = createLoader({
+/* const l = createLoader({
   queries: () =>
     [
       {
@@ -92,9 +91,9 @@ const l = createLoader({
         isSuccess: false,
         isUninitialized: true,
         refetch: () => {},
-      } as Types.UseQueryResult<{ data: "exists" }>,
+      } as Types.UseQueryResult<{key: "value"}>,
     ] as const,
   transform: (queries) => ({
-    test: queries[0].data
+    test: queries[0].data.key,
   }),
 }); */
