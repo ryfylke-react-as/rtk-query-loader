@@ -64,21 +64,6 @@ export type InferLoaderData<T> = T extends UseLoader<any, any>
   ? InferQueryResult<ReturnType<T>>
   : never;
 
-export type WithLoaderArgs<
-  P extends unknown,
-  R extends unknown,
-  A = never
-> = {
-  useLoader: UseLoader<A, R>;
-  useLoaderArg?: (props: P) => A;
-  onLoading?: (props: P) => ReactElement;
-  onError?: (
-    props: P,
-    error: SerializedError | FetchBaseQueryError
-  ) => ReactElement;
-  onFetching?: (props: P) => ReactElement;
-};
-
 export type Component<P extends Record<string, unknown>> = (
   props: P
 ) => ReactElement;
@@ -87,4 +72,34 @@ export type Loader<
   P extends unknown,
   R extends unknown,
   A = never
-> = WithLoaderArgs<P, R, A>;
+> = {
+  useLoader: UseLoader<A, R>;
+  queriesArg?: (props: P) => A;
+  onLoading?: (props: P) => ReactElement;
+  onError?: (
+    props: P,
+    error: SerializedError | FetchBaseQueryError
+  ) => ReactElement;
+  onFetching?: (props: P) => ReactElement;
+  extend: (
+    args: Omit<Loader<unknown, R, A>, "useLoader" | "extend">
+  ) => Loader<unknown, R, A>;
+};
+
+export type WithLoaderArgs<
+  P extends unknown,
+  R extends unknown,
+  A = never
+> = Loader<P, R, A>;
+
+export type CreateLoaderArgs<
+  P extends unknown,
+  QRU extends readonly UseQueryResult<unknown>[],
+  R extends unknown = QRU,
+  A = never
+> = CreateUseLoaderArgs<QRU, R, A> & {
+  queriesArg?: (props: P) => A;
+  onLoading?: (props: P) => ReactElement;
+  onError?: (props: P, error?: unknown) => ReactElement;
+  onFetching?: (props: P) => ReactElement;
+};

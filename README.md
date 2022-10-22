@@ -103,6 +103,10 @@ Returns a `readonly` array of useQuery results.
 
 Transforms the list of queries to the desired loader output format.
 
+**queriesArg**?: `(props: T) => A`
+
+Creates an argument for the queries function based on expected props. Useful when you have queries in your loader that need arguments from the props of the component.
+
 **onLoading**?: `(props: T) => ReactElement`
 
 **onError**?: `(props: T) => ReactElement`
@@ -148,11 +152,10 @@ const Component = withLoader(
 
      return posts.map(,,,);
   },
-  {
-    ...postsLoader,
+  postsLoader.extend({
     onLoading: (props) => <props.loader />,
     onFetching: (props) => <props.loader />,
-  }
+  }),
 )
 
 ```

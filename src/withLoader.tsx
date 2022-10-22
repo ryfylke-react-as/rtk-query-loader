@@ -12,8 +12,8 @@ export const withLoader = <
 ): Types.Component<P> => {
   return (props: P) => {
     const useLoaderArgs = [];
-    if (args.useLoaderArg) {
-      useLoaderArgs.push(args.useLoaderArg(props));
+    if (args.queriesArg) {
+      useLoaderArgs.push(args.queriesArg(props));
     }
     const query = args.useLoader(
       ...(useLoaderArgs as Types.OptionalGenericArg<A>)
