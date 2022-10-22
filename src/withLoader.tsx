@@ -31,8 +31,11 @@ export const withLoader = <
             : undefined
         }
         onSuccess={(data) => Component(props, data)}
-        onFetching={args?.onFetching?.(props, () =>
-          Component(props, query.data as R)
+        onFetching={args?.onFetching?.(
+          props,
+          query.data
+            ? () => Component(props, query.data as R)
+            : () => <React.Fragment />
         )}
       />
     );
