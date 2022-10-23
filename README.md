@@ -2,7 +2,6 @@
 
 ![npm](https://img.shields.io/npm/v/@ryfylke-react/rtk-query-loader?color=gray&style=flat-square)
 ![npm type definitions](https://img.shields.io/npm/types/@ryfylke-react/rtk-query-loader?color=gray&label=%20&logoColor=gray)
-![npm](https://img.shields.io/npm/dw/@ryfylke-react/rtk-query-loader?color=%23444&style=flat-square)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/@ryfylke-react/rtk-query-loader@latest?style=flat-square)
 
 Lets you create loaders that contain multiple RTK queries.
