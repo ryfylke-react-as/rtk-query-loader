@@ -65,7 +65,8 @@ export type ComponentWithLoaderData<
 
 export type InferLoaderData<T> = T extends Loader<
   any | never,
-  infer X
+  infer X,
+  any | never
 >
   ? X
   : never;
