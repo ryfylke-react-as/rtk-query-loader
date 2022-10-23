@@ -80,23 +80,3 @@ export const createLoader = <
 
   return loader;
 };
-
-/* const getData = <T>(): T | undefined => "" as T;
-
-const l = createLoader({
-  queries: () =>
-    [
-      {
-        data: getData<{ key: string }>(),
-        isError: false,
-        isFetching: false,
-        isLoading: false,
-        isSuccess: false,
-        isUninitialized: true,
-        refetch: () => {},
-      },
-    ] as const,
-  transform: (queries) => ({
-    test: queries[0].data.key,
-  }),
-}); */

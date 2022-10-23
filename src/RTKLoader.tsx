@@ -20,10 +20,6 @@ export function RTKLoader<T>(
     return props.loader ?? <React.Fragment />;
   }
   if (props.query.isError && props.query.error) {
-    console.warn(
-      `RTKLoader error: ${props.query.requestId}`,
-      props.query.error
-    );
     return (
       props.onError?.(props.query.error as SerializedError) ?? (
         <React.Fragment />

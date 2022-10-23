@@ -1,7 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import userEvent from "@testing-library/user-event";
 import {
   ExtendedLoaderComponent,
   FailTester,
+  FetchTestComponent,
   LoadPokemon,
   SimpleLoadedComponent,
   TestAggregateComponent,
@@ -44,6 +46,22 @@ describe("withLoader", () => {
     expect(screen.getByText("Loading")).toBeVisible();
     await waitFor(() =>
       expect(screen.getByText("Error")).toBeVisible()
+    );
+  });
+
+  test("onFetching renders when applicable", async () => {
+    render(<FetchTestComponent />);
+    expect(screen.getByText("Loading")).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByRole("textbox")).toBeVisible()
+    );
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "Abc{Enter}");
+    await waitFor(() =>
+      expect(screen.getByText("Fetching")).toBeVisible()
+    );
+    await waitFor(() =>
+      expect(screen.getByText("#3")).toBeVisible()
     );
   });
 

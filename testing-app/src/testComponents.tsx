@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { useRef, useState } from "react";
 import { aggregateToQuery } from "../../src/aggregateToQuery";
 import { createLoader } from "../../src/createLoader";
 import { withLoader } from "../../src/withLoader";
@@ -78,6 +79,43 @@ export const FailTester = withLoader(
     queries: () => [useGetPokemonByNameQuery("error")] as const,
     onError: () => <div>Error</div>,
     onLoading: () => <div>Loading</div>,
+  })
+);
+
+export const FetchTestComponent = () => {
+  const [name, setName] = useState("charizard");
+
+  return <FetchTester name={name} onChange={setName} />;
+};
+
+export const FetchTester = withLoader(
+  (props, loaderData) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+    return (
+      <div>
+        #{loaderData[0].data.id}
+        <br />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            props.onChange(inputRef.current?.value ?? "");
+          }}
+        >
+          <input type="text" ref={inputRef} />
+          <button>Go</button>
+        </form>
+      </div>
+    );
+  },
+  createLoader({
+    queries: (name: string) =>
+      [useGetPokemonByNameQuery(name)] as const,
+    queriesArg: (props: {
+      name: string;
+      onChange: (name: string) => void;
+    }) => props.name,
+    onLoading: () => <div>Loading</div>,
+    onFetching: () => <div>Fetching</div>,
   })
 );
 
