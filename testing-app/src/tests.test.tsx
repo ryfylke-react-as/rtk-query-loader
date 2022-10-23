@@ -7,6 +7,7 @@ import {
   LoadPokemon,
   SimpleLoadedComponent,
   TestAggregateComponent,
+  TestTransformed,
 } from "./testComponents";
 import { render, screen, waitFor } from "./utils";
 
@@ -62,6 +63,13 @@ describe("withLoader", () => {
     );
     await waitFor(() =>
       expect(screen.getByText("#3")).toBeVisible()
+    );
+  });
+
+  test("Can transform the output of the loader", async () => {
+    render(<TestTransformed />);
+    await waitFor(() =>
+      expect(screen.getByText("charizard")).toBeVisible()
     );
   });
 

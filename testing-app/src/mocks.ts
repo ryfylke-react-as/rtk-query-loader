@@ -1,6 +1,6 @@
 import { rest } from "msw";
 
-const RESPONSE_DELAY = 600;
+const RESPONSE_DELAY = 100;
 
 export const handlers = [
   rest.get("/pokemons", (req, res, c) => {

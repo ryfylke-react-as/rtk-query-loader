@@ -1,5 +1,5 @@
 {
-  "name": "testing-app",
+  "name": "rtk-query-loader-testing-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -17,10 +17,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test"
   },
   "eslintConfig": {
     "extends": [

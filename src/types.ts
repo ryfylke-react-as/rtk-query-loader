@@ -63,12 +63,11 @@ export type ComponentWithLoaderData<
   R extends unknown
 > = (props: P, loaderData: R) => ReactElement;
 
-type InferQueryResult<T> = T extends UseQueryResult<infer X>
+export type InferLoaderData<T> = T extends Loader<
+  any | never,
+  infer X
+>
   ? X
-  : never;
-
-export type InferLoaderData<T> = T extends UseLoader<any, any>
-  ? InferQueryResult<ReturnType<T>>
   : never;
 
 export type Component<P extends Record<string, unknown>> = (

@@ -35,6 +35,9 @@ const simpleLoader = createLoader({
   onLoading: () => <div>Loading</div>,
 });
 
+// Test type inferrence with no transform
+//type SimpleLoaderResponse = InferLoaderData<typeof simpleLoader>;
+
 export const SimpleLoadedComponent = withLoader(
   (props, loaderData) => (
     <RenderPokemonData
@@ -141,3 +144,20 @@ export const TestAggregateComponent = () => {
 
   return <div>Loading</div>;
 };
+
+const transformLoader = createLoader({
+  queries: () => [useGetPokemonByNameQuery("charizard")],
+  transform: (queries) => ({
+    pokemon: queries[0].data,
+  }),
+});
+
+// test type inferrence of transformed
+// type TransformedType = InferLoaderData<typeof transformLoader>;
+
+export const TestTransformed = withLoader(
+  (props, loaderData) => {
+    return <div>{loaderData.pokemon.name}</div>;
+  },
+  transformLoader
+);

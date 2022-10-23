@@ -200,8 +200,8 @@ const Component = () => {
 Infers the type of the data the loader returns. Use:
 
 ```typescript
-const { useLoader } = createLoader(...);
-type LoaderData = InferLoaderData<typeof useLoader>;
+const loader = createLoader(...);
+type LoaderData = InferLoaderData<typeof loader>;
 ```
 
 Typescript should infer the loader data type automatically inside `withLoader`, but if you need the type elsewhere then this could be useful.
