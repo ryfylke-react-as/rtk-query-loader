@@ -58,6 +58,29 @@ export const ExtendedLoaderComponent = withLoader(
   extendedLoader
 );
 
+const pokemonByNameLoader = createLoader({
+  queries: (name: string) =>
+    [useGetPokemonByNameQuery(name)] as const,
+  queriesArg: (props: { name: string }) => props.name,
+});
+
+export const LoadPokemon = withLoader((props, loaderData) => {
+  return (
+    <div>
+      Loaded: "{loaderData[0].data.name}", props: "{props.name}"
+    </div>
+  );
+}, pokemonByNameLoader);
+
+export const FailTester = withLoader(
+  () => <div>Success</div>,
+  createLoader({
+    queries: () => [useGetPokemonByNameQuery("error")] as const,
+    onError: () => <div>Error</div>,
+    onLoading: () => <div>Loading</div>,
+  })
+);
+
 export const TestAggregateComponent = () => {
   const q1 = useGetPokemonByNameQuery("charizard");
   const q2 = useGetPokemonsQuery(undefined);
