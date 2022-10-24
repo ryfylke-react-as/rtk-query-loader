@@ -89,7 +89,10 @@ export type CreateLoaderArgs<
 > = Partial<CreateUseLoaderArgs<QRU, R, A>> & {
   queriesArg?: (props: P) => A;
   onLoading?: (props: P) => ReactElement;
-  onError?: (props: P, error?: unknown) => ReactElement;
+  onError?: (
+    props: P,
+    error: FetchBaseQueryError | SerializedError
+  ) => ReactElement;
   onFetching?: (
     props: P,
     renderBody: () => ReactElement
