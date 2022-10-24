@@ -3,7 +3,7 @@ import { RTKLoader } from "./RTKLoader";
 import * as Types from "./types";
 
 export const withLoader = <
-  P extends Record<string, unknown>,
+  P extends Record<string, any>,
   R extends unknown,
   A = never
 >(

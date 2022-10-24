@@ -71,7 +71,7 @@ export type InferLoaderData<T> = T extends Loader<
   ? X
   : never;
 
-export type Component<P extends Record<string, unknown>> = (
+export type Component<P extends Record<string, any>> = (
   props: P
 ) => ReactElement;
 
