@@ -237,6 +237,6 @@ const pokemonLoader = baseLoader.extend({
   transform: (q) => q, // Reapply default transform for query
 });
 
-type Test = ReturnType<typeof pokemonLoader.useLoader>;
+type Test = ReturnType<typeof pokemonLoader>;
 // { i_want: string; }
 ```
