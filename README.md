@@ -6,7 +6,8 @@
 
 Lets you create loaders that contain multiple RTK queries.
 
-[Live demo / Playground](https://codesandbox.io/s/rtk-query-loader-demo-42tubp)
+* [Live demo / Playground](https://codesandbox.io/s/rtk-query-loader-demo-42tubp)
+* [NPM](https://www.npmjs.com/package/@ryfylke-react/rtk-query-loader)
 
 ## **Usage**
 
