@@ -22,7 +22,7 @@ A simple example of a component using rtk-query-loader:
 ```tsx
 import {
   createLoader,
-  RTKLoader,
+  withLoader,
 } from "@ryfylke-react/rtk-query-loader";
 
 const loader = createLoader({
