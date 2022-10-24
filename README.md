@@ -21,7 +21,7 @@ A simple example of a component using rtk-query-loader:
 
 ```tsx
 import {
-  createUseLoader,
+  createLoader,
   RTKLoader,
 } from "@ryfylke-react/rtk-query-loader";
 
