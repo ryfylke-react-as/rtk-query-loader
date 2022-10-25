@@ -64,11 +64,15 @@ export type ComponentWithLoaderData<
 > = (props: P, loaderData: R) => ReactElement;
 
 export type InferLoaderData<T> = T extends Loader<
-  any | never,
+  any,
   infer X,
-  any | never
+  any
 >
   ? X
+  : T extends Loader<never, infer Y, any>
+  ? Y
+  : T extends Loader<any, infer Z, never>
+  ? Z
   : never;
 
 export type Component<P extends Record<string, any>> = (

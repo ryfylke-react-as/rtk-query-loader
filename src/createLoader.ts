@@ -54,7 +54,9 @@ export const createLoader = <
     extend: function <
       QRUb extends readonly Types.UseQueryResult<unknown>[],
       Pb extends unknown = P,
-      Rb = R,
+      Rb = QRUb extends unknown
+        ? R
+        : Types.MakeDataRequired<QRUb>,
       Ab = A
     >({
       queries,
