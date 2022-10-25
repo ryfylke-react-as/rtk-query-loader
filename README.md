@@ -224,7 +224,9 @@ const pokemonLoader = baseLoader.extend({
 
 New properties will overwrite existing.
 
-> If the loader you extend has a `transform` function, and you are changing the `queries` function, you might need to do this to resolve the types properly:
+**NOTE**:
+
+> If the loader that you _extend from_ has a `transform` function, and you are change the `queries` function in the _extended_ loader, you might need to do the following fix to resolve the types correctly:
 
 ```typescript
 const baseLoader = createLoader({
@@ -232,11 +234,25 @@ const baseLoader = createLoader({
   transform: () => {i_want: "this-format"},
 })
 
-const pokemonLoader = baseLoader.extend({
+// This first example is extending a loader that has a transform.
+// It does not supply a new transform function
+const extendedOne = baseLoader.extend(({
+   queries: () => [...],
+}))
+
+type TestOne = InferLoaderData<typeof extendedOne>;
+// Resolves to: { i_want: string; }
+// which is incorrect. In reality it defaults to your list of queries.
+
+// In this example, we supply a transform function as well:
+const extendedTwo = baseLoader.extend({
   queries: () => [...],
-  transform: (q) => q, // Reapply default transform for query
+  transform: (q) => q, // This is essentially the default value
 });
 
-type Test = ReturnType<typeof pokemonLoader>;
-// { i_want: string; }
+type TestTwo = InferLoaderData<typeof extendedTwo>;
+// Resolves to: readonly [UseQueryResult<...>]
+// which is correct.
 ```
+
+> This is just a type mistake that will hopefully be fixed in the future. Both `extendedOne` and `extendedTwo` return the same format, but `extendedTwo` has the correct types. 
