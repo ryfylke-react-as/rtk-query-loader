@@ -16,14 +16,11 @@ export const withLoader = <
     if (args.queriesArg) {
       useLoaderArgs.push(args.queriesArg(props));
     }
-    const debouncedQueryArgs = useDebounce(
-      useLoaderArgs as Types.OptionalGenericArg<A>,
-      args.debounce ?? 0
-    );
+
     const query = args.useLoader(
-      ...(args.debounce
-        ? debouncedQueryArgs
-        : (useLoaderArgs as Types.OptionalGenericArg<A>))
+      ...((args.debounce
+        ? useDebounce(useLoaderArgs, args.debounce)
+        : useLoaderArgs) as Types.OptionalGenericArg<A>)
     );
 
     return (
@@ -40,22 +37,11 @@ export const withLoader = <
                 ) ?? <React.Fragment />
             : undefined
         }
-        onSuccess={(data) =>
-          React.createElement(
-            Component,
-            { ...props, ref: data },
-            (props as any)?.children ?? null
-          )
-        }
+        onSuccess={(data) => Component(props, data)}
         onFetching={args?.onFetching?.(
           props,
           query.data
-            ? () =>
-                React.createElement(
-                  Component,
-                  { ...props, ref: query.data as R },
-                  (props as any)?.children
-                )
+            ? () => Component(props, query.data as R)
             : () => <React.Fragment />
         )}
       />

@@ -1636,7 +1636,7 @@
 
 "@ryfylke-react/rtk-query-loader@file:..":
   "resolved" "file:.."
-  "version" "0.3.25-beta.0"
+  "version" "0.3.25-beta.1"
   dependencies:
     "@reduxjs/toolkit" "^1.6.2"
     "@types/react" "^18.0.21"
