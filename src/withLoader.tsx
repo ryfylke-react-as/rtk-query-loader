@@ -25,9 +25,11 @@ export const withLoader = <
         onError={
           args.onError
             ? (error) =>
-                args.onError?.(props, error) ?? (
-                  <React.Fragment />
-                )
+                args.onError?.(
+                  props,
+                  error,
+                  query as Types.UseQueryResult<undefined>
+                ) ?? <React.Fragment />
             : undefined
         }
         onSuccess={(data) => Component(props, data)}

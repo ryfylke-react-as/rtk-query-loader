@@ -95,7 +95,8 @@ export type CreateLoaderArgs<
   onLoading?: (props: P) => ReactElement;
   onError?: (
     props: P,
-    error: FetchBaseQueryError | SerializedError
+    error: FetchBaseQueryError | SerializedError,
+    joinedQuery: UseQueryResult<undefined>
   ) => ReactElement;
   onFetching?: (
     props: P,
@@ -113,7 +114,8 @@ export type Loader<
   onLoading?: (props: P) => ReactElement;
   onError?: (
     props: P,
-    error: SerializedError | FetchBaseQueryError
+    error: SerializedError | FetchBaseQueryError,
+    joinedQuery: UseQueryResult<undefined>
   ) => ReactElement;
   onFetching?: (
     props: P,
