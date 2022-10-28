@@ -6,8 +6,8 @@
 
 Lets you create loaders that contain multiple RTK queries.
 
-* [Live demo / Playground](https://codesandbox.io/s/rtk-query-loader-demo-42tubp)
-* [NPM](https://www.npmjs.com/package/@ryfylke-react/rtk-query-loader)
+- [Live demo / Playground](https://codesandbox.io/s/rtk-query-loader-demo-42tubp)
+- [NPM](https://www.npmjs.com/package/@ryfylke-react/rtk-query-loader)
 
 ## **Usage**
 
@@ -116,7 +116,20 @@ Creates an argument for the queries function based on expected props. Useful whe
 
 **onError**?: `(props: T, error: RTKError) => ReactElement`
 
-**onFetching**?: `(props: T, renderBody: (() => ReactElement)) => ReactElement`
+**onFetching**?: `(props: T, Component: (() => ReactElement)) => ReactElement`
+
+Make sure you call the second argument as a component, not a function:
+
+```tsx
+{
+  onFetching: (props, Component) => (
+    <div className="relative-wrapper">
+      <Component />
+      <LoadingOverlay />
+    </div>
+  );
+}
+```
 
 ## withLoader
 
@@ -255,4 +268,4 @@ type TestTwo = InferLoaderData<typeof extendedTwo>;
 // which is correct.
 ```
 
-> This is just a type mistake that will hopefully be fixed in the future. Both `extendedOne` and `extendedTwo` return the same format, but `extendedTwo` has the correct types. 
+> This is just a type mistake that will hopefully be fixed in the future. Both `extendedOne` and `extendedTwo` return the same format, but `extendedTwo` has the correct types.
