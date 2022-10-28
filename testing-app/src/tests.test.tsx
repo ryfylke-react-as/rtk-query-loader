@@ -1,7 +1,7 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import userEvent from "@testing-library/user-event";
-import React from "react";
+import { useState } from "react";
 import {
+  DebouncedTester,
   ExtendedLoaderComponent,
   FailTester,
   FetchTestComponent,
@@ -11,8 +11,6 @@ import {
   TestTransformed,
 } from "./testComponents";
 import { render, screen, waitFor } from "./utils";
-
-console.log(React.version);
 
 describe("aggregateToQuery", () => {
   test("It aggregates query status", async () => {
@@ -73,6 +71,30 @@ describe("withLoader", () => {
     render(<TestTransformed />);
     await waitFor(() =>
       expect(screen.getByText("charizard")).toBeVisible()
+    );
+  });
+
+  const DebouncedTesterStateHolder = () => {
+    const [name, setName] = useState("");
+    return <DebouncedTester name={name} onChange={setName} />;
+  };
+
+  test("Can debounce the query", async () => {
+    render(<DebouncedTesterStateHolder />);
+    await waitFor(() =>
+      expect(screen.queryByText("Loading")).toBeNull()
+    );
+    userEvent.click(screen.getByRole("button"));
+    await waitFor(() =>
+      expect(screen.getByText(`"1"`)).toBeVisible()
+    );
+    userEvent.click(screen.getByRole("button"));
+    userEvent.click(screen.getByRole("button"));
+    userEvent.click(screen.getByRole("button"));
+    userEvent.click(screen.getByRole("button"));
+    expect(screen.getByText(`"1"`)).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText(`"2"`)).toBeVisible()
     );
   });
 

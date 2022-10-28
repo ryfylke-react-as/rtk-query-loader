@@ -40,11 +40,22 @@ export const withLoader = <
                 ) ?? <React.Fragment />
             : undefined
         }
-        onSuccess={(data) => Component(props, data)}
+        onSuccess={(data) =>
+          React.createElement(
+            Component,
+            { ...props, ref: data },
+            (props as any)?.children ?? null
+          )
+        }
         onFetching={args?.onFetching?.(
           props,
           query.data
-            ? () => Component(props, query.data as R)
+            ? () =>
+                React.createElement(
+                  Component,
+                  { ...props, ref: query.data as R },
+                  (props as any)?.children
+                )
             : () => <React.Fragment />
         )}
       />

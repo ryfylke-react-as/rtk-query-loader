@@ -93,36 +93,35 @@ export const FetchTestComponent = () => {
   return <FetchTester name={name} onChange={setName} />;
 };
 
-export const FetchTester = withLoader(
-  (props, loaderData) => {
-    const inputRef = useRef<HTMLInputElement>(null);
-    return (
-      <div>
-        #{loaderData[0].data.id}
-        <br />
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            props.onChange(inputRef.current?.value ?? "");
-          }}
-        >
-          <input type="text" ref={inputRef} />
-          <button>Go</button>
-        </form>
-      </div>
-    );
-  },
-  createLoader({
-    queries: (name: string) =>
-      [useGetPokemonByNameQuery(name)] as const,
-    queriesArg: (props: {
-      name: string;
-      onChange: (name: string) => void;
-    }) => props.name,
-    onLoading: () => <div>Loading</div>,
-    onFetching: () => <div>Fetching</div>,
-  })
-);
+const fetchTestLoader = createLoader({
+  queries: (name: string) =>
+    [useGetPokemonByNameQuery(name)] as const,
+  queriesArg: (props: {
+    name: string;
+    onChange: (name: string) => void;
+  }) => props.name,
+  onLoading: () => <div>Loading</div>,
+  onFetching: () => <div>Fetching</div>,
+});
+
+export const FetchTester = withLoader((props, loaderData) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  return (
+    <div>
+      #{loaderData[0].data.id}
+      <br />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          props.onChange(inputRef.current?.value ?? "");
+        }}
+      >
+        <input type="text" ref={inputRef} />
+        <button>Go</button>
+      </form>
+    </div>
+  );
+}, fetchTestLoader);
 
 export const TestAggregateComponent = () => {
   const q1 = useGetPokemonByNameQuery("charizard");
@@ -163,3 +162,24 @@ export const TestTransformed = withLoader(
   },
   transformLoader
 );
+
+const debouncedLoader = fetchTestLoader.extend({
+  debounce: 1000,
+});
+
+export const DebouncedTester = withLoader((props, data) => {
+  const [i, setI] = useState(0);
+  return (
+    <div>
+      "{data[0].data.name}"
+      <button
+        onClick={() => {
+          props.onChange((i + 1).toString());
+          setI(i + 1);
+        }}
+      >
+        Click me
+      </button>
+    </div>
+  );
+}, debouncedLoader);
