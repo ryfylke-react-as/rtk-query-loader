@@ -44,6 +44,7 @@ export type CreateUseLoaderArgs<
 > = {
   queries: (...args: OptionalGenericArg<A>) => QRU;
   transform?: LoaderTransformFunction<QRU, R>;
+  debounce?: number;
 };
 
 export type UseLoader<A, R> = (
@@ -121,6 +122,7 @@ export type Loader<
     props: P,
     renderBody: () => ReactElement
   ) => ReactElement;
+  debounce?: number;
   extend: <
     QRUb extends readonly UseQueryResult<unknown>[],
     Pb extends unknown = P,

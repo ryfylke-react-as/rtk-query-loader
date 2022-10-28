@@ -1,4 +1,5 @@
 import React from "react";
+import { useDebounce } from "./hooks/useDebounce";
 import { RTKLoader } from "./RTKLoader";
 import * as Types from "./types";
 
@@ -15,9 +16,16 @@ export const withLoader = <
     if (args.queriesArg) {
       useLoaderArgs.push(args.queriesArg(props));
     }
-    const query = args.useLoader(
-      ...(useLoaderArgs as Types.OptionalGenericArg<A>)
+    const debouncedQueryArgs = useDebounce(
+      useLoaderArgs as Types.OptionalGenericArg<A>,
+      args.debounce ?? 0
     );
+    const query = args.useLoader(
+      ...(args.debounce
+        ? debouncedQueryArgs
+        : (useLoaderArgs as Types.OptionalGenericArg<A>))
+    );
+
     return (
       <RTKLoader
         query={query}
