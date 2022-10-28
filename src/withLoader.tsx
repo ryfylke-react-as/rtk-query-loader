@@ -18,6 +18,14 @@ export const withLoader = <
     const query = args.useLoader(
       ...(useLoaderArgs as Types.OptionalGenericArg<A>)
     );
+
+    const ForwardedComponent = React.useCallback(
+      React.forwardRef(
+        Component as React.ForwardRefRenderFunction<R, P>
+      ) as unknown as Types.ComponentWithLoaderData<P, R>,
+      []
+    );
+
     return (
       <RTKLoader
         query={query}
@@ -32,11 +40,18 @@ export const withLoader = <
                 ) ?? <React.Fragment />
             : undefined
         }
-        onSuccess={(data) => Component(props, data)}
+        onSuccess={(data) => (
+          <ForwardedComponent {...props} ref={data} />
+        )}
         onFetching={args?.onFetching?.(
           props,
           query.data
-            ? () => Component(props, query.data as R)
+            ? () => (
+                <ForwardedComponent
+                  {...props}
+                  ref={query.data as R}
+                />
+              )
             : () => <React.Fragment />
         )}
       />
