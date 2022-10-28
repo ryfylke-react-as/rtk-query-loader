@@ -10,6 +10,10 @@ type Props<T> = {
     error: FetchBaseQueryError | SerializedError
   ) => React.ReactElement;
   onFetching?: React.ReactElement;
+  whileFetching?: {
+    append?: React.ReactElement;
+    prepend?: React.ReactElement;
+  };
   loader?: React.ReactElement;
 };
 
@@ -30,7 +34,17 @@ export function RTKLoader<T>(
     return props.onFetching;
   }
   if (props.query.data !== undefined) {
-    return props.onSuccess(props.query.data);
+    return (
+      <>
+        {props.query.isFetching
+          ? props.whileFetching?.prepend ?? null
+          : null}
+        {props.onSuccess(props.query.data)}
+        {props.query.isFetching
+          ? props.whileFetching?.append ?? null
+          : null}
+      </>
+    );
   }
   return <React.Fragment />;
 }

@@ -131,6 +131,17 @@ Make sure you call the second argument as a component, not a function:
 }
 ```
 
+**whileFetching**?:
+
+```typescript
+{
+  append?: (props: P, data?: R) => ReactElement;
+  prepend?: (props: P, data?: R) => ReactElement;
+}
+```
+
+By using this instead of `onFetching`, you ensure that you don't reset the internal state of the component while fetching.
+
 ## withLoader
 
 Wraps a component to provide it with loader data.

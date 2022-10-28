@@ -50,6 +50,7 @@ export const createLoader = <
     onLoading: createLoaderArgs.onLoading,
     onError: createLoaderArgs.onError,
     onFetching: createLoaderArgs.onFetching,
+    whileFetching: createLoaderArgs.whileFetching,
     queriesArg: createLoaderArgs.queriesArg,
     extend: function <
       QRUb extends readonly Types.UseQueryResult<unknown>[],

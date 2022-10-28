@@ -10,7 +10,8 @@ export const withLoader = <
   Component: Types.ComponentWithLoaderData<P, R>,
   args: Types.WithLoaderArgs<P, R, A>
 ): Types.Component<P> => {
-  return (props: P) => {
+  let CachedComponent: Types.ComponentWithLoaderData<P, R>;
+  const LoaderComponent = (props: P) => {
     const useLoaderArgs = [];
     if (args.queriesArg) {
       useLoaderArgs.push(args.queriesArg(props));
@@ -18,13 +19,11 @@ export const withLoader = <
     const query = args.useLoader(
       ...(useLoaderArgs as Types.OptionalGenericArg<A>)
     );
-
-    const ForwardedComponent = React.useCallback(
-      React.forwardRef(
+    if (!CachedComponent) {
+      CachedComponent = React.forwardRef(
         Component as React.ForwardRefRenderFunction<R, P>
-      ) as unknown as Types.ComponentWithLoaderData<P, R>,
-      []
-    );
+      ) as unknown as Types.ComponentWithLoaderData<P, R>;
+    }
 
     return (
       <RTKLoader
@@ -41,13 +40,27 @@ export const withLoader = <
             : undefined
         }
         onSuccess={(data) => (
-          <ForwardedComponent {...props} ref={data} />
+          <CachedComponent {...props} ref={data} />
         )}
+        whileFetching={
+          args.whileFetching
+            ? {
+                prepend: args.whileFetching?.prepend?.(
+                  props,
+                  query?.data
+                ),
+                append: args.whileFetching?.prepend?.(
+                  props,
+                  query?.data
+                ),
+              }
+            : undefined
+        }
         onFetching={args?.onFetching?.(
           props,
           query.data
             ? () => (
-                <ForwardedComponent
+                <CachedComponent
                   {...props}
                   ref={query.data as R}
                 />
@@ -57,4 +70,5 @@ export const withLoader = <
       />
     );
   };
+  return LoaderComponent;
 };

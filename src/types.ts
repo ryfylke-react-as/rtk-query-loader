@@ -85,6 +85,11 @@ export type WithLoaderArgs<
   A = never
 > = Loader<P, R, A>;
 
+type WhileFetchingArgs<P extends unknown, R extends unknown> = {
+  prepend?: (props: P, data?: R) => ReactElement;
+  append?: (props: P, data?: R) => ReactElement;
+};
+
 export type CreateLoaderArgs<
   P extends unknown,
   QRU extends readonly UseQueryResult<unknown>[],
@@ -102,6 +107,7 @@ export type CreateLoaderArgs<
     props: P,
     renderBody: () => ReactElement
   ) => ReactElement;
+  whileFetching?: WhileFetchingArgs<P, R>;
 };
 
 export type Loader<
@@ -121,6 +127,7 @@ export type Loader<
     props: P,
     renderBody: () => ReactElement
   ) => ReactElement;
+  whileFetching?: WhileFetchingArgs<P, R>;
   extend: <
     QRUb extends readonly UseQueryResult<unknown>[],
     Pb extends unknown = P,
