@@ -1,8 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import {
+  aggregateToQuery,
+  createLoader,
+  withLoader,
+} from "@ryfylke-react/rtk-query-loader";
 import { useRef, useState } from "react";
-import { aggregateToQuery } from "../../src/aggregateToQuery";
-import { createLoader } from "../../src/createLoader";
-import { withLoader } from "../../src/withLoader";
 import {
   Pokemon,
   Pokemons,

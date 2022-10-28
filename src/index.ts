@@ -1,3 +1,4 @@
+export { aggregateToQuery } from "./aggregateToQuery";
 export { createLoader, createUseLoader } from "./createLoader";
 export { RTKLoader } from "./RTKLoader";
 export type {

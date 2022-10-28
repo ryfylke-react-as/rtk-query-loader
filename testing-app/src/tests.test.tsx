@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import userEvent from "@testing-library/user-event";
+import React from "react";
 import {
   ExtendedLoaderComponent,
   FailTester,
@@ -10,6 +11,8 @@ import {
   TestTransformed,
 } from "./testComponents";
 import { render, screen, waitFor } from "./utils";
+
+console.log(React.version);
 
 describe("aggregateToQuery", () => {
   test("It aggregates query status", async () => {
