@@ -23,6 +23,8 @@ export const createUseLoader = <
       return {
         ...aggregatedQuery,
         data,
+        currentData: data,
+        originalArgs: args,
       } as Types.UseQueryResult<R>;
     }
 
