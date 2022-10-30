@@ -85,7 +85,10 @@ export type WithLoaderArgs<
   A = never
 > = Loader<P, R, A>;
 
-type WhileFetchingArgs<P extends unknown, R extends unknown> = {
+export type WhileFetchingArgs<
+  P extends unknown,
+  R extends unknown
+> = {
   prepend?: (props: P, data?: R) => ReactElement;
   append?: (props: P, data?: R) => ReactElement;
 };
@@ -103,6 +106,7 @@ export type CreateLoaderArgs<
     error: FetchBaseQueryError | SerializedError,
     joinedQuery: UseQueryResult<undefined>
   ) => ReactElement;
+  /** @deprecated Using onFetching might result in loss of internal state. Use `whileFetching` instead, or pass the query to the component */
   onFetching?: (
     props: P,
     renderBody: () => ReactElement
@@ -123,6 +127,7 @@ export type Loader<
     error: SerializedError | FetchBaseQueryError,
     joinedQuery: UseQueryResult<undefined>
   ) => ReactElement;
+  /** @deprecated Using onFetching might result in loss of internal state. Use `whileFetching` instead, or pass the query to the component */
   onFetching?: (
     props: P,
     renderBody: () => ReactElement

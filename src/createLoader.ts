@@ -8,8 +8,7 @@ export const createUseLoader = <
 >(
   createUseLoaderArgs: Types.CreateUseLoaderArgs<QRU, R, A>
 ): Types.UseLoader<A, R> => {
-  // useLoader
-  return (...args) => {
+  const useLoader = (...args: Types.OptionalGenericArg<A>) => {
     const createdQueries = createUseLoaderArgs.queries(...args);
     const aggregatedQuery = aggregateToQuery(createdQueries);
 
@@ -30,7 +29,7 @@ export const createUseLoader = <
 
     return aggregatedQuery as Types.UseQueryResult<R>;
   };
-  //
+  return useLoader;
 };
 
 export const createLoader = <

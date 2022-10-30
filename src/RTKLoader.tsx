@@ -20,31 +20,44 @@ type Props<T> = {
 export function RTKLoader<T>(
   props: Props<T>
 ): React.ReactElement {
-  if (props.query.isLoading || props.query.isUninitialized) {
+  const shouldLoad =
+    props.query.isLoading || props.query.isUninitialized;
+  const hasError = props.query.isError && props.query.error;
+  const isFetching = props.query.isFetching;
+
+  if (shouldLoad) {
     return props.loader ?? <React.Fragment />;
   }
-  if (props.query.isError && props.query.error) {
+
+  if (hasError) {
     return (
       props.onError?.(props.query.error as SerializedError) ?? (
         <React.Fragment />
       )
     );
   }
-  if (props.query.isFetching && props.onFetching) {
+
+  if (isFetching && props.onFetching) {
     return props.onFetching;
   }
+
   if (props.query.data !== undefined) {
+    const prepend = isFetching
+      ? props.whileFetching?.prepend ?? null
+      : null;
+    const append = isFetching
+      ? props.whileFetching?.append ?? null
+      : null;
+    const componentWithData = props.onSuccess(props.query.data);
+
     return (
       <>
-        {props.query.isFetching
-          ? props.whileFetching?.prepend ?? null
-          : null}
-        {props.onSuccess(props.query.data)}
-        {props.query.isFetching
-          ? props.whileFetching?.append ?? null
-          : null}
+        {prepend}
+        {componentWithData}
+        {append}
       </>
     );
   }
+
   return <React.Fragment />;
 }

@@ -1,3 +1,5 @@
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import React from "react";
 import { RTKLoader } from "./RTKLoader";
 import * as Types from "./types";
@@ -25,48 +27,51 @@ export const withLoader = <
       ) as unknown as Types.ComponentWithLoaderData<P, R>;
     }
 
+    const onLoading = args.onLoading?.(props);
+
+    const onError = args.onError
+      ? (error: SerializedError | FetchBaseQueryError) => {
+          if (!args.onError) return <React.Fragment />;
+          return args.onError(
+            props,
+            error,
+            query as Types.UseQueryResult<undefined>
+          );
+        }
+      : undefined;
+
+    const onSuccess = (data: R) => (
+      <CachedComponent {...props} ref={data} />
+    );
+
+    const whileFetching = args.whileFetching
+      ? {
+          prepend: args.whileFetching.prepend?.(
+            props,
+            query?.data
+          ),
+          append: args.whileFetching.append?.(
+            props,
+            query?.data
+          ),
+        }
+      : undefined;
+
+    const onFetching = args?.onFetching?.(
+      props,
+      query.data
+        ? () => onSuccess(query.data as R)
+        : () => <React.Fragment />
+    );
+
     return (
       <RTKLoader
         query={query}
-        loader={args.onLoading?.(props)}
-        onError={
-          args.onError
-            ? (error) =>
-                args.onError?.(
-                  props,
-                  error,
-                  query as Types.UseQueryResult<undefined>
-                ) ?? <React.Fragment />
-            : undefined
-        }
-        onSuccess={(data) => (
-          <CachedComponent {...props} ref={data} />
-        )}
-        whileFetching={
-          args.whileFetching
-            ? {
-                prepend: args.whileFetching?.prepend?.(
-                  props,
-                  query?.data
-                ),
-                append: args.whileFetching?.append?.(
-                  props,
-                  query?.data
-                ),
-              }
-            : undefined
-        }
-        onFetching={args?.onFetching?.(
-          props,
-          query.data
-            ? () => (
-                <CachedComponent
-                  {...props}
-                  ref={query.data as R}
-                />
-              )
-            : () => <React.Fragment />
-        )}
+        onSuccess={onSuccess}
+        onError={onError}
+        loader={onLoading}
+        onFetching={onFetching}
+        whileFetching={whileFetching}
       />
     );
   };
