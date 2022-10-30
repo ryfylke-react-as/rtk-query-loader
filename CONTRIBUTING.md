@@ -42,10 +42,16 @@ For now, try to following existing patterns. Formalized code-guidelines will com
 - First, make sure you create a link between your local package and the testing-app. In the root of the repository:
 
 ```bash
-$ npm link
-$ cd testing-app
-$ npm link @ryfylke-react/rtk-query-loader
+$ yarn run setup-link
 ```
+
+> If this doesn't work, try to run the commands manually:
+>
+> ```bash
+> $ npm link
+> $ cd testing-app
+> $ npm link @ryfylke-react/rtk-query-loader
+> ```
 
 - In the `testing-app` directory, install dependencies, and then run the tests:
 

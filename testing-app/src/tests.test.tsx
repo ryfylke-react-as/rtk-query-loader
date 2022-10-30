@@ -1,8 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import {
+  createLoader,
+  withLoader,
+} from "@ryfylke-react/rtk-query-loader";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
-import { createLoader } from "../../src/createLoader";
-import { withLoader } from "../../src/withLoader";
 import {
   useGetPokemonByNameQuery,
   useGetPokemonsQuery,
@@ -14,9 +16,13 @@ import {
   LoadPokemon,
   SimpleLoadedComponent,
   TestAggregateComponent,
-  TestTransformed,
 } from "./testComponents";
-import { render, screen, waitFor } from "./utils";
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "./utils";
 
 describe("aggregateToQuery", () => {
   test("It aggregates query status", async () => {
@@ -59,7 +65,9 @@ describe("withLoader", () => {
 
   test("onFetching renders when applicable", async () => {
     render(<FetchTestRenderer />);
-    expect(screen.getByText("Loading")).toBeVisible();
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Loading")
+    );
     await waitFor(() =>
       expect(screen.getByRole("textbox")).toBeVisible()
     );
@@ -68,34 +76,57 @@ describe("withLoader", () => {
     await waitFor(() =>
       expect(screen.getByText("Fetching")).toBeVisible()
     );
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Fetching")
+    );
     await waitFor(() =>
       expect(screen.getByText("#3")).toBeVisible()
     );
   });
 
-  test("whileFetching renders when applicable", async () => {
+  test("Internal state won't reset when using whileFetching", async () => {
     render(<FetchTestRenderer while />);
-    expect(screen.getByText("Loading")).toBeVisible();
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Loading")
+    );
     await waitFor(() =>
       expect(screen.getByRole("textbox")).toBeVisible()
     );
     const input = screen.getByRole("textbox");
     userEvent.type(input, "Abc{Enter}");
-    await waitFor(
-      () =>
-        expect(screen.getByText("FetchingWhile")).toBeVisible(),
-      { interval: 20 }
+    await waitFor(() =>
+      expect(screen.getByText("FetchingWhile")).toBeVisible()
+    );
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("FetchingWhile")
     );
     await waitFor(() =>
       expect(screen.getByText("#3")).toBeVisible()
     );
+    expect(screen.getByRole("textbox")).toHaveValue("Abc");
   });
 
-  test("Can transform the output of the loader", async () => {
-    render(<TestTransformed />);
-    await waitFor(() =>
-      expect(screen.getByText("charizard")).toBeVisible()
+  // Not wanted behavior, but expected behavior:
+  test("Internal state will reset when using onFetching", async () => {
+    render(<FetchTestRenderer />);
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Loading")
     );
+    await waitFor(() =>
+      expect(screen.getByRole("textbox")).toBeVisible()
+    );
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "Abc{Enter}");
+    await waitFor(() =>
+      expect(screen.getByText("Fetching")).toBeVisible()
+    );
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Fetching")
+    );
+    await waitFor(() =>
+      expect(screen.getByText("#3")).toBeVisible()
+    );
+    expect(screen.getByRole("textbox")).toHaveValue("");
   });
 
   describe(".extend()", () => {
@@ -241,7 +272,7 @@ describe("withLoader", () => {
             <ul>
               <li>{loaderData[0].data.name}</li>
               {loaderData[1].data.results.map((pokemon) => (
-                <li>{pokemon.name}</li>
+                <li key={pokemon.name}>{pokemon.name}</li>
               ))}
             </ul>
           </div>
