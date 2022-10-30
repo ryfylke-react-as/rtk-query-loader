@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import { aggregateToQuery } from "../../src/aggregateToQuery";
 import { createLoader } from "../../src/createLoader";
+import { InferLoaderData } from "../../src/types";
 import { withLoader } from "../../src/withLoader";
 import {
   Pokemon,
@@ -85,40 +86,67 @@ export const FailTester = withLoader(
   })
 );
 
-export const FetchTestComponent = () => {
+const fetchTestBaseLoader = createLoader({
+  queries: (name: string) =>
+    [useGetPokemonByNameQuery(name)] as const,
+  queriesArg: (props: {
+    name: string;
+    onChange: (name: string) => void;
+  }) => props.name,
+  onLoading: () => <div>Loading</div>,
+  onFetching: () => <div>Fetching</div>,
+});
+
+type FetchTestLoader = InferLoaderData<
+  typeof fetchTestBaseLoader
+>;
+
+const FetchTesterComponent = (
+  props: {
+    name: string;
+    onChange: (name: string) => void;
+  },
+  loaderData: FetchTestLoader
+) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  return (
+    <div>
+      #{loaderData[0].data.id}
+      <br />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          props.onChange(inputRef.current?.value ?? "");
+        }}
+      >
+        <input type="text" ref={inputRef} />
+        <button>Go</button>
+      </form>
+    </div>
+  );
+};
+
+export const FetchTestRenderer = (props: {
+  while?: boolean;
+}) => {
   const [name, setName] = useState("charizard");
 
+  if (props.while) {
+    return <WhileFetchTester name={name} onChange={setName} />;
+  }
   return <FetchTester name={name} onChange={setName} />;
 };
 
 export const FetchTester = withLoader(
-  (props, loaderData) => {
-    const inputRef = useRef<HTMLInputElement>(null);
-    return (
-      <div>
-        #{loaderData[0].data.id}
-        <br />
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            props.onChange(inputRef.current?.value ?? "");
-          }}
-        >
-          <input type="text" ref={inputRef} />
-          <button>Go</button>
-        </form>
-      </div>
-    );
-  },
-  createLoader({
-    queries: (name: string) =>
-      [useGetPokemonByNameQuery(name)] as const,
-    queriesArg: (props: {
-      name: string;
-      onChange: (name: string) => void;
-    }) => props.name,
-    onLoading: () => <div>Loading</div>,
-    onFetching: () => <div>Fetching</div>,
+  FetchTesterComponent,
+  fetchTestBaseLoader
+);
+
+export const WhileFetchTester = withLoader(
+  FetchTesterComponent,
+  fetchTestBaseLoader.extend({
+    whileFetching: { prepend: () => <div>FetchingWhile</div> },
+    onFetching: undefined,
   })
 );
 

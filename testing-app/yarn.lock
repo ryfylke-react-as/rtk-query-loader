@@ -1636,12 +1636,7 @@
 
 "@ryfylke-react/rtk-query-loader@file:..":
   "resolved" "file:.."
-  "version" "0.3.26"
-  dependencies:
-    "@reduxjs/toolkit" "^1.6.2"
-    "@types/react" "^18.0.21"
-    "react" "^18.2.0"
-    "tslib" "^2.4.0"
+  "version" "0.3.31"
 
 "@sinclair/typebox@^0.24.1":
   "integrity" "sha512-k8ETQOOQDg5FtK7y9KJWpsGLik+QlPmIi8zzl/dGUgshV2QitprkFlCR/AemjWOTyKn9UwSSGRTzLVotvgCjYQ=="
@@ -2398,9 +2393,9 @@
     "@xtuc/long" "4.2.2"
 
 "@xmldom/xmldom@^0.8.3":
-  "integrity" "sha512-Lv2vySXypg4nfa51LY1nU8yDAGo/5YwF+EY/rUZgIbfvwVARcd67ttCM8SMsTeJy51YhHYavEq+FS6R0hW9PFQ=="
-  "resolved" "https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-0.8.3.tgz"
-  "version" "0.8.3"
+  "integrity" "sha512-JIsjTbWBWJHb2t1D4UNZIJ6ohlRYCdoGzeHSzTorMH2zOq3UKlSBzFBMBdFK3xnUD/ANHw/SUzl/vx0z0JrqRw=="
+  "resolved" "https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-0.8.4.tgz"
+  "version" "0.8.4"
 
 "@xtuc/ieee754@^1.2.0":
   "integrity" "sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA=="

@@ -49,7 +49,7 @@ export const withLoader = <
                   props,
                   query?.data
                 ),
-                append: args.whileFetching?.prepend?.(
+                append: args.whileFetching?.append?.(
                   props,
                   query?.data
                 ),
