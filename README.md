@@ -280,3 +280,5 @@ type TestTwo = InferLoaderData<typeof extendedTwo>;
 ```
 
 > This is just a type mistake that will hopefully be fixed in the future. Both `extendedOne` and `extendedTwo` return the same format, but `extendedTwo` has the correct types.
+
+## [**Contributing guidelines**](https://github.com/ryfylke-react-as/rtk-query-loader/blob/main/CONTRIBUTING.md)
