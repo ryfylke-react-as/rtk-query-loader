@@ -23,11 +23,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install package
         run: yarn install
-      - name: Link step 1
-        run: npm link
-      - name: Link step 2
-        working-directory: ./testing-app
-        run: npm link @ryfylke-react/rtk-query-loader --force
       - name: Install testing-app
         working-directory: ./testing-app
         run: yarn install

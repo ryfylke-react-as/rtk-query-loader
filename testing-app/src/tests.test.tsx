@@ -285,5 +285,9 @@ describe("withLoader", () => {
       expect(screen.getByText(/charizard/i)).toBeVisible();
       expect(screen.getByText(/pikachu/i)).toBeVisible();
     });
+    test("Should throw", () => {
+      expect(false).toBeTruthy();
+    });
   });
+
 });
