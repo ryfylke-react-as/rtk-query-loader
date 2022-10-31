@@ -1,0 +1,37 @@
+name: Build and Test
+run-name: Testing out changes 🚀
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node: [10, 12]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install package
+        run: npm install
+      - name: Link step 1
+        run: npm link
+      - name: Link step 2
+        run: cd testing-app
+      - name: Link step 3
+        run: npm link @ryfylke-react/rtk-query-loader
+      - name: Install testing-app
+        run: npm install
+      - name: Build the project
+        run: npm run build --if-present
+      - name: Run tests
+        run: npm test
