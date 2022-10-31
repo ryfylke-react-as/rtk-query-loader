@@ -28,7 +28,7 @@ jobs:
       - name: Link step 2
         run: cd testing-app
       - name: Link step 3
-        run: npm link @ryfylke-react/rtk-query-loader
+        run: npm link @ryfylke-react/rtk-query-loader --force
       - name: Install testing-app
         run: yarn install
       - name: Build the project
