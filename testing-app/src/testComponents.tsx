@@ -1,10 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import {
-  createLoader,
-  InferLoaderData,
-  withLoader,
-} from "@ryfylke-react/rtk-query-loader";
 import { useRef, useState } from "react";
+import { withLoader } from "../../src/withLoader";
+import { createLoader } from "../../src/createLoader";
+import { InferLoaderData } from "../../src/types";
 import { aggregateToQuery } from "../../src/aggregateToQuery";
 import {
   Pokemon,

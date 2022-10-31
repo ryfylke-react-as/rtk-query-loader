@@ -1,10 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import {
-  createLoader,
-  withLoader,
-} from "@ryfylke-react/rtk-query-loader";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
+import { withLoader } from "../../src/withLoader";
+import { createLoader } from "../../src/createLoader";
 import {
   useGetPokemonByNameQuery,
   useGetPokemonsQuery,
