@@ -32,6 +32,6 @@ jobs:
       - name: Install testing-app
         run: yarn install
       - name: Build the project
-        run: yarn run build --if-present
+        run: yarn run build
       - name: Run tests
         run: yarn run test
