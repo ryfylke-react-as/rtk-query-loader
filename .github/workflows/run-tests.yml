@@ -33,5 +33,9 @@ jobs:
         run: yarn install
       - name: Build the project
         run: yarn run build
+      - name: Test 1
+        run: ls
+      - name: Test 2
+        run: npm run
       - name: Run tests
         run: npm test
