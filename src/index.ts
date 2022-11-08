@@ -4,9 +4,10 @@ export { RTKLoader } from "./RTKLoader";
 export type {
   Component,
   ComponentWithLoaderData,
-  CreateLoaderType,
   CreateUseLoaderArgs,
+  CustomLoaderProps,
   InferLoaderData,
+  Loader,
   LoaderTransformFunction,
   OptionalGenericArg,
   UseLoader,

@@ -1,24 +1,9 @@
 import { SerializedError } from "@reduxjs/toolkit";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import * as React from "react";
-import { UseQueryResult } from "./types";
-
-type Props<T> = {
-  query: UseQueryResult<T>;
-  onSuccess: (data: T) => React.ReactElement;
-  onError?: (
-    error: FetchBaseQueryError | SerializedError
-  ) => React.ReactElement;
-  onFetching?: React.ReactElement;
-  whileFetching?: {
-    append?: React.ReactElement;
-    prepend?: React.ReactElement;
-  };
-  loader?: React.ReactElement;
-};
+import { CustomLoaderProps } from "./types";
 
 export function RTKLoader<T>(
-  props: Props<T>
+  props: CustomLoaderProps<T>
 ): React.ReactElement {
   const shouldLoad =
     props.query.isLoading || props.query.isUninitialized;
@@ -26,7 +11,7 @@ export function RTKLoader<T>(
   const isFetching = props.query.isFetching;
 
   if (shouldLoad) {
-    return props.loader ?? <React.Fragment />;
+    return props.onLoading ?? <React.Fragment />;
   }
 
   if (hasError) {

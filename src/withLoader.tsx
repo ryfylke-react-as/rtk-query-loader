@@ -1,7 +1,6 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import React from "react";
-import { RTKLoader } from "./RTKLoader";
 import * as Types from "./types";
 
 export const withLoader = <
@@ -10,15 +9,15 @@ export const withLoader = <
   A = never
 >(
   Component: Types.ComponentWithLoaderData<P, R>,
-  args: Types.WithLoaderArgs<P, R, A>
+  loader: Types.Loader<P, R, A>
 ): Types.Component<P> => {
   let CachedComponent: Types.ComponentWithLoaderData<P, R>;
-  const LoaderComponent = (props: P) => {
+  const LoadedComponent = (props: P) => {
     const useLoaderArgs = [];
-    if (args.queriesArg) {
-      useLoaderArgs.push(args.queriesArg(props));
+    if (loader.queriesArg) {
+      useLoaderArgs.push(loader.queriesArg(props));
     }
-    const query = args.useLoader(
+    const query = loader.useLoader(
       ...(useLoaderArgs as Types.OptionalGenericArg<A>)
     );
     if (!CachedComponent) {
@@ -27,12 +26,12 @@ export const withLoader = <
       ) as unknown as Types.ComponentWithLoaderData<P, R>;
     }
 
-    const onLoading = args.onLoading?.(props);
+    const onLoading = loader.onLoading?.(props);
 
-    const onError = args.onError
+    const onError = loader.onError
       ? (error: SerializedError | FetchBaseQueryError) => {
-          if (!args.onError) return <React.Fragment />;
-          return args.onError(
+          if (!loader.onError) return <React.Fragment />;
+          return loader.onError(
             props,
             error,
             query as Types.UseQueryResult<undefined>
@@ -44,36 +43,40 @@ export const withLoader = <
       <CachedComponent {...props} ref={data} />
     );
 
-    const whileFetching = args.whileFetching
+    const whileFetching = loader.whileFetching
       ? {
-          prepend: args.whileFetching.prepend?.(
+          prepend: loader.whileFetching.prepend?.(
             props,
             query?.data
           ),
-          append: args.whileFetching.append?.(
+          append: loader.whileFetching.append?.(
             props,
             query?.data
           ),
         }
       : undefined;
 
-    const onFetching = args?.onFetching?.(
+    const onFetching = loader?.onFetching?.(
       props,
       query.data
         ? () => onSuccess(query.data as R)
         : () => <React.Fragment />
     );
 
+    const { LoaderComponent } = loader;
+
     return (
-      <RTKLoader
-        query={query}
-        onSuccess={onSuccess}
-        onError={onError}
-        loader={onLoading}
+      <LoaderComponent
         onFetching={onFetching}
         whileFetching={whileFetching}
+        onSuccess={
+          onSuccess as (data: unknown) => React.ReactElement
+        }
+        onError={onError}
+        onLoading={onLoading}
+        query={query}
       />
     );
   };
-  return LoaderComponent;
+  return LoadedComponent;
 };

@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useRef, useState } from "react";
-import { withLoader } from "../../src/withLoader";
+import { aggregateToQuery } from "../../src/aggregateToQuery";
 import { createLoader } from "../../src/createLoader";
 import { InferLoaderData } from "../../src/types";
-import { aggregateToQuery } from "../../src/aggregateToQuery";
+import { withLoader } from "../../src/withLoader";
 import {
   Pokemon,
   Pokemons,
@@ -36,11 +36,8 @@ const simpleLoader = createLoader({
   onLoading: () => <div>Loading</div>,
 });
 
-// Test type inferrence with no transform
-//type SimpleLoaderResponse = InferLoaderData<typeof simpleLoader>;
-
 export const SimpleLoadedComponent = withLoader(
-  (props, loaderData) => (
+  (_, loaderData) => (
     <RenderPokemonData
       pokemon={loaderData[0].data}
       pokemons={loaderData[1].data}
@@ -180,12 +177,6 @@ const transformLoader = createLoader({
   }),
 });
 
-// test type inferrence of transformed
-// type TransformedType = InferLoaderData<typeof transformLoader>;
-
-export const TestTransformed = withLoader(
-  (props, loaderData) => {
-    return <div>{loaderData.pokemon.name}</div>;
-  },
-  transformLoader
-);
+export const TestTransformed = withLoader((_, loaderData) => {
+  return <div>{loaderData.pokemon.name}</div>;
+}, transformLoader);

@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
-import { withLoader } from "../../src/withLoader";
 import { createLoader } from "../../src/createLoader";
+import { CustomLoaderProps } from "../../src/types";
+import { withLoader } from "../../src/withLoader";
 import {
   useGetPokemonByNameQuery,
   useGetPokemonsQuery,
@@ -125,6 +126,30 @@ describe("withLoader", () => {
       expect(screen.getByText("#3")).toBeVisible()
     );
     expect(screen.getByRole("textbox")).toHaveValue("");
+  });
+
+  test("Can use custom loader component", async () => {
+    const CustomLoader = (props: CustomLoaderProps) => {
+      if (props.query.isSuccess && props.query.data) {
+        return props.onSuccess(props.query.data);
+      }
+      return <div>Custom loader!</div>;
+    };
+
+    const loader = createLoader({
+      loaderComponent: CustomLoader,
+      queries: () => [useGetPokemonByNameQuery("charizard")],
+    });
+
+    const Component = withLoader(
+      (_, loaderData) => <div>{loaderData[0].data.name}</div>,
+      loader
+    );
+    render(<Component />);
+    expect(screen.getByText("Custom loader!")).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText("charizard")).toBeVisible()
+    );
   });
 
   describe(".extend()", () => {
@@ -286,5 +311,4 @@ describe("withLoader", () => {
       expect(screen.getByText(/pikachu/i)).toBeVisible();
     });
   });
-
 });

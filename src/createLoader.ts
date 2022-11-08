@@ -1,4 +1,5 @@
 import { aggregateToQuery } from "./aggregateToQuery";
+import { RTKLoader } from "./RTKLoader";
 import * as Types from "./types";
 
 export const createUseLoader = <
@@ -53,6 +54,8 @@ export const createLoader = <
     onFetching: createLoaderArgs.onFetching,
     whileFetching: createLoaderArgs.whileFetching,
     queriesArg: createLoaderArgs.queriesArg,
+    LoaderComponent:
+      createLoaderArgs.loaderComponent ?? RTKLoader,
     extend: function <
       QRUb extends readonly Types.UseQueryResult<unknown>[],
       Pb extends unknown = P,
