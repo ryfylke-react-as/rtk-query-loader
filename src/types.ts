@@ -90,9 +90,9 @@ export type InferLoaderData<T> = T extends Loader<
   any
 >
   ? X
-  : T extends Loader<never, infer Y, any>
+  : T extends Loader<never, infer Y, any, any>
   ? Y
-  : T extends Loader<any, infer Z, never>
+  : T extends Loader<any, infer Z, never, any>
   ? Z
   : never;
 
