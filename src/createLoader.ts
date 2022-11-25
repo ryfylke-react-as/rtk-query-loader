@@ -40,14 +40,14 @@ export const createLoader = <
   A = never
 >(
   createLoaderArgs: Types.CreateLoaderArgs<P, QRU, R, A>
-): Types.Loader<P, R, A> => {
+): Types.Loader<P, R, QRU, A> => {
   const useLoader = createUseLoader({
     queries:
       createLoaderArgs.queries ?? (() => [] as unknown as QRU),
     transform: createLoaderArgs.transform,
   });
 
-  const loader: Types.Loader<P, R, A> = {
+  const loader: Types.Loader<P, R, QRU, A> = {
     useLoader,
     onLoading: createLoaderArgs.onLoading,
     onError: createLoaderArgs.onError,
@@ -69,9 +69,9 @@ export const createLoader = <
       ...loaderArgs
     }: Partial<Types.CreateLoaderArgs<Pb, QRUb, Rb, Ab>>) {
       const extendedLoader = {
-        ...(this as unknown as Types.Loader<Pb, Rb, Ab>),
+        ...(this as unknown as Types.Loader<Pb, Rb, QRUb, Ab>),
         ...loaderArgs,
-      } as Types.Loader<Pb, Rb, Ab>;
+      } as Types.Loader<Pb, Rb, QRUb, Ab>;
 
       if (queries) {
         const newUseLoader = createUseLoader({

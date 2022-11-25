@@ -6,10 +6,11 @@ import * as Types from "./types";
 export const withLoader = <
   P extends Record<string, any>,
   R extends unknown,
+  QRU extends readonly Types.UseQueryResult<unknown>[],
   A = never
 >(
   Component: Types.ComponentWithLoaderData<P, R>,
-  loader: Types.Loader<P, R, A>
+  loader: Types.Loader<P, R, QRU, A>
 ): Types.Component<P> => {
   let CachedComponent: Types.ComponentWithLoaderData<P, R>;
   const LoadedComponent = (props: P) => {
