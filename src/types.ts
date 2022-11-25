@@ -162,6 +162,7 @@ export type CreateLoaderArgs<
 export type Loader<
   P extends unknown,
   R extends unknown,
+  QRU extends readonly UseQueryResult<unknown>[],
   A = never
 > = {
   /** A hook that runs all queries and returns aggregated result */
@@ -185,15 +186,17 @@ export type Loader<
   whileFetching?: WhileFetchingArgs<P, R>;
   /** Returns a new `Loader` extended from this `Loader`, with given overrides. */
   extend: <
-    QRUb extends readonly UseQueryResult<unknown>[],
+    QRUb extends readonly UseQueryResult<unknown>[] = QRU,
     Pb extends unknown = P,
-    Rb extends unknown = QRUb extends unknown
-      ? R
+    Rb extends unknown = QRUb extends QRU
+      ? R extends never
+        ? QRU
+        : R
       : MakeDataRequired<QRUb>,
     Ab = A
   >(
     newLoader: Partial<CreateLoaderArgs<Pb, QRUb, Rb, Ab>>
-  ) => Loader<Pb, Rb, Ab>;
+  ) => Loader<Pb, Rb, QRUb extends never ? QRU : QRUb, Ab>;
   /** The component to use to switch between rendering the different query states. */
   LoaderComponent: Component<CustomLoaderProps>;
 };
@@ -204,4 +207,4 @@ export type WithLoaderArgs<
   P extends unknown,
   R extends unknown,
   A = never
-> = Loader<P, R, A>;
+> = Loader<P, R, [], A>;
