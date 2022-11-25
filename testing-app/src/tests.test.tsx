@@ -75,6 +75,12 @@ describe("withLoader", () => {
     await waitFor(() =>
       expect(screen.getByText("Fetching")).toBeVisible()
     );
+    expect(
+      screen.getByRole("textbox", { hidden: true })
+    ).toBeTruthy();
+    expect(
+      screen.queryByRole("textbox", { hidden: false })
+    ).toBeFalsy();
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Fetching")
     );
@@ -105,8 +111,7 @@ describe("withLoader", () => {
     expect(screen.getByRole("textbox")).toHaveValue("Abc");
   });
 
-  // Not wanted behavior, but expected behavior:
-  test("Internal state will reset when using onFetching", async () => {
+  test("Internal state will not reset when using onFetching", async () => {
     render(<FetchTestRenderer />);
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading")
@@ -125,7 +130,7 @@ describe("withLoader", () => {
     await waitFor(() =>
       expect(screen.getByText("#3")).toBeVisible()
     );
-    expect(screen.getByRole("textbox")).toHaveValue("");
+    expect(screen.getByRole("textbox")).toHaveValue("Abc");
   });
 
   test("Can use custom loader component", async () => {
