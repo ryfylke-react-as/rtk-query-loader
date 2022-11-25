@@ -42,21 +42,27 @@ export function RTKLoader<T>(
     const append = isFetching
       ? props.whileFetching?.append ?? null
       : null;
-    const onFetchingComponent =
-      isFetching && props.onFetching ? props.onFetching : null;
 
     const componentWithData = props.onSuccess(props.query.data);
+
+    if (props.onFetching) {
+      return (
+        <>
+          <div
+            style={wrapperStyle}
+            aria-hidden={isFetching ? true : false}
+          >
+            {componentWithData}
+          </div>
+          {isFetching ? props.onFetching : null}
+        </>
+      );
+    }
 
     return (
       <>
         {prepend}
-        <div
-          style={wrapperStyle}
-          aria-hidden={isFetching ? true : false}
-        >
-          {componentWithData}
-        </div>
-        {onFetchingComponent}
+        {componentWithData}
         {append}
       </>
     );
