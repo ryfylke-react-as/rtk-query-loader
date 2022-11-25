@@ -162,7 +162,7 @@ export type CreateLoaderArgs<
 export type Loader<
   P extends unknown,
   R extends unknown,
-  QRU extends readonly UseQueryResult<unknown>[],
+  QRU extends readonly UseQueryResult<unknown>[] = [],
   A = never
 > = {
   /** A hook that runs all queries and returns aggregated result */

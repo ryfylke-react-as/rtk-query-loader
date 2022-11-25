@@ -35,7 +35,7 @@ export const createUseLoader = <
 
 export const createLoader = <
   P extends unknown,
-  QRU extends readonly Types.UseQueryResult<unknown>[],
+  QRU extends readonly Types.UseQueryResult<unknown>[] = [],
   R extends unknown = Types.MakeDataRequired<QRU>,
   A = never
 >(

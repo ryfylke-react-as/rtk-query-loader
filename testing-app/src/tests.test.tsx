@@ -280,7 +280,6 @@ describe("withLoader", () => {
           [useGetPokemonByNameQuery(arg)] as const,
         queriesArg: (props: { name: string }) => props.name,
         onLoading: () => <div>Loading</div>,
-        transform: (q) => ({ test: "best" }),
       }).extend({
         queries: (arg: string) =>
           [
