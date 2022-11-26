@@ -1,6 +1,6 @@
 {
   "name": "@ryfylke-react/rtk-query-loader",
-  "version": "0.3.36",
+  "version": "0.3.37",
   "description": "Lets you create reusable, extendable RTK loaders for React components.",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",

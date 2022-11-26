@@ -201,8 +201,9 @@ export type Loader<
   LoaderComponent: Component<CustomLoaderProps>;
 };
 
-/** Legacy/unused, for backwards compatibility */
-
+/************************************************/
+/*  Legacy/unused, for backwards compatibility  */
+/************************************************/
 export type WithLoaderArgs<
   P extends unknown,
   R extends unknown,

@@ -168,27 +168,6 @@ const Component = withLoader(
 2. `Loader`  
    Return value of `createLoader`.
 
-### Extending/customizing the loader
-
-To use an existing loader but with maybe a different loading state, for example:
-
-```tsx
-
-const Component = withLoader(
-  (props: Props, loaderData) => {
-    // Can safely assume that loaderData and props are populated.
-     const posts = loaderData.posts;
-
-     return posts.map(,,,);
-  },
-  postsLoader.extend({
-    onLoading: (props) => <props.loader />,
-    onFetching: (props) => <props.loader />,
-  }),
-)
-
-```
-
 ## createUseLoader
 
 Creates only the hook for the loader, without the extra metadata like loading state.
@@ -247,38 +226,3 @@ const pokemonLoader = baseLoader.extend({
 ```
 
 New properties will overwrite existing.
-
-**NOTE**:
-
-> If the loader that you _extend from_ has a `transform` function, and you are change the `queries` function in the _extended_ loader, you might need to do the following fix to resolve the types correctly:
-
-```typescript
-const baseLoader = createLoader({
-  queries: () => [...],
-  transform: () => {i_want: "this-format"},
-})
-
-// This first example is extending a loader that has a transform.
-// It does not supply a new transform function
-const extendedOne = baseLoader.extend(({
-   queries: () => [...],
-}))
-
-type TestOne = InferLoaderData<typeof extendedOne>;
-// Resolves to: { i_want: string; }
-// which is incorrect. In reality it defaults to your list of queries.
-
-// In this example, we supply a transform function as well:
-const extendedTwo = baseLoader.extend({
-  queries: () => [...],
-  transform: (q) => q, // This is essentially the default value
-});
-
-type TestTwo = InferLoaderData<typeof extendedTwo>;
-// Resolves to: readonly [UseQueryResult<...>]
-// which is correct.
-```
-
-> This is just a type mistake that will hopefully be fixed in the future. Both `extendedOne` and `extendedTwo` return the same format, but `extendedTwo` has the correct types.
-
-## [**Contributing guidelines**](https://github.com/ryfylke-react-as/rtk-query-loader/blob/main/CONTRIBUTING.md)
