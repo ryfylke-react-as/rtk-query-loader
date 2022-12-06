@@ -87,6 +87,7 @@ export type ComponentWithLoaderData<
 export type InferLoaderData<T> = T extends Loader<
   any,
   infer X,
+  any,
   any
 >
   ? X
