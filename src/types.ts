@@ -72,6 +72,11 @@ export type CreateUseLoaderArgs<
   queries: (...args: OptionalGenericArg<A>) => QRU;
   /** Transforms the output of the queries */
   transform?: LoaderTransformFunction<QRU, R>;
+  deferred?: (
+    createResponse: <CR>(val: CR) => UseQueryResult<CR>
+  ) => readonly (UseQueryResult<unknown> | undefined)[];
+  defer?: number[];
+  fallback?: unknown[];
 };
 
 export type UseLoader<A, R> = (

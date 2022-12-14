@@ -21,7 +21,7 @@ export const handlers = [
   }),
   rest.get("/pokemon/:name", (req, res, c) => {
     if (req.params.name === "error") {
-      return res(c.delay(RESPONSE_DELAY), c.status(500));
+      return res(c.delay(RESPONSE_DELAY + 200), c.status(500));
     }
     return res(
       c.delay(RESPONSE_DELAY),

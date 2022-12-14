@@ -152,6 +152,77 @@ describe("withLoader", () => {
     );
   });
 
+  test("Can defer one of two queries", async () => {
+    const loader = createLoader({
+      queries: () => {
+        // Queries that are not deferred should be called first
+        const notDeferred = useGetPokemonsQuery(undefined);
+        const notDeferred2 = useGetPokemonsQuery(undefined);
+        // Queries that are deferred should be called last
+        const deferred = useGetPokemonByNameQuery("charizard");
+        return [
+          deferred, // 100ms slower than useGetPokemonsQuery
+          notDeferred2,
+          notDeferred,
+        ] as const;
+      },
+      deferred: (cr) => [
+        cr({ name: "temp-charizard" }),
+        undefined,
+        undefined,
+      ],
+      onLoading: () => <div>Loading</div>,
+    });
+    const Component = withLoader(
+      (_, loaderData) => (
+        <>
+          <div>{loaderData[0].data.name}</div>
+        </>
+      ),
+      loader
+    );
+    render(<Component />);
+    expect(screen.getByText("Loading")).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText("temp-charizard")).toBeVisible()
+    );
+    await waitFor(() =>
+      expect(screen.getByText("charizard")).toBeVisible()
+    );
+  });
+
+  test("Can defer all queries", async () => {
+    const loader = createLoader({
+      queries: () =>
+        [
+          useGetPokemonsQuery(undefined),
+          useGetPokemonByNameQuery("charizard"),
+        ] as const,
+      deferred: (cr) => [
+        cr({ results: [] }),
+        cr({ name: "temp-charizard" }),
+      ],
+      onLoading: () => <div>Loading</div>,
+    });
+    const Component = withLoader(
+      (_, loaderData) => (
+        <>
+          <div>{loaderData[1].data.name}</div>
+          <div>{loaderData[0]?.data ? "Loaded" : "💩"}</div>
+        </>
+      ),
+      loader
+    );
+    render(<Component />);
+
+    expect(screen.getByText("temp-charizard")).toBeVisible();
+    expect(screen.getByText("Loaded")).toBeVisible();
+
+    await waitFor(() =>
+      expect(screen.getByText("charizard")).toBeVisible()
+    );
+  });
+
   describe(".extend()", () => {
     test("Can extend onLoading", async () => {
       render(<ExtendedLoaderComponent />);
