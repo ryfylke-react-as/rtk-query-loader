@@ -161,22 +161,23 @@ describe("withLoader", () => {
         // Queries that are deferred should be called last
         const deferred = useGetPokemonByNameQuery("charizard");
         return [
-          deferred, // 100ms slower than useGetPokemonsQuery
           notDeferred2,
           notDeferred,
+          deferred, // 100ms slower than useGetPokemonsQuery
         ] as const;
       },
       deferred: (cr) => [
+        undefined,
+        undefined,
         cr({ name: "temp-charizard" }),
-        undefined,
-        undefined,
       ],
       onLoading: () => <div>Loading</div>,
     });
+
     const Component = withLoader(
       (_, loaderData) => (
         <>
-          <div>{loaderData[0].data.name}</div>
+          <div>{loaderData[2].data.name}</div>
         </>
       ),
       loader

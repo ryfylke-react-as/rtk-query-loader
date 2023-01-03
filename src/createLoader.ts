@@ -37,8 +37,13 @@ export const createUseLoader = <
           joinedCreatedQueries[index] = query;
         }
       });
+      console.log(joinedCreatedQueries.map((q) => q?.isLoading));
       const aggregatedDeferredQuery = aggregateToQuery(
         joinedCreatedQueries
+      );
+      console.log(
+        "Aggregated state",
+        aggregatedDeferredQuery.isLoading
       );
 
       if (aggregatedDeferredQuery.isSuccess) {
