@@ -13,6 +13,55 @@ export const createUseLoader = <
     const createdQueries = createUseLoaderArgs.queries(...args);
     const aggregatedQuery = aggregateToQuery(createdQueries);
 
+    if (createUseLoaderArgs.deferred) {
+      const createResponse = <T>(
+        res: T
+      ): Types.UseQueryResult<T> => ({
+        data: res,
+        error: undefined,
+        isFetching: false,
+        isLoading: false,
+        isUninitialized: false,
+        isSuccess: true,
+        isError: false,
+        refetch: () => {},
+      });
+
+      const deferredQueries =
+        createUseLoaderArgs.deferred(createResponse);
+      const joinedCreatedQueries: Types.UseQueryResult<unknown>[] =
+        [...createdQueries];
+      deferredQueries.forEach((query, index) => {
+        if (query && createdQueries[index].isLoading) {
+          // We have a fallback value, and the query is loading.
+          joinedCreatedQueries[index] = query;
+        }
+      });
+      console.log(joinedCreatedQueries.map((q) => q?.isLoading));
+      const aggregatedDeferredQuery = aggregateToQuery(
+        joinedCreatedQueries
+      );
+      console.log(
+        "Aggregated state",
+        aggregatedDeferredQuery.isLoading
+      );
+
+      if (aggregatedDeferredQuery.isSuccess) {
+        const data = createUseLoaderArgs.transform
+          ? createUseLoaderArgs.transform(
+              joinedCreatedQueries as unknown as Types.MakeDataRequired<QRU>
+            )
+          : joinedCreatedQueries;
+
+        return {
+          ...aggregatedDeferredQuery,
+          data,
+          currentData: data,
+          originalArgs: args,
+        } as Types.UseQueryResult<R>;
+      }
+    } // end deferred handling
+
     if (aggregatedQuery.isSuccess) {
       const data = createUseLoaderArgs.transform
         ? createUseLoaderArgs.transform(
@@ -45,6 +94,7 @@ export const createLoader = <
     queries:
       createLoaderArgs.queries ?? (() => [] as unknown as QRU),
     transform: createLoaderArgs.transform,
+    deferred: createLoaderArgs.deferred,
   });
 
   const loader: Types.Loader<P, R, QRU, A> = {
