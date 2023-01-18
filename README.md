@@ -254,4 +254,12 @@ const pokemonLoader = baseLoader.extend({
 });
 ```
 
-New properties will overwrite existing.
+New properties will overwrite existing. 
+
+It's worth mentioning that `queries` and `transform` are linked in this context, meaning that if you supply a new `queries` argument in the extended loader, but no `transform`, then you will **not** inherit the `transform` from the original loader. You either overwrite both or none of these. 
+
+* Supplying _just_ a new `queries` argument will result in `transform` being `undefined` in practise. 
+* Supplying _just_ a new `transform` argument will result in the new transform being ignored.
+* Supplying a new `transform` _and_ a new `queries` argument will properly overwrite the existing base properties.
+
+All other properties in the loader will overwrite as expected. You can, for example, just supply a new `onLoading`, or `onError`. 
