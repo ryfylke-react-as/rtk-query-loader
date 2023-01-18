@@ -52,11 +52,13 @@ export type OptionalGenericArg<T> = T extends never ? [] : [T];
 
 export type LoaderTransformFunction<
   QRU extends readonly UseQueryResult<unknown>[],
+  QRUD extends readonly UseQueryResult<unknown>[],
   R extends unknown
-> = (queries: MakeDataRequired<QRU>) => R;
+> = (queries: MakeDataRequired<QRU>, deferredQueries: QRUD) => R;
 
 export type CreateUseLoaderArgs<
   QRU extends readonly UseQueryResult<unknown>[],
+  QRUD extends readonly UseQueryResult<unknown>[],
   R extends unknown,
   A = never
 > = {
@@ -70,8 +72,18 @@ export type CreateUseLoaderArgs<
    * ```
    */
   queries: (...args: OptionalGenericArg<A>) => QRU;
+  /** Should return a list of RTK useQuery results.
+   * Example:
+   * ```typescript
+   * (args: Args) => [
+   *    useGetPokemonQuery(args.pokemonId),
+   *    useGetSomethingElse(args.someArg)
+   * ] as const
+   * ```
+   */
+  deferredQueries?: (...args: OptionalGenericArg<A>) => QRUD;
   /** Transforms the output of the queries */
-  transform?: LoaderTransformFunction<QRU, R>;
+  transform?: LoaderTransformFunction<QRU, QRUD, R>;
 };
 
 export type UseLoader<A, R> = (
@@ -136,9 +148,10 @@ export type CustomLoaderProps<T = unknown> = {
 export type CreateLoaderArgs<
   P extends unknown,
   QRU extends readonly UseQueryResult<unknown>[],
+  QRUD extends readonly UseQueryResult<unknown>[],
   R extends unknown = MakeDataRequired<QRU>,
   A = never
-> = Partial<CreateUseLoaderArgs<QRU, R, A>> & {
+> = Partial<CreateUseLoaderArgs<QRU, QRUD, R, A>> & {
   /** Generates an argument for the `queries` based on component props */
   queriesArg?: (props: P) => A;
   /** Determines what to render while loading (with no data to fallback on) */
@@ -188,6 +201,7 @@ export type Loader<
   /** Returns a new `Loader` extended from this `Loader`, with given overrides. */
   extend: <
     QRUb extends readonly UseQueryResult<unknown>[] = QRU,
+    QRUDb extends readonly UseQueryResult<unknown>[] = [],
     Pb extends unknown = P,
     Rb extends unknown = QRUb extends QRU
       ? R extends never
@@ -196,7 +210,7 @@ export type Loader<
       : MakeDataRequired<QRUb>,
     Ab = A
   >(
-    newLoader: Partial<CreateLoaderArgs<Pb, QRUb, Rb, Ab>>
+    newLoader: Partial<CreateLoaderArgs<Pb, QRUb, QRUDb, Rb, Ab>>
   ) => Loader<Pb, Rb, QRUb extends never ? QRU : QRUb, Ab>;
   /** The component to use to switch between rendering the different query states. */
   LoaderComponent: Component<CustomLoaderProps>;

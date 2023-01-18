@@ -23,8 +23,12 @@ export const handlers = [
     if (req.params.name === "error") {
       return res(c.delay(RESPONSE_DELAY), c.status(500));
     }
+    const delay =
+      req.params.name === "delay"
+        ? RESPONSE_DELAY + 100
+        : RESPONSE_DELAY;
     return res(
-      c.delay(RESPONSE_DELAY),
+      c.delay(delay),
       c.status(200),
       c.json({
         name: req.params.name,

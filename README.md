@@ -199,6 +199,35 @@ const Component = () => {
 };
 ```
 
+## Deferring queries
+
+You can defer queries by using the `deferredQueries` argument in `createLoader` (or `createUseLoader`). These queries are passed as the second argument to `transform` which has to be used to access the deferred queries in your loaded component.
+
+Example usage:
+
+```tsx
+const loader = createLoader({
+  queries: () => [useImportantQuery()] as const,
+  deferredQueries: () => [useSlowButNotImportantQuery()] as const,
+  transform: (queries, deferredQueries) => ({
+    important: queries[0].data,
+    not_important: deferredQueries[0].data,
+  }),
+});
+
+const Component = withLoader((props, loaderData) => {
+  const { important, not_important } = loaderData;
+  // not_important could be undefined
+
+  return (
+    <div>
+      {important.person.name}
+      {not_important ? "it has resolved : "some fallback"}
+    </div>
+  )
+}, loader);
+```
+
 ## InferLoaderData
 
 Infers the type of the data the loader returns. Use:
