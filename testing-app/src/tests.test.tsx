@@ -347,5 +347,48 @@ describe("withLoader", () => {
       expect(screen.getByText(/charizard/i)).toBeVisible();
       expect(screen.getByText(/pikachu/i)).toBeVisible();
     });
+
+    test("Can extend deferred queries", async () => {
+      const Component = withLoader(
+        (props, { charizard, delay }) => {
+          return (
+            <>
+              <div>{charizard.name}</div>
+              <div>
+                {delay ? "loaded-deferred" : "loading-deferred"}
+              </div>
+            </>
+          );
+        },
+        createLoader({
+          queries: () =>
+            [useGetPokemonsQuery(undefined)] as const,
+          deferredQueries: () =>
+            [useGetPokemonByNameQuery("charizard")] as const,
+        }).extend({
+          queries: () =>
+            [useGetPokemonByNameQuery("charizard")] as const,
+          deferredQueries: () => {
+            const delayQ = useGetPokemonByNameQuery("delay");
+            return [delayQ] as const;
+          },
+          transform: (queries, deferred) => ({
+            charizard: queries[0].data,
+            delay: deferred[0].data,
+          }),
+          onLoading: () => <div>Loading</div>,
+          onError: () => <div>Error</div>,
+        })
+      );
+      render(<Component />);
+      expect(screen.getByText("Loading")).toBeVisible();
+      await waitFor(() =>
+        expect(screen.getByText("charizard")).toBeVisible()
+      );
+      expect(screen.getByText("loading-deferred")).toBeVisible();
+      await waitFor(() =>
+        expect(screen.getByText("loaded-deferred")).toBeVisible()
+      );
+    });
   });
 });

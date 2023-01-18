@@ -72,6 +72,7 @@ export const createLoader = <
       Ab = A
     >({
       queries,
+      deferredQueries,
       transform,
       ...loaderArgs
     }: Partial<
@@ -86,6 +87,7 @@ export const createLoader = <
         const newUseLoader = createUseLoader({
           queries,
           transform,
+          deferredQueries,
         });
         extendedLoader.useLoader = newUseLoader;
       }
