@@ -93,54 +93,30 @@ What if we could instead "join" these queries into one, and then just return ear
 Creates a `Loader`.
 
 ```typescript
-const loader = createLoader({
-  queries: () => [useGetUsers()] as const,
+const userRouteLoader = createLoader({
+  queries: () => {
+    const { userId } = useParams();
+    const userQuery = useGetUser(userId);
+    return [userQuery] as const;
+  },
+  transform: (queries) => ({
+    user: queries[0].data,
+  }),
 });
 ```
 
-### Argument object:
+#### Argument object:
 
-**queries**?: `(arg?: T) => readonly UseQueryResults<unknown>[]`
-
-Returns a `readonly` array of useQuery results.
-
-**transform**?: `(queries: readonly UseQueryResult[]) => T`
-
-Transforms the list of queries to the desired loader output format.
-
-**queriesArg**?: `(props: T) => A`
-
-Creates an argument for the queries function based on expected props. Useful when you have queries in your loader that need arguments from the props of the component.
-
-**onLoading**?: `(props: T) => ReactElement`
-
-**onError**?: `(props: T, error: RTKError) => ReactElement`
-
-**onFetching**?: `(props: T, Component: (() => ReactElement)) => ReactElement`
-
-Make sure you call the second argument as a component, not a function:
-
-```tsx
-{
-  onFetching: (props, Component) => (
-    <div className="relative-wrapper">
-      <Component />
-      <LoadingOverlay />
-    </div>
-  );
-}
-```
-
-**whileFetching**?:
-
-```typescript
-{
-  append?: (props: P, data?: R) => ReactElement;
-  prepend?: (props: P, data?: R) => ReactElement;
-}
-```
-
-By using this instead of `onFetching`, you ensure that you don't reset the internal state of the component while fetching.
+| Property             | Interface                                                                                            | Description                                                                                                                                                                                                                                      |
+|----------------------|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **queries**?         | `(arg?: T) => readonly UseQueryResults[]`                                                            | Returns a `readonly` array of useQuery results. **This function is a hook**, which means that you can use other hooks, like `useLocation`, in it.                                                                                                |
+| **transform**?       | `(queries: readonly UseQueryResult[], deferredQueries: readonly UseQueryResult[]) => T`              | Transforms the list of queries to the desired loader output format. (Is also given deferredQueries as second argument)                                                                                                                           |
+| **queriesArg**?      | `(props: T) => A`                                                                                    | Creates an argument for the queries function based on expected props. Useful when you have queries in your loader that need arguments from the props of the component.                                                                           |
+| **deferredQueries**? | `(arg?: T) => readonly UseQueryResults[]`                                                            | Queries that should not affect the component-state (loading/error/success). Component might render before these are fulfilled. Like `queries`, **this function is a hook**, which means that you can use other hooks, like `useLocation`, in it. |
+| **onLoading**?       | `(props: T) => ReactElement`                                                                         |                                                                                                                                                                                                                                                  |
+| **onError**?         | `(props: T, error: RTKError) => ReactElement`                                                        |                                                                                                                                                                                                                                                  |
+| **onFetching**?      | `(props: T, Component: (() => ReactElement)) => ReactElement`                                        | Make sure you call the second argument as a component, not a function.                                                                                                                                                                           |
+| **whileFetching**?   | `{ append?: (props: P, data?: R) => ReactElement; prepend?: (props: P, data?: R) => ReactElement; }` | By using this instead of `onFetching`, you ensure that you don't reset the internal state of the component while fetching.                                                                                                                       |
 
 ## withLoader
 
@@ -161,7 +137,7 @@ const Component = withLoader(
 
 ```
 
-### Arguments
+#### Arguments
 
 1. `(props: P, loaderData: R) => ReactElement`  
    Component with loader-data
