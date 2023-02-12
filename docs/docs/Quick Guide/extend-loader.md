@@ -1,0 +1,13 @@
+---
+sidebar_position: 2
+---
+
+# Extend the base loader
+
+Extend from the base loader so that you inherit the sensible defaults. You can overwrite these at any point.
+
+```tsx title="/src/loaders/userRouteLoader.tsx" {3-11}
+import { baseLoader } from "./baseLoader";
+
+export const userRouteLoader = baseLoader.extend({});
+```
