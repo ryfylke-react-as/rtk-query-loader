@@ -5,14 +5,19 @@ slug: /
 
 # RTK Query Loader
 
-#### `@ryfylke-react/rtk-query-loader`
-
 ![npm](https://img.shields.io/npm/v/@ryfylke-react/rtk-query-loader?color=gray&style=flat-square)
 ![npm type definitions](https://img.shields.io/npm/types/@ryfylke-react/rtk-query-loader?color=gray&label=%20&logoColor=gray)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/@ryfylke-react/rtk-query-loader@latest?style=flat-square)
+![npm downloads](https://img.shields.io/npm/dm/@ryfylke-react/rtk-query-loader)
+[![github stars](https://img.shields.io/github/stars/ryfylke-react-as/rtk-query-loader?style=social)](https://github.com/ryfylke-react-as/rtk-query-loader)
+
+```shell
+npm i @ryfylke-react/rtk-query-loader
+```
 
 - [Github](https://github.com/ryfylke-react-as/rtk-query-loader)
 - [NPM](https://www.npmjs.com/package/@ryfylke-react/rtk-query-loader)
+- [CodeSandbox](https://codesandbox.io/s/rtk-query-loader-demo-42tubp) (demo/playground)
 
 Lets you create loaders for RTK query.
 

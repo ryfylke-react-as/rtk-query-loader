@@ -6,7 +6,38 @@ sidebar_position: 1
 
 Creates a `Loader`.
 
-Takes the following argument:
+```typescript title="example.ts"
+type ConsumerProps = Record<string, any> & {
+  userId: string;
+};
+
+const loader = createLoader({
+  queriesArg: (props: ConsumerProps) => props.userId,
+  queries: (userId) => {
+    return [useGetUser(userId)] as const;
+  },
+  deferredQueries: (userId) => {
+    return [useGetUserRelations(userId)] as const;
+  },
+  transform: (queries, deferredQueries) => ({
+    queries: [...queries, ...deferredQueries],
+    foo: "bar",
+  }),
+  onLoading: (props) => <div>Loading...</div>,
+  onError: (props, error) => <div>Error!</div>,
+  whileFetching: {
+    prepend: (props) => <LoadingSpinner />,
+  },
+});
+```
+
+A `Loader` takes ownership over...
+
+- Data-loading
+- Data-transformation
+- Fetch-state rendering
+
+Here is the `createLoader` argument:
 
 ````typescript
 type CreateLoaderArgs<

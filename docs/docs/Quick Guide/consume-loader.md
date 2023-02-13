@@ -37,7 +37,7 @@ export const UserRoute = withLoader((props: Props, queries) => {
 
 Every `Loader` contains an actual hook that you can call to run all the queries and aggregate their statuses as if they were just one joined query.
 
-```tsx
+```tsx {3,9}
 import { userRouteLoader } from "./baseLoader";
 
 const useLoaderData = userRouteLoader.useLoader;

@@ -12,7 +12,7 @@ import { baseLoader } from "./baseLoader";
 export const userRouteLoader = baseLoader.extend({});
 ```
 
-You can pass any argument from [`createLoader`](/Exports/create-loader) into `Loader.extend`.
+You can pass any argument from [`createLoader`](/Exports/create-loader) into [`Loader.extend`](/Features/extending).
 
 Its up to you how much you want to separate logic here. Some examples would be...
 

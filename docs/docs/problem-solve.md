@@ -45,7 +45,7 @@ What if we could instead "join" these queries into one, and then just return ear
 - [x] Extendability
 - [x] Transform the output to any format you'd like.
 
-## What does it look like?
+## Simple example
 
 ```tsx {10-19,22-31}
 import {
