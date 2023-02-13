@@ -216,6 +216,29 @@ export type Loader<
   LoaderComponent: Component<CustomLoaderProps>;
 };
 
+export type CreateQueryGetter<T extends unknown> =
+  () => Promise<T>;
+
+export type CreateQueryReducerAction<T extends unknown> =
+  | {
+      type: "load";
+    }
+  | {
+      type: "fetch";
+    }
+  | {
+      type: "error";
+      payload: {
+        error: unknown;
+      };
+    }
+  | {
+      type: "success";
+      payload: {
+        data: T;
+      };
+    };
+
 /************************************************/
 /*  Legacy/unused, for backwards compatibility  */
 /************************************************/
