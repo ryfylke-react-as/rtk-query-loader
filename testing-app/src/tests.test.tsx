@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import userEvent from "@testing-library/user-event";
-import { useState } from "react";
+import * as React from "react";
 import { createLoader } from "../../src/createLoader";
+import { _testCreateUseCreateQuery } from "../../src/createQuery";
 import { CustomLoaderProps } from "../../src/types";
 import { withLoader } from "../../src/withLoader";
 import {
@@ -23,12 +24,73 @@ import {
   waitForElementToBeRemoved,
 } from "./utils";
 
+const { useState } = React;
+
+// We do this to avoid two conflicting versions of React
+const useCreateQuery = _testCreateUseCreateQuery(React);
+
 describe("aggregateToQuery", () => {
   test("It aggregates query status", async () => {
     render(<TestAggregateComponent />);
     expect(screen.getByText("Loading")).toBeVisible();
     await waitFor(() =>
       expect(screen.getByText("charizard: 9")).toBeVisible()
+    );
+  });
+});
+
+describe("useCreateQuery", () => {
+  test("It creates a query", async () => {
+    const Component = withLoader(
+      (props, queries) => <div>{queries[0].data.name}</div>,
+      createLoader({
+        queries: () => [
+          useCreateQuery(async () => {
+            await new Promise((resolve) =>
+              setTimeout(resolve, 100)
+            );
+            return {
+              name: "charizard",
+            };
+          }),
+        ],
+        onLoading: () => <div>Loading</div>,
+      })
+    );
+    render(<Component />);
+    expect(screen.getByText("Loading")).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText("charizard")).toBeVisible()
+    );
+  });
+  test("The query can throw error", async () => {
+    const Component = withLoader(
+      (props, queries) => <div>{queries[0].data.name}</div>,
+      createLoader({
+        queries: () =>
+          [
+            useCreateQuery(async () => {
+              await new Promise((resolve, reject) =>
+                setTimeout(
+                  () => reject(new Error("error-message")),
+                  100
+                )
+              );
+              return {
+                name: "charizard",
+              };
+            }),
+          ] as const,
+        onLoading: () => <div>Loading</div>,
+        onError: (props, error) => (
+          <div>{(error as any)?.message}</div>
+        ),
+      })
+    );
+    render(<Component />);
+    expect(screen.getByText("Loading")).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText("error-message")).toBeVisible()
     );
   });
 });
