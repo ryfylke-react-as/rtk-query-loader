@@ -80,7 +80,7 @@ const config = {
       footer: {
         style: "dark",
         links: [],
-        copyright: `Copyright © ${new Date().getFullYear()} Ryfylke React AS`,
+        copyright: `Open source / GPL-3.0 License`,
       },
       prism: {
         theme: lightCodeTheme,
