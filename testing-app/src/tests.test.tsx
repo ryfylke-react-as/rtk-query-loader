@@ -252,6 +252,36 @@ describe("withLoader", () => {
     );
   });
 
+  test("Can defer all queries", async () => {
+    const Component = withLoader(
+      (props, data) => {
+        if (data[0].isLoading) {
+          return <>Loading</>;
+        }
+        return <>{data[0].data?.name}</>;
+      },
+      createLoader({
+        deferredQueries: () =>
+          [useGetPokemonByNameQuery("charizard")] as const,
+        transform: (_, deferred) => deferred,
+      })
+    );
+    render(<Component />);
+    expect(screen.getByText("Loading")).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText("charizard")).toBeVisible()
+    );
+  });
+
+  test("Loaders with no queries render immediately", () => {
+    const Component = withLoader(
+      () => <div>Success</div>,
+      createLoader({})
+    );
+    render(<Component />);
+    expect(screen.getByText("Success")).toBeVisible();
+  });
+
   describe(".extend()", () => {
     test("Can extend onLoading", async () => {
       render(<ExtendedLoaderComponent />);

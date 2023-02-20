@@ -16,7 +16,10 @@ export const createUseLoader = <
       createUseLoaderArgs.deferredQueries?.(...args) ?? [];
     const aggregatedQuery = aggregateToQuery(createdQueries);
 
-    if (aggregatedQuery.isSuccess) {
+    if (
+      aggregatedQuery.isSuccess ||
+      createdQueries.length === 0
+    ) {
       const data = createUseLoaderArgs.transform
         ? createUseLoaderArgs.transform(
             createdQueries as unknown as Types.MakeDataRequired<QRU>,
@@ -26,6 +29,7 @@ export const createUseLoader = <
 
       return {
         ...aggregatedQuery,
+        isSuccess: true,
         data,
         currentData: data,
         originalArgs: args,
