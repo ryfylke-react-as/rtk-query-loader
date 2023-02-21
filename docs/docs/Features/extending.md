@@ -24,4 +24,6 @@ It's worth mentioning that queries and transform are linked in this context, mea
 
 All other properties in the loader will overwrite as expected. You can, for example, just supply a new `onLoading`, or `onError`.
 
-> You may extend _extended_ loaders, to create an inheritance model.
+:::info
+You may extend _extended_ loaders, to create an inheritance model.
+:::

@@ -27,7 +27,10 @@ const loader = createLoader({
 });
 ```
 
-> You lose some great features from RTK query when using `useCreateQuery`.
-> If possible, try to stick to using actual queries, created from a `@reduxjs/toolkit` API.
-> You can look at this feature like an escape-hatch that allows you to pass other
-> data through the loader as well.
+:::caution
+You lose some great features from RTK query when using `useCreateQuery`.
+
+When possible, try to stick to using actual queries, created from a `@reduxjs/toolkit` API.
+You can look at this feature like an escape-hatch that allows you to pass other
+data through the loader as well.
+:::

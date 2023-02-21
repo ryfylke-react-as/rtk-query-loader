@@ -14,6 +14,7 @@ export const userRouteLoader = baseLoader.extend({});
 
 You can pass any argument from [`createLoader`](/Exports/create-loader) into [`Loader.extend`](/Features/extending).
 
+:::info Separation of concerns
 Its up to you how much you want to separate logic here. Some examples would be...
 
 - Co-locating loaders in a shared folder
@@ -21,3 +22,4 @@ Its up to you how much you want to separate logic here. Some examples would be..
 - Co-locating loaders in same directory but in a separate file from the component
 
 I personally prefer to keep the loaders close to the component, either in a file besides it or directly in the file itself, and then keep a base loader somewhere else to extend from.
+:::

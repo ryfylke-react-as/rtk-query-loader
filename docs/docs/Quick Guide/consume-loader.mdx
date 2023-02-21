@@ -2,13 +2,19 @@
 sidebar_position: 4
 ---
 
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
 # Consume the loader
 
-## Using `withLoader`
+<Tabs groupId="method" queryString>
+  <Tab label="Using withLoader" value="withLoader">
 
-A convenient wrapper that ensures that the component is only rendered when it has data. This is definitely the preferred and optimal way to consume the loaders.
+A convenient wrapper that ensures that the component is only rendered when it has data.
 
-```tsx title="/src/routes/UserRoute.tsx" {8-22}
+This is definitely the preferred and optimal way to consume the loaders.
+
+```tsx {8-22}
 import { withLoader } from "@ryfylke-react/rtk-query-loader";
 import { userRouteLoader } from "../loaders/baseLoader";
 
@@ -33,7 +39,8 @@ export const UserRoute = withLoader((props: Props, queries) => {
 }, userRouteLoader);
 ```
 
-## Using `useLoader`
+  </Tab>
+  <Tab label="Using useLoader" value="useLoader" default>
 
 Every `Loader` contains an actual hook that you can call to run all the queries and aggregate their statuses as if they were just one joined query.
 
@@ -58,3 +65,6 @@ const UserRoute = (props: Props) => {
   // ...
 };
 ```
+
+  </Tab>
+</Tabs>

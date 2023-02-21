@@ -11,6 +11,13 @@ slug: /
 ![npm downloads](https://img.shields.io/npm/dm/@ryfylke-react/rtk-query-loader)
 [![github stars](https://img.shields.io/github/stars/ryfylke-react-as/rtk-query-loader?style=social)](https://github.com/ryfylke-react-as/rtk-query-loader)
 
+Lets you create loaders for use with [RTK Query](https://redux-toolkit.js.org/rtk-query/overview).
+
+- [x] **Reusable**
+- [x] **Extendable**
+- [x] **Transformable**
+- [x] **Type-safe**
+
 ```shell
 npm i @ryfylke-react/rtk-query-loader
 ```
@@ -19,9 +26,6 @@ npm i @ryfylke-react/rtk-query-loader
 - [NPM](https://www.npmjs.com/package/@ryfylke-react/rtk-query-loader)
 - [CodeSandbox](https://codesandbox.io/s/rtk-query-loader-demo-42tubp) (demo/playground)
 
-Lets you create loaders for RTK query.
-
-- [x] **Reusable**
-- [x] **Extendable**
-- [x] **Transformable**
-- [x] **Type-safe**
+:::tip Getting Started
+Get started with our recommended best practises by following the [**Quick guide**](/Quick%20guide).
+:::

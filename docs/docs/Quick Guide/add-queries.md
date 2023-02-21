@@ -40,7 +40,11 @@ export const userRouteLoader = baseLoader.extend({
 });
 ```
 
-**If you want to consume this loader through `withLoader`, you need to add the `queriesArg` argument**.
+:::caution Beware
+If you want to consume this loader through `withLoader`, you need to add the `queriesArg` argument. This supplies the loader with an argument piped from `props`.
+:::
+
+### `queriesArg`
 
 This argument transforms the consumer's props to the queries argument.
 
