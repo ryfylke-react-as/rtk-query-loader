@@ -1,5 +1,4 @@
 import { aggregateToQuery } from "./aggregateToQuery";
-import { useCreateQuery } from "./createQuery";
 import { RTKLoader } from "./RTKLoader";
 import * as Types from "./types";
 
@@ -28,7 +27,11 @@ export const createUseLoader = <
     if (aggregatedQuery.isSuccess || queriesList.length === 0) {
       const data = createUseLoaderArgs.transform
         ? createUseLoaderArgs.transform(
-            loaderRes as Types.ResolveDataShape<Q, D, E>
+            loaderRes as Types.ResolveDataShape<
+              Types.MakeDataRequired<Q>,
+              D,
+              E
+            >
           )
         : loaderRes;
 
@@ -119,38 +122,3 @@ export const createLoader = <
 
   return loader;
 };
-
-const tester = createLoader({
-  queriesArg: (props: {}) => "test",
-  useQuery: (arg) => {
-    const q1 = useCreateQuery(async () => "foo" as const);
-    const q2 = useCreateQuery(async () => "bar" as const);
-    return {
-      queries: {
-        q1,
-      },
-      deferredQueries: {
-        q2,
-      },
-    };
-  },
-  transform: (data) => ({
-    ...data,
-    foo: "bar" as const,
-  }),
-}).extend({
-  useQuery: () => ({
-    queries: {
-      foo: useCreateQuery(async () => "bar" as const),
-    },
-    deferredQueries: {
-      bar: useCreateQuery(async () => "foo" as const),
-    },
-  }),
-  transform: (data) => ({
-    ...data,
-    bar: "foo",
-  }),
-});
-
-type Tester = Types.InferLoaderData<typeof tester>;
