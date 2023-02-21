@@ -61,6 +61,26 @@ export type DataShape<
   payload?: E;
 };
 
+export type ResolveDataShape<
+  Q extends _Q,
+  D extends _D,
+  E extends _E
+> = Q extends never
+  ? D extends never
+    ? E extends never
+      ? {}
+      : { payload: E }
+    : E extends never
+    ? { deferredQueries: D }
+    : { deferredQueries: D; payload: E }
+  : D extends never
+  ? E extends never
+    ? { queries: Q }
+    : { queries: Q; payload: E }
+  : E extends never
+  ? { queries: Q; deferredQueries: D }
+  : { queries: Q; deferredQueries: D; payload: E };
+
 /** Use: `(...args: OptionalGenericArg<T>) => void;`
  * Allows either `T` or `none` for the parameter
  */
@@ -71,7 +91,7 @@ export type LoaderTransformFunction<
   D extends _D,
   E extends _E,
   R extends unknown
-> = (data: DataShape<MakeDataRequired<Q>, D, E>) => R;
+> = (data: ResolveDataShape<MakeDataRequired<Q>, D, E>) => R;
 
 export type CreateUseLoaderArgs<
   Q extends _Q,
@@ -94,7 +114,9 @@ export type CreateUseLoaderArgs<
     ...args: OptionalGenericArg<A>
   ) => DataShape<Q, D, E>;
   /** Transforms the output of the queries */
-  transform?: (data: DataShape<Q, D, E>) => R;
+  transform?: (
+    data: ResolveDataShape<MakeDataRequired<Q>, D, E>
+  ) => R;
 };
 
 export type UseLoader<A, R> = (
@@ -111,14 +133,18 @@ export type InferLoaderData<T> = T extends Loader<
   any,
   infer X,
   any,
+  any,
+  any,
   any
 >
   ? X
-  : T extends Loader<never, infer Y, any, any>
+  : T extends Loader<never, infer Y, any, any, any, any>
   ? Y
-  : T extends Loader<any, infer Z, never, any>
+  : T extends Loader<any, infer Z, never, any, any, any>
   ? Z
-  : never;
+  : T extends Loader<any, infer W, any, never, any, any>
+  ? W
+  : "could not parse";
 
 export type Component<P extends Record<string, any>> = (
   props: P
@@ -185,12 +211,23 @@ export type CreateLoaderArgs<
   loaderComponent?: Component<CustomLoaderProps>;
 };
 
+export type CreateLoader<
+  P extends unknown,
+  Q extends _Q,
+  D extends _D,
+  E extends _E,
+  R extends unknown = MakeDataRequired<Q>,
+  A = never
+> = (
+  args: CreateLoaderArgs<P, Q, D, E, R, A>
+) => Loader<P, R, Q, D, E, A>;
+
 export type Loader<
   P extends unknown,
   R extends unknown,
-  Q extends _Q = _Q,
-  D extends _D = _D,
-  E extends _E = _E,
+  Q extends _Q,
+  D extends _D,
+  E extends _E,
   A = never
 > = {
   /** A hook that runs all queries and returns aggregated result */
@@ -215,17 +252,17 @@ export type Loader<
   /** Returns a new `Loader` extended from this `Loader`, with given overrides. */
   extend: <
     Qb extends _Q = Q,
-    Db extends _D = _Q,
-    Eb extends _E = _E,
+    Db extends _D = D,
+    Eb extends _E = E,
     Pb extends unknown = P,
     Rb extends unknown = Qb extends Q
       ? R extends never
         ? Q
         : R
-      : DataShape<MakeDataRequired<Qb>, Db, Eb>,
+      : ResolveDataShape<MakeDataRequired<Qb>, Db, Eb>,
     Ab = A
   >(
-    newLoader: Partial<CreateLoaderArgs<Pb, Qb, Db, Rb, Ab>>
+    newLoader: Partial<CreateLoaderArgs<Pb, Qb, Db, Eb, Rb, Ab>>
   ) => Loader<
     Pb,
     Rb,

@@ -28,19 +28,20 @@ const RenderPokemonData = (props: {
 );
 
 const simpleLoader = createLoader({
-  queries: () =>
-    [
-      useGetPokemonByNameQuery("charizard"),
-      useGetPokemonsQuery(undefined),
-    ] as const,
+  useQuery: () => ({
+    queries: {
+      charizard: useGetPokemonByNameQuery("charizard"),
+      pokemons: useGetPokemonsQuery(undefined),
+    },
+  }),
   onLoading: () => <div>Loading</div>,
 });
 
 export const SimpleLoadedComponent = withLoader(
-  (_, loaderData) => (
+  (_, loader) => (
     <RenderPokemonData
-      pokemon={loaderData[0].data}
-      pokemons={loaderData[1].data}
+      pokemon={loader.queries.charizard.data}
+      pokemons={loader.queries.pokemons.data}
     />
   ),
   simpleLoader
@@ -53,39 +54,55 @@ const extendedLoader = simpleLoader.extend({
 export const ExtendedLoaderComponent = withLoader(
   (_, loaderData) => (
     <RenderPokemonData
-      pokemon={loaderData[0].data}
-      pokemons={loaderData[1].data}
+      pokemon={loaderData.queries.charizard.data}
+      pokemons={loaderData.queries.pokemons.data}
     />
   ),
   extendedLoader
 );
 
 const pokemonByNameLoader = createLoader({
-  queries: (name: string) =>
-    [useGetPokemonByNameQuery(name)] as const,
   queriesArg: (props: { name: string }) => props.name,
+  useQuery: (name) => {
+    const pokemon = useGetPokemonByNameQuery(name);
+    return {
+      queries: {
+        pokemon,
+      },
+    };
+  },
 });
 
-export const LoadPokemon = withLoader((props, loaderData) => {
-  return (
-    <div>
-      Loaded: "{loaderData[0].data.name}", props: "{props.name}"
-    </div>
-  );
-}, pokemonByNameLoader);
+export const LoadPokemon = withLoader(
+  (props, { queries: { pokemon } }) => {
+    return (
+      <div>
+        Loaded: "{pokemon.data.name}", props: "{props.name}"
+      </div>
+    );
+  },
+  pokemonByNameLoader
+);
 
 export const FailTester = withLoader(
   () => <div>Success</div>,
   createLoader({
-    queries: () => [useGetPokemonByNameQuery("error")] as const,
+    useQuery: () => ({
+      queries: {
+        error: useGetPokemonByNameQuery("error"),
+      },
+    }),
     onError: () => <div>Error</div>,
     onLoading: () => <div>Loading</div>,
   })
 );
 
 const fetchTestBaseLoader = createLoader({
-  queries: (name: string) =>
-    [useGetPokemonByNameQuery(name)] as const,
+  useQuery: (name: string) => ({
+    queries: {
+      pokemon: useGetPokemonByNameQuery(name),
+    },
+  }),
   queriesArg: (props: {
     name: string;
     onChange: (name: string) => void;
@@ -108,7 +125,7 @@ const FetchTesterComponent = (
   const inputRef = useRef<HTMLInputElement>(null);
   return (
     <div>
-      #{loaderData[0].data.id}
+      #{loaderData.queries.pokemon.data.id}
       <br />
       <form
         onSubmit={(e) => {
@@ -171,9 +188,13 @@ export const TestAggregateComponent = () => {
 };
 
 const transformLoader = createLoader({
-  queries: () => [useGetPokemonByNameQuery("charizard")],
-  transform: (queries) => ({
-    pokemon: queries[0].data,
+  useQuery: () => ({
+    queries: {
+      charizard: useGetPokemonByNameQuery("charizard"),
+    },
+  }),
+  transform: (loader) => ({
+    pokemon: loader.queries.charizard.data,
   }),
 });
 

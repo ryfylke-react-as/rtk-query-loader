@@ -7,7 +7,7 @@ export const createUseLoader = <
   Q extends Types._Q,
   D extends Types._D,
   E extends Types._E,
-  R extends unknown = Types.DataShape<
+  R extends unknown = Types.ResolveDataShape<
     Types.MakeDataRequired<Q>,
     D,
     E
@@ -27,7 +27,9 @@ export const createUseLoader = <
 
     if (aggregatedQuery.isSuccess || queriesList.length === 0) {
       const data = createUseLoaderArgs.transform
-        ? createUseLoaderArgs.transform(loaderRes)
+        ? createUseLoaderArgs.transform(
+            loaderRes as Types.ResolveDataShape<Q, D, E>
+          )
         : loaderRes;
 
       return {
@@ -46,10 +48,10 @@ export const createUseLoader = <
 
 export const createLoader = <
   P extends unknown,
-  Q extends Types._Q = Types._Q,
-  D extends Types._D = Types._D,
-  E extends Types._E = Types._E,
-  R extends unknown = Types.DataShape<
+  Q extends Types._Q,
+  D extends Types._D,
+  E extends Types._E,
+  R extends unknown = Types.ResolveDataShape<
     Types.MakeDataRequired<Q>,
     D,
     E
@@ -80,8 +82,12 @@ export const createLoader = <
       Pb extends unknown = P,
       Rb = Qb extends unknown
         ? R
-        : Types.DataShape<Types.MakeDataRequired<Qb>, Db, Eb>,
-      Ab = A
+        : Types.ResolveDataShape<
+            Types.MakeDataRequired<Qb>,
+            Db,
+            Eb
+          >,
+      Ab extends unknown = A
     >({
       useQuery,
       transform,
@@ -114,7 +120,7 @@ export const createLoader = <
   return loader;
 };
 
-const loader = createLoader({
+const tester = createLoader({
   queriesArg: (props: {}) => "test",
   useQuery: (arg) => {
     const q1 = useCreateQuery(async () => "foo" as const);
@@ -128,4 +134,23 @@ const loader = createLoader({
       },
     };
   },
+  transform: (data) => ({
+    ...data,
+    foo: "bar" as const,
+  }),
+}).extend({
+  useQuery: () => ({
+    queries: {
+      foo: useCreateQuery(async () => "bar" as const),
+    },
+    deferredQueries: {
+      bar: useCreateQuery(async () => "foo" as const),
+    },
+  }),
+  transform: (data) => ({
+    ...data,
+    bar: "foo",
+  }),
 });
+
+type Tester = Types.InferLoaderData<typeof tester>;

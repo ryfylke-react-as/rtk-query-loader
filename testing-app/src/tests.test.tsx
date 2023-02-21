@@ -42,18 +42,22 @@ describe("aggregateToQuery", () => {
 describe("useCreateQuery", () => {
   test("It creates a query", async () => {
     const Component = withLoader(
-      (props, queries) => <div>{queries[0].data.name}</div>,
+      (props, queries) => (
+        <div>{queries.queries.q.data.name}</div>
+      ),
       createLoader({
-        queries: () => [
-          useCreateQuery(async () => {
-            await new Promise((resolve) =>
-              setTimeout(resolve, 100)
-            );
-            return {
-              name: "charizard",
-            };
-          }),
-        ],
+        useQuery: () => ({
+          queries: {
+            q: useCreateQuery(async () => {
+              await new Promise((resolve) =>
+                setTimeout(resolve, 100)
+              );
+              return {
+                name: "charizard",
+              };
+            }),
+          },
+        }),
         onLoading: () => <div>Loading</div>,
       })
     );
@@ -65,11 +69,11 @@ describe("useCreateQuery", () => {
   });
   test("The query can throw error", async () => {
     const Component = withLoader(
-      (props, queries) => <div>{queries[0].data.name}</div>,
+      (props, loader) => <div>{loader.queries.q.data.name}</div>,
       createLoader({
-        queries: () =>
-          [
-            useCreateQuery(async () => {
+        useQuery: () => ({
+          queries: {
+            q: useCreateQuery(async () => {
               await new Promise((resolve, reject) =>
                 setTimeout(
                   () => reject(new Error("error-message")),
@@ -80,7 +84,8 @@ describe("useCreateQuery", () => {
                 name: "charizard",
               };
             }),
-          ] as const,
+          },
+        }),
         onLoading: () => <div>Loading</div>,
         onError: (props, error) => (
           <div>{(error as any)?.message}</div>
@@ -200,11 +205,17 @@ describe("withLoader", () => {
 
     const loader = createLoader({
       loaderComponent: CustomLoader,
-      queries: () => [useGetPokemonByNameQuery("charizard")],
+      useQuery: () => ({
+        queries: {
+          charizard: useGetPokemonByNameQuery("charizard"),
+        },
+      }),
     });
 
     const Component = withLoader(
-      (_, loaderData) => <div>{loaderData[0].data.name}</div>,
+      (_, loaderData) => (
+        <div>{loaderData.queries.charizard.data.name}</div>
+      ),
       loader
     );
     render(<Component />);
@@ -227,15 +238,17 @@ describe("withLoader", () => {
         );
       },
       createLoader({
-        queries: () =>
-          [useGetPokemonByNameQuery("charizard")] as const,
-        deferredQueries: () => {
-          const delayQ = useGetPokemonByNameQuery("delay");
-          return [delayQ] as const;
-        },
-        transform: (queries, deferred) => ({
-          charizard: queries[0].data,
-          delay: deferred[0].data,
+        useQuery: () => ({
+          queries: {
+            charizard: useGetPokemonByNameQuery("charizard"),
+          },
+          deferredQueries: {
+            delay: useGetPokemonByNameQuery("delay"),
+          },
+        }),
+        transform: (loader) => ({
+          charizard: loader.queries.charizard.data,
+          delay: loader.deferredQueries.delay.data,
         }),
         onLoading: () => <div>Loading</div>,
         onError: () => <div>Error</div>,
@@ -255,15 +268,19 @@ describe("withLoader", () => {
   test("Can defer all queries", async () => {
     const Component = withLoader(
       (props, data) => {
-        if (data[0].isLoading) {
+        if (data.isLoading) {
           return <>Loading</>;
         }
-        return <>{data[0].data?.name}</>;
+        return <>{data.data?.name}</>;
       },
       createLoader({
-        deferredQueries: () =>
-          [useGetPokemonByNameQuery("charizard")] as const,
-        transform: (_, deferred) => deferred,
+        useQuery: () => ({
+          deferredQueries: {
+            charizard: useGetPokemonByNameQuery("charizard"),
+          },
+        }),
+        transform: (loaderData) =>
+          loaderData.deferredQueries.charizard,
       })
     );
     render(<Component />);
@@ -294,8 +311,11 @@ describe("withLoader", () => {
           return <div>Success</div>;
         },
         createLoader({
-          queries: () =>
-            [useGetPokemonByNameQuery("error")] as const,
+          useQuery: () => ({
+            queries: {
+              error: useGetPokemonByNameQuery("error"),
+            },
+          }),
           onLoading: () => <div>Loading</div>,
           onError: () => <div>Error</div>,
         }).extend({
@@ -311,8 +331,11 @@ describe("withLoader", () => {
 
     test("Can extend onFetching", async () => {
       const loader = createLoader({
-        queries: (arg: string) =>
-          [useGetPokemonByNameQuery(arg)] as const,
+        useQuery: (arg) => ({
+          queries: {
+            pokemon: useGetPokemonByNameQuery(arg),
+          },
+        }),
         queriesArg: (props: {
           name: string;
           onChange: (name: string) => void;
@@ -326,7 +349,8 @@ describe("withLoader", () => {
       const Component = withLoader((props, loaderData) => {
         return (
           <div>
-            Success <span>{loaderData[0].data.name}</span>
+            Success{" "}
+            <span>{loaderData.queries.pokemon.data.name}</span>
             <button
               onClick={() => props.onChange(props.name + "a")}
             >
@@ -356,8 +380,11 @@ describe("withLoader", () => {
 
     test("Can extend whileFetching", async () => {
       const loader = createLoader({
-        queries: (arg: string) =>
-          [useGetPokemonByNameQuery(arg)] as const,
+        useQuery: (arg: string) => ({
+          queries: {
+            pokemon: useGetPokemonByNameQuery(arg),
+          },
+        }),
         queriesArg: (props: {
           name: string;
           onChange: (name: string) => void;
@@ -376,7 +403,8 @@ describe("withLoader", () => {
       const Component = withLoader((props, loaderData) => {
         return (
           <div>
-            Success <span>{loaderData[0].data.name}</span>
+            Success{" "}
+            <span>{loaderData.queries.pokemon.data.name}</span>
             <button
               onClick={() => props.onChange(props.name + "a")}
             >
@@ -406,26 +434,32 @@ describe("withLoader", () => {
 
     test("Can extend queries", async () => {
       const loader = createLoader({
-        queries: (arg: string) =>
-          [useGetPokemonByNameQuery(arg)] as const,
+        useQuery: (arg: string) => ({
+          queries: {
+            pokemon: useGetPokemonByNameQuery(arg),
+          },
+        }),
         queriesArg: (props: { name: string }) => props.name,
         onLoading: () => <div>Loading</div>,
       }).extend({
-        queries: (arg: string) =>
-          [
-            useGetPokemonByNameQuery(arg),
-            useGetPokemonsQuery(undefined),
-          ] as const,
+        useQuery: (arg: string) => ({
+          queries: {
+            pokemon: useGetPokemonByNameQuery(arg),
+            pokemons: useGetPokemonsQuery(undefined),
+          },
+        }),
       });
 
       const Component = withLoader((props, loaderData) => {
         return (
           <div>
             <ul>
-              <li>{loaderData[0].data.name}</li>
-              {loaderData[1].data.results.map((pokemon) => (
-                <li key={pokemon.name}>{pokemon.name}</li>
-              ))}
+              <li>{loaderData.queries.pokemon.data.name}</li>
+              {loaderData.queries.pokemons.data.results.map(
+                (pokemon) => (
+                  <li key={pokemon.name}>{pokemon.name}</li>
+                )
+              )}
             </ul>
           </div>
         );
@@ -453,20 +487,26 @@ describe("withLoader", () => {
           );
         },
         createLoader({
-          queries: () =>
-            [useGetPokemonsQuery(undefined)] as const,
-          deferredQueries: () =>
-            [useGetPokemonByNameQuery("charizard")] as const,
+          useQuery: () => ({
+            queries: {
+              pokemons: useGetPokemonsQuery(undefined),
+            },
+            deferredQueries: {
+              charizard: useGetPokemonByNameQuery("charizard"),
+            },
+          }),
         }).extend({
-          queries: () =>
-            [useGetPokemonByNameQuery("charizard")] as const,
-          deferredQueries: () => {
-            const delayQ = useGetPokemonByNameQuery("delay");
-            return [delayQ] as const;
-          },
-          transform: (queries, deferred) => ({
-            charizard: queries[0].data,
-            delay: deferred[0].data,
+          useQuery: () => ({
+            queries: {
+              charizard: useGetPokemonByNameQuery("charizard"),
+            },
+            deferredQueries: {
+              delay: useGetPokemonByNameQuery("delay"),
+            },
+          }),
+          transform: (loader) => ({
+            charizard: loader.queries.charizard.data,
+            delay: loader.deferredQueries.delay.data,
           }),
           onLoading: () => <div>Loading</div>,
           onError: () => <div>Error</div>,
