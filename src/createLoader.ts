@@ -1,31 +1,34 @@
 import { aggregateToQuery } from "./aggregateToQuery";
+import { useCreateQuery } from "./createQuery";
 import { RTKLoader } from "./RTKLoader";
 import * as Types from "./types";
 
 export const createUseLoader = <
-  QRU extends readonly Types.UseQueryResult<unknown>[],
-  QRUD extends readonly Types.UseQueryResult<unknown>[],
-  R extends unknown = Types.MakeDataRequired<QRU>,
+  Q extends Types._Q,
+  D extends Types._D,
+  E extends Types._E,
+  R extends unknown = Types.DataShape<
+    Types.MakeDataRequired<Q>,
+    D,
+    E
+  >,
   A = never
 >(
-  createUseLoaderArgs: Types.CreateUseLoaderArgs<QRU, QRUD, R, A>
+  createUseLoaderArgs: Types.CreateUseLoaderArgs<Q, D, E, R, A>
 ): Types.UseLoader<A, R> => {
   const useLoader = (...args: Types.OptionalGenericArg<A>) => {
-    const createdQueries = createUseLoaderArgs.queries(...args);
-    const deferredQueries =
-      createUseLoaderArgs.deferredQueries?.(...args) ?? [];
-    const aggregatedQuery = aggregateToQuery(createdQueries);
+    const loaderRes = createUseLoaderArgs.useQuery(...args);
+    const queriesList = loaderRes.queries
+      ? Object.keys(loaderRes.queries).map(
+          (key) => (loaderRes.queries as Q)[key]
+        )
+      : [];
+    const aggregatedQuery = aggregateToQuery(queriesList);
 
-    if (
-      aggregatedQuery.isSuccess ||
-      createdQueries.length === 0
-    ) {
+    if (aggregatedQuery.isSuccess || queriesList.length === 0) {
       const data = createUseLoaderArgs.transform
-        ? createUseLoaderArgs.transform(
-            createdQueries as unknown as Types.MakeDataRequired<QRU>,
-            deferredQueries as QRUD
-          )
-        : createdQueries;
+        ? createUseLoaderArgs.transform(loaderRes)
+        : loaderRes;
 
       return {
         ...aggregatedQuery,
@@ -43,21 +46,25 @@ export const createUseLoader = <
 
 export const createLoader = <
   P extends unknown,
-  QRU extends readonly Types.UseQueryResult<unknown>[] = [],
-  QRUD extends readonly Types.UseQueryResult<unknown>[] = [],
-  R extends unknown = Types.MakeDataRequired<QRU>,
-  A = never
+  Q extends Types._Q = Types._Q,
+  D extends Types._D = Types._D,
+  E extends Types._E = Types._E,
+  R extends unknown = Types.DataShape<
+    Types.MakeDataRequired<Q>,
+    D,
+    E
+  >,
+  A extends unknown = never
 >(
-  createLoaderArgs: Types.CreateLoaderArgs<P, QRU, QRUD, R, A>
-): Types.Loader<P, R, QRU, A> => {
+  createLoaderArgs: Types.CreateLoaderArgs<P, Q, D, E, R, A>
+): Types.Loader<P, R, Q, D, E, A> => {
   const useLoader = createUseLoader({
-    queries:
-      createLoaderArgs.queries ?? (() => [] as unknown as QRU),
+    useQuery:
+      createLoaderArgs.useQuery ?? (() => ({} as unknown as Q)),
     transform: createLoaderArgs.transform,
-    deferredQueries: createLoaderArgs.deferredQueries,
   });
 
-  const loader: Types.Loader<P, R, QRU, A> = {
+  const loader: Types.Loader<P, R, Q, D, E, A> = {
     useLoader,
     onLoading: createLoaderArgs.onLoading,
     onError: createLoaderArgs.onError,
@@ -67,31 +74,35 @@ export const createLoader = <
     LoaderComponent:
       createLoaderArgs.loaderComponent ?? RTKLoader,
     extend: function <
-      QRUb extends readonly Types.UseQueryResult<unknown>[],
-      QRUDb extends readonly Types.UseQueryResult<unknown>[],
+      Qb extends Types._Q,
+      Db extends Types._D = Types._D,
+      Eb extends Types._E = Types._E,
       Pb extends unknown = P,
-      Rb = QRUb extends unknown
+      Rb = Qb extends unknown
         ? R
-        : Types.MakeDataRequired<QRUb>,
+        : Types.DataShape<Types.MakeDataRequired<Qb>, Db, Eb>,
       Ab = A
     >({
-      queries,
-      deferredQueries,
+      useQuery,
       transform,
       ...loaderArgs
-    }: Partial<
-      Types.CreateLoaderArgs<Pb, QRUb, QRUDb, Rb, Ab>
-    >) {
+    }: Partial<Types.CreateLoaderArgs<Pb, Qb, Db, Eb, Rb, Ab>>) {
       const extendedLoader = {
-        ...(this as unknown as Types.Loader<Pb, Rb, QRUb, Ab>),
+        ...(this as unknown as Types.Loader<
+          Pb,
+          Rb,
+          Qb,
+          Db,
+          Eb,
+          Ab
+        >),
         ...loaderArgs,
-      } as Types.Loader<Pb, Rb, QRUb, Ab>;
+      } as Types.Loader<Pb, Rb, Qb, Db, Eb, Ab>;
 
-      if (queries) {
+      if (useQuery) {
         const newUseLoader = createUseLoader({
-          queries,
+          useQuery,
           transform,
-          deferredQueries,
         });
         extendedLoader.useLoader = newUseLoader;
       }
@@ -102,3 +113,19 @@ export const createLoader = <
 
   return loader;
 };
+
+const loader = createLoader({
+  queriesArg: (props: {}) => "test",
+  useQuery: (arg) => {
+    const q1 = useCreateQuery(async () => "foo" as const);
+    const q2 = useCreateQuery(async () => "bar" as const);
+    return {
+      queries: {
+        q1,
+      },
+      deferredQueries: {
+        q2,
+      },
+    };
+  },
+});

@@ -1,6 +1,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { ReactElement } from "react";
+import { useCreateQuery } from "./createQuery";
 
 /** Result of a RTK useQuery hook */
 export type UseQueryResult<T> = {
@@ -38,11 +39,26 @@ export type UseQueryResult<T> = {
   refetch: () => void;
 };
 
-export type MakeDataRequired<
-  T extends readonly UseQueryResult<unknown>[]
-> = {
+/** _X are types that are extended from in the generics */
+export type _Q = Record<string, UseQueryResult<unknown>>;
+export type _D = Record<string, UseQueryResult<unknown>>;
+export type _E = unknown;
+export type _P = Record<string, unknown>;
+export type _R = unknown;
+
+export type MakeDataRequired<T extends _Q> = {
   // @ts-ignore: TS2536: Type '"data"' cannot be used to index type 'T[K]'.
   [K in keyof T]: T[K] & { data: NonNullable<T[K]["data"]> };
+};
+
+export type DataShape<
+  Q extends _Q,
+  D extends _D,
+  E extends _E
+> = {
+  queries?: Q;
+  deferredQueries?: D;
+  payload?: E;
 };
 
 /** Use: `(...args: OptionalGenericArg<T>) => void;`
@@ -51,39 +67,34 @@ export type MakeDataRequired<
 export type OptionalGenericArg<T> = T extends never ? [] : [T];
 
 export type LoaderTransformFunction<
-  QRU extends readonly UseQueryResult<unknown>[],
-  QRUD extends readonly UseQueryResult<unknown>[],
+  Q extends _Q,
+  D extends _D,
+  E extends _E,
   R extends unknown
-> = (queries: MakeDataRequired<QRU>, deferredQueries: QRUD) => R;
+> = (data: DataShape<MakeDataRequired<Q>, D, E>) => R;
 
 export type CreateUseLoaderArgs<
-  QRU extends readonly UseQueryResult<unknown>[],
-  QRUD extends readonly UseQueryResult<unknown>[],
-  R extends unknown,
+  Q extends _Q,
+  D extends _D,
+  E extends _E,
+  R extends _R,
   A = never
 > = {
   /** Should return a list of RTK useQuery results.
    * Example:
    * ```typescript
-   * (args: Args) => [
-   *    useGetPokemonQuery(args.pokemonId),
-   *    useGetSomethingElse(args.someArg)
-   * ] as const
+   * (args: Args) => ({
+   *    queries: {
+   *      pokemon: useGetPokemonQuery(args.pokemonId),
+   *    }
+   * })
    * ```
    */
-  queries: (...args: OptionalGenericArg<A>) => QRU;
-  /** Should return a list of RTK useQuery results.
-   * Example:
-   * ```typescript
-   * (args: Args) => [
-   *    useGetPokemonQuery(args.pokemonId),
-   *    useGetSomethingElse(args.someArg)
-   * ] as const
-   * ```
-   */
-  deferredQueries?: (...args: OptionalGenericArg<A>) => QRUD;
+  useQuery: (
+    ...args: OptionalGenericArg<A>
+  ) => DataShape<Q, D, E>;
   /** Transforms the output of the queries */
-  transform?: LoaderTransformFunction<QRU, QRUD, R>;
+  transform?: (data: DataShape<Q, D, E>) => R;
 };
 
 export type UseLoader<A, R> = (
@@ -147,11 +158,12 @@ export type CustomLoaderProps<T = unknown> = {
 
 export type CreateLoaderArgs<
   P extends unknown,
-  QRU extends readonly UseQueryResult<unknown>[],
-  QRUD extends readonly UseQueryResult<unknown>[],
-  R extends unknown = MakeDataRequired<QRU>,
+  Q extends _Q,
+  D extends _D,
+  E extends _E,
+  R extends unknown = MakeDataRequired<Q>,
   A = never
-> = Partial<CreateUseLoaderArgs<QRU, QRUD, R, A>> & {
+> = Partial<CreateUseLoaderArgs<Q, D, E, R, A>> & {
   /** Generates an argument for the `queries` based on component props */
   queriesArg?: (props: P) => A;
   /** Determines what to render while loading (with no data to fallback on) */
@@ -176,7 +188,9 @@ export type CreateLoaderArgs<
 export type Loader<
   P extends unknown,
   R extends unknown,
-  QRU extends readonly UseQueryResult<unknown>[] = [],
+  Q extends _Q = _Q,
+  D extends _D = _D,
+  E extends _E = _E,
   A = never
 > = {
   /** A hook that runs all queries and returns aggregated result */
@@ -200,18 +214,26 @@ export type Loader<
   whileFetching?: WhileFetchingArgs<P, R>;
   /** Returns a new `Loader` extended from this `Loader`, with given overrides. */
   extend: <
-    QRUb extends readonly UseQueryResult<unknown>[] = QRU,
-    QRUDb extends readonly UseQueryResult<unknown>[] = [],
+    Qb extends _Q = Q,
+    Db extends _D = _Q,
+    Eb extends _E = _E,
     Pb extends unknown = P,
-    Rb extends unknown = QRUb extends QRU
+    Rb extends unknown = Qb extends Q
       ? R extends never
-        ? QRU
+        ? Q
         : R
-      : MakeDataRequired<QRUb>,
+      : DataShape<MakeDataRequired<Qb>, Db, Eb>,
     Ab = A
   >(
-    newLoader: Partial<CreateLoaderArgs<Pb, QRUb, QRUDb, Rb, Ab>>
-  ) => Loader<Pb, Rb, QRUb extends never ? QRU : QRUb, Ab>;
+    newLoader: Partial<CreateLoaderArgs<Pb, Qb, Db, Rb, Ab>>
+  ) => Loader<
+    Pb,
+    Rb,
+    Qb extends never ? Q : Qb,
+    Qb extends never ? D : Db,
+    Qb extends never ? E : Eb,
+    Ab
+  >;
   /** The component to use to switch between rendering the different query states. */
   LoaderComponent: Component<CustomLoaderProps>;
 };
@@ -246,4 +268,30 @@ export type WithLoaderArgs<
   P extends unknown,
   R extends unknown,
   A = never
-> = Loader<P, R, [], A>;
+> = Loader<P, R, _Q, _Q, unknown, A>;
+
+const _createLoaderTypeTest = <
+  P extends unknown,
+  Q extends _Q,
+  D extends _D,
+  E extends _E,
+  R extends unknown = MakeDataRequired<Q>,
+  A = never
+>(
+  args: CreateLoaderArgs<P, Q, D, E, R>
+): Loader<P, R, Q, D, A> => {
+  return {} as Loader<P, R, Q, D, A>;
+};
+
+const asd = _createLoaderTypeTest({
+  useQuery: () => {
+    return {
+      queries: {
+        test: useCreateQuery(async () => "foo" as const),
+      },
+      deferredQueries: {
+        best: useCreateQuery(async () => "bar" as const),
+      },
+    };
+  },
+});
