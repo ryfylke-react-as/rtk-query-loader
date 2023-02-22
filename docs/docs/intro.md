@@ -29,3 +29,7 @@ npm i @ryfylke-react/rtk-query-loader
 :::tip Getting Started
 Get started with our recommended best practises by following the [**Quick guide**](/Quick%20guide).
 :::
+
+:::danger These docs are for version 1.0.0 and up
+If you are using version `0.3.51` or earlier, please refer to the [**migration guide**](./Migrations/v0.x).
+:::

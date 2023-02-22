@@ -298,6 +298,23 @@ describe("withLoader", () => {
     expect(screen.getByText("Success")).toBeVisible();
   });
 
+  test("Can send static payload to loader", async () => {
+    const Component = withLoader(
+      (_, loader) => {
+        return <div>{loader.payload.foo}</div>;
+      },
+      createLoader({
+        useQueries: () => ({
+          payload: {
+            foo: "bar" as const,
+          },
+        }),
+      })
+    );
+    render(<Component />);
+    expect(screen.getByText("bar")).toBeVisible();
+  });
+
   describe(".extend()", () => {
     test("Can extend onLoading", async () => {
       render(<ExtendedLoaderComponent />);
