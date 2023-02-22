@@ -6,24 +6,29 @@ sidebar_position: 3
 
 You can now start to add queries to your extended loaders.
 
-The `queries` argument of [createLoader](/Exports/create-loader) is a _hook_, which means that [the rules of hooks](https://reactjs.org/docs/hooks-rules.html) apply. This gives you the super-power of utilizing other hooks inside of your loader.
+The `useQueries` argument of [createLoader](/Exports/create-loader) is a _hook_, which means that [the rules of hooks](https://reactjs.org/docs/hooks-rules.html) apply. This gives you the super-power of utilizing other hooks inside of your loader.
 
-```tsx title="/src/loaders/userRouteLoader.tsx" {6-10}
+```tsx title="/src/loaders/userRouteLoader.tsx" {6-15}
 import { baseLoader } from "./baseLoader";
 // ...
 
 export const userRouteLoader = baseLoader.extend({
-  queries: () => {
+  useQueries: () => {
     const { userId } = useParams();
     const user = useGetUserQuery(userId);
     const posts = useGetPostsByUser(userId);
 
-    return [user, posts] as const;
+    return {
+      queries: {
+        user,
+        posts,
+      },
+    };
   },
 });
 ```
 
-The hook should return a `readonly array` of the `useQuery` results. This means that in typescript, you need to specify `as const` after the array.
+You can add as many queries as you'd like to `Response.queries`, and they will all aggregate to a common loading state.
 
 ## Accepting arguments
 
@@ -31,11 +36,16 @@ If you want the loader to take an argument, you can do that.
 
 ```tsx {2}
 export const userRouteLoader = baseLoader.extend({
-  queries: (userId: string) => {
+  useQueries: (userId: string) => {
     const user = useGetUserQuery(userId);
     const posts = useGetPostsByUser(userId);
 
-    return [user, posts] as const;
+    return {
+      queries: {
+        user,
+        posts,
+      },
+    };
   },
 });
 ```
@@ -58,11 +68,16 @@ type UserRouteLoaderProps = Record<string, any> & {
 export const userRouteLoader = baseLoader.extend({
   queriesArg: (props: UserRouteLoaderProps) => props.userId,
   // type is now inferred from queriesArg return
-  queries: (userId) => {
+  useQueries: (userId) => {
     const user = useGetUserQuery(userId);
     const posts = useGetPostsByUser(userId);
 
-    return [user, posts] as const;
+    return {
+      queries: {
+        user,
+        posts,
+      },
+    };
   },
 });
 ```
@@ -70,13 +85,13 @@ export const userRouteLoader = baseLoader.extend({
 A component consuming this loader would pass the argument automatically through this pipeline:
 
 ```typescript
-// props → queriesArg → queries
-loaderArgs.queries(queriesArg(consumerProps));
+// props → queriesArg → useQueries
+loaderArgs.useQueries(queriesArg(consumerProps));
 ```
 
 ```typescript
 <UserRoute userId="1234" />
 // → queriesArg({ userId: "1234" })
 // → "1234"
-// → loader.queries("1234")
+// → loader.useQueries("1234")
 ```

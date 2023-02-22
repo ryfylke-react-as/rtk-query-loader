@@ -8,17 +8,21 @@ You can transform the queries to any format you'd like.
 
 ```ts
 const notTransformed = createLoader({
-  queries: () => [useGetPokemonsQuery()],
+  useQueries: () => ({
+    queries: { pokemons: useGetPokemonsQuery() },
+  }),
 });
 
 type NotTransformedData = InferLoaderData<typeof notTransformed>;
-// readonly [UseQueryResults<Pokemon[]>]
+// { queries: { pokemons: UseQueryResult<Pokemon[]> } }
 
 const transformed = createLoader({
-  queries: () => [useGetPokemonsQuery()],
-  transform: (queries) => ({
-    results: queries[0].data,
-    query: queries[0],
+  useQueries: () => ({
+    queries: { pokemons: useGetPokemonsQuery() },
+  }),
+  transform: (loader) => ({
+    results: loader.queries.pokemons.data,
+    query: loader.queries.pokemons,
   }),
 });
 

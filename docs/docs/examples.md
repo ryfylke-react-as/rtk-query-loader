@@ -4,7 +4,7 @@ sidebar_position: 3
 
 # Simple example
 
-```tsx {10-19,22-31}
+```tsx {10-23,26-35}
 import {
   withLoader,
   createLoader,
@@ -15,20 +15,24 @@ import { ErrorView } from "../components/ErrorView";
 
 // Create a loader
 const userRouteLoader = createLoader({
-  queries: () => {
+  useQueries: () => {
     const { userId } = useParams();
     const userQuery = useGetUserQuery(userId);
 
-    return [userQuery] as const; // important
+    return {
+      queries: {
+        userQuery,
+      },
+    };
   },
   onLoading: (props) => <div>Loading...</div>,
   onError: (props, error) => <ErrorView error={error} />,
 });
 
 // Consume the loader
-const UserRoute = withLoader((props: {}, queries) => {
+const UserRoute = withLoader((props, loader) => {
   // Queries have successfully loaded
-  const user = queries[0].data;
+  const user = loader.queries.userQuery.data;
 
   return (
     <div>

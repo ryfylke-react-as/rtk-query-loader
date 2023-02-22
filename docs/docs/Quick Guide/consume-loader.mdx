@@ -14,7 +14,7 @@ A convenient wrapper that ensures that the component is only rendered when it ha
 
 This is definitely the preferred and optimal way to consume the loaders.
 
-```tsx {8-22}
+```tsx {8-26}
 import { withLoader } from "@ryfylke-react/rtk-query-loader";
 import { userRouteLoader } from "../loaders/baseLoader";
 
@@ -22,17 +22,21 @@ type Props = {
   /* ... */
 };
 
-export const UserRoute = withLoader((props: Props, queries) => {
+export const UserRoute = withLoader((props: Props, loader) => {
   // `queries` is typed correctly, and ensured to have loaded.
-  const user = queries[0].data;
-  const posts = queries[1].data;
+  const {
+    user,
+    posts
+  } = loader.queries;
+
   return (
     <article>
       <header>
-        <h2>{user.name}</h2>
+        <h2>{user.data.name}</h2>
+        {user.isFetching || posts.isFetching ? (<InlineLoading />) : null}
       </header>
       <main>
-        {posts.map((post) => (...))}
+        {posts.data.map((post) => (...))}
       </main>
     </article>
   );

@@ -14,15 +14,24 @@ import {
   useCreateQuery,
 } from "@ryfylke-react/rtk-query-loader";
 
+const getUser = async (userId: string) => {
+  const res = await fetch(`users/${userId}`);
+  const json = await res.json();
+  return json as SomeDataType;
+};
+
 const loader = createLoader({
-  queries: (userId: string) => {
-    const query = useCreateQuery(async () => {
-      const res = await fetch(`users/${userId}`);
-      const json = await res.json();
-      return json as SomeDataType;
-      // dependency array
-    }, [userId]);
-    return [query] as const;
+  useQueries: (userId: string) => {
+    const query = useCreateQuery(
+      async () => await getUser(userId),
+      [userId]
+    );
+
+    return {
+      queries: {
+        query,
+      },
+    };
   },
 });
 ```
