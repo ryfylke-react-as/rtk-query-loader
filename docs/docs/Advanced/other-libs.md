@@ -4,8 +4,6 @@ You can technically use RTK Query Loader with most other similar query-fetching 
 
 ## Tanstack Query
 
-Below is an example of a resolver for `@tanstack/react-query`:
-
 ```typescript
 import {
   useQuery,
@@ -63,6 +61,6 @@ const loader = createLoader({
 
 The output format will obviously be a bit different, but in this example you have access to the original query at the `.original_query` property.
 
-## More libraries
+## Other libraries
 
-If you are interested in creating resolvers for other libraries, you can [edit this page](https://github.com/ryfylke-react-as/rtk-query-loader/tree/main/docs/docs/Advanced/other-libs.md) and then [submit a pull request](https://github.com/ryfylke-react-as/rtk-query-loader/compare) on GitHub to share your resolver here.
+If you are interested in creating resolvers for other libraries, you can [edit this page](https://github.com/ryfylke-react-as/rtk-query-loader/tree/main/docs/docs/Advanced/other-libs.md) and then [submit a pull request](https://github.com/ryfylke-react-as/rtk-query-loader/compare) on GitHub to share your resolver here, as an npm package, or with the code embedded directly in the docs.
