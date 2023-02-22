@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { createLoader } from "../../src/createLoader";
@@ -46,7 +45,7 @@ describe("useCreateQuery", () => {
         <div>{queries.queries.q.data.name}</div>
       ),
       createLoader({
-        useQuery: () => ({
+        useQueries: () => ({
           queries: {
             q: useCreateQuery(async () => {
               await new Promise((resolve) =>
@@ -71,7 +70,7 @@ describe("useCreateQuery", () => {
     const Component = withLoader(
       (props, loader) => <div>{loader.queries.q.data.name}</div>,
       createLoader({
-        useQuery: () => ({
+        useQueries: () => ({
           queries: {
             q: useCreateQuery(async () => {
               await new Promise((resolve, reject) =>
@@ -205,7 +204,7 @@ describe("withLoader", () => {
 
     const loader = createLoader({
       loaderComponent: CustomLoader,
-      useQuery: () => ({
+      useQueries: () => ({
         queries: {
           charizard: useGetPokemonByNameQuery("charizard"),
         },
@@ -238,7 +237,7 @@ describe("withLoader", () => {
         );
       },
       createLoader({
-        useQuery: () => ({
+        useQueries: () => ({
           queries: {
             charizard: useGetPokemonByNameQuery("charizard"),
           },
@@ -274,7 +273,7 @@ describe("withLoader", () => {
         return <>{data.data?.name}</>;
       },
       createLoader({
-        useQuery: () => ({
+        useQueries: () => ({
           deferredQueries: {
             charizard: useGetPokemonByNameQuery("charizard"),
           },
@@ -310,12 +309,16 @@ describe("withLoader", () => {
         (props, loaderData) => {
           return <div>Success</div>;
         },
+
         createLoader({
-          useQuery: () => ({
-            queries: {
-              error: useGetPokemonByNameQuery("error"),
-            },
-          }),
+          useQueries: () => {
+            const error = useGetPokemonByNameQuery("error");
+            return {
+              queries: {
+                error,
+              },
+            };
+          },
           onLoading: () => <div>Loading</div>,
           onError: () => <div>Error</div>,
         }).extend({
@@ -331,7 +334,7 @@ describe("withLoader", () => {
 
     test("Can extend onFetching", async () => {
       const loader = createLoader({
-        useQuery: (arg) => ({
+        useQueries: (arg) => ({
           queries: {
             pokemon: useGetPokemonByNameQuery(arg),
           },
@@ -380,7 +383,7 @@ describe("withLoader", () => {
 
     test("Can extend whileFetching", async () => {
       const loader = createLoader({
-        useQuery: (arg: string) => ({
+        useQueries: (arg: string) => ({
           queries: {
             pokemon: useGetPokemonByNameQuery(arg),
           },
@@ -434,7 +437,7 @@ describe("withLoader", () => {
 
     test("Can extend queries", async () => {
       const loader = createLoader({
-        useQuery: (arg: string) => ({
+        useQueries: (arg: string) => ({
           queries: {
             pokemon: useGetPokemonByNameQuery(arg),
           },
@@ -442,7 +445,7 @@ describe("withLoader", () => {
         queriesArg: (props: { name: string }) => props.name,
         onLoading: () => <div>Loading</div>,
       }).extend({
-        useQuery: (arg: string) => ({
+        useQueries: (arg: string) => ({
           queries: {
             pokemon: useGetPokemonByNameQuery(arg),
             pokemons: useGetPokemonsQuery(undefined),
@@ -487,7 +490,7 @@ describe("withLoader", () => {
           );
         },
         createLoader({
-          useQuery: () => ({
+          useQueries: () => ({
             queries: {
               pokemons: useGetPokemonsQuery(undefined),
             },
@@ -496,7 +499,7 @@ describe("withLoader", () => {
             },
           }),
         }).extend({
-          useQuery: () => ({
+          useQueries: () => ({
             queries: {
               charizard: useGetPokemonByNameQuery("charizard"),
             },

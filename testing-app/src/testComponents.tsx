@@ -28,7 +28,7 @@ const RenderPokemonData = (props: {
 );
 
 const simpleLoader = createLoader({
-  useQuery: () => ({
+  useQueries: () => ({
     queries: {
       charizard: useGetPokemonByNameQuery("charizard"),
       pokemons: useGetPokemonsQuery(undefined),
@@ -63,7 +63,7 @@ export const ExtendedLoaderComponent = withLoader(
 
 const pokemonByNameLoader = createLoader({
   queriesArg: (props: { name: string }) => props.name,
-  useQuery: (name) => {
+  useQueries: (name) => {
     const pokemon = useGetPokemonByNameQuery(name);
     return {
       queries: {
@@ -87,7 +87,7 @@ export const LoadPokemon = withLoader(
 export const FailTester = withLoader(
   () => <div>Success</div>,
   createLoader({
-    useQuery: () => ({
+    useQueries: () => ({
       queries: {
         error: useGetPokemonByNameQuery("error"),
       },
@@ -98,7 +98,7 @@ export const FailTester = withLoader(
 );
 
 const fetchTestBaseLoader = createLoader({
-  useQuery: (name: string) => ({
+  useQueries: (name: string) => ({
     queries: {
       pokemon: useGetPokemonByNameQuery(name),
     },
@@ -188,7 +188,7 @@ export const TestAggregateComponent = () => {
 };
 
 const transformLoader = createLoader({
-  useQuery: () => ({
+  useQueries: () => ({
     queries: {
       charizard: useGetPokemonByNameQuery("charizard"),
     },

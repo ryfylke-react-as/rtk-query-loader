@@ -68,7 +68,7 @@ export type ResolveDataShape<
 > = Q extends never
   ? D extends never
     ? E extends never
-      ? {}
+      ? never
       : { payload: E }
     : E extends never
     ? { deferredQueries: D }
@@ -110,7 +110,7 @@ export type CreateUseLoaderArgs<
    * })
    * ```
    */
-  useQuery: (
+  useQueries: (
     ...args: OptionalGenericArg<A>
   ) => DataShape<Q, D, E>;
   /** Transforms the output of the queries */
@@ -142,7 +142,7 @@ export type InferLoaderData<T> = T extends Loader<
   ? Y
   : T extends Loader<any, infer Z, never, any, any, any>
   ? Z
-  : T extends Loader<any, infer W, any, never, any, any>
+  : T extends Loader<any, infer W, any, any, any, never>
   ? W
   : "could not parse";
 
@@ -255,7 +255,11 @@ export type Loader<
     Db extends _D = D,
     Eb extends _E = E,
     Pb extends unknown = P,
-    Rb extends unknown = Qb extends Q
+    Rb extends unknown = ResolveDataShape<
+      Qb,
+      Db,
+      Eb
+    > extends never
       ? R extends never
         ? Q
         : R
@@ -266,9 +270,27 @@ export type Loader<
   ) => Loader<
     Pb,
     Rb,
-    Qb extends never ? Q : Qb,
-    Qb extends never ? D : Db,
-    Qb extends never ? E : Eb,
+    Qb extends Q
+      ? Db extends D
+        ? Eb extends E
+          ? Q
+          : Qb
+        : Qb
+      : Qb,
+    Qb extends Q
+      ? Db extends D
+        ? Eb extends E
+          ? D
+          : Db
+        : Db
+      : Db,
+    Qb extends Q
+      ? Db extends D
+        ? Eb extends E
+          ? E
+          : Eb
+        : Eb
+      : Eb,
     Ab
   >;
   /** The component to use to switch between rendering the different query states. */
@@ -321,7 +343,7 @@ const _createLoaderTypeTest = <
 };
 
 const asd = _createLoaderTypeTest({
-  useQuery: () => {
+  useQueries: () => {
     return {
       queries: {
         test: useCreateQuery(async () => "foo" as const),

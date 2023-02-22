@@ -16,7 +16,7 @@ export const createUseLoader = <
   createUseLoaderArgs: Types.CreateUseLoaderArgs<Q, D, E, R, A>
 ): Types.UseLoader<A, R> => {
   const useLoader = (...args: Types.OptionalGenericArg<A>) => {
-    const loaderRes = createUseLoaderArgs.useQuery(...args);
+    const loaderRes = createUseLoaderArgs.useQueries(...args);
     const queriesList = loaderRes.queries
       ? Object.keys(loaderRes.queries).map(
           (key) => (loaderRes.queries as Q)[key]
@@ -64,8 +64,9 @@ export const createLoader = <
   createLoaderArgs: Types.CreateLoaderArgs<P, Q, D, E, R, A>
 ): Types.Loader<P, R, Q, D, E, A> => {
   const useLoader = createUseLoader({
-    useQuery:
-      createLoaderArgs.useQuery ?? (() => ({} as unknown as Q)),
+    useQueries:
+      createLoaderArgs.useQueries ??
+      (() => ({} as unknown as Q)),
     transform: createLoaderArgs.transform,
   });
 
@@ -92,7 +93,7 @@ export const createLoader = <
           >,
       Ab extends unknown = A
     >({
-      useQuery,
+      useQueries,
       transform,
       ...loaderArgs
     }: Partial<Types.CreateLoaderArgs<Pb, Qb, Db, Eb, Rb, Ab>>) {
@@ -108,9 +109,9 @@ export const createLoader = <
         ...loaderArgs,
       } as Types.Loader<Pb, Rb, Qb, Db, Eb, Ab>;
 
-      if (useQuery) {
+      if (useQueries) {
         const newUseLoader = createUseLoader({
-          useQuery,
+          useQueries,
           transform,
         });
         extendedLoader.useLoader = newUseLoader;
