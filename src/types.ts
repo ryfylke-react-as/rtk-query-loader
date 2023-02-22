@@ -1,7 +1,6 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { ReactElement } from "react";
-import { useCreateQuery } from "./createQuery";
 
 /** Result of a RTK useQuery hook */
 export type UseQueryResult<T> = {
@@ -328,29 +327,3 @@ export type WithLoaderArgs<
   R extends unknown,
   A = never
 > = Loader<P, R, _Q, _Q, unknown, A>;
-
-const _createLoaderTypeTest = <
-  P extends unknown,
-  Q extends _Q,
-  D extends _D,
-  E extends _E,
-  R extends unknown = MakeDataRequired<Q>,
-  A = never
->(
-  args: CreateLoaderArgs<P, Q, D, E, R>
-): Loader<P, R, Q, D, A> => {
-  return {} as Loader<P, R, Q, D, A>;
-};
-
-const asd = _createLoaderTypeTest({
-  useQueries: () => {
-    return {
-      queries: {
-        test: useCreateQuery(async () => "foo" as const),
-      },
-      deferredQueries: {
-        best: useCreateQuery(async () => "bar" as const),
-      },
-    };
-  },
-});
