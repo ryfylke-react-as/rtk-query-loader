@@ -9,4 +9,4 @@ sidebar_position: 4
 1. [Create a base loader](./base-loader.md)
 2. [Extend the base loader](./extend-loader.md)
 3. [Add queries](./add-queries.md)
-4. [Consume the loader](./consume-loader.md)
+4. [Consume the loader](./consume-loader.mdx)
