@@ -18,7 +18,7 @@
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
+[data-theme="dark"] {
   --ifm-color-primary: #25c2a0;
   --ifm-color-primary-dark: #21af90;
   --ifm-color-primary-darker: #1fa588;
@@ -27,4 +27,48 @@
   --ifm-color-primary-lighter: #32d8b4;
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+.icon-npm {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0px;
+}
+.icon-npm svg {
+  display: none;
+}
+.icon-npm::after {
+  background-image: url("https://img.shields.io/npm/v/@ryfylke-react/rtk-query-loader?color=gray&style=flat-square");
+  width: 88px;
+  height: 20px;
+  content: "";
+  display: flex;
+  border: 1px solid transparent;
+}
+.icon-npm:hover::after,
+.icon-npm:focus::after {
+  border: 1px solid currentColor;
+}
+
+.icon-github {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0px;
+}
+.icon-github svg {
+  display: none;
+}
+.icon-github::after {
+  background-image: url("https://img.shields.io/github/stars/ryfylke-react-as/rtk-query-loader?style=social");
+  width: 82px;
+  height: 20px;
+  content: "";
+  transition: transform 0.1s ease-in-out;
+  display: flex;
+}
+.icon-github:hover::after,
+.icon-github:focus::after {
+  transform: scale(1.05);
 }

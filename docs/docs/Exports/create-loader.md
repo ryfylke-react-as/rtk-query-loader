@@ -44,3 +44,7 @@ A `Loader` takes ownership over...
 - Data-loading
 - Data-transformation
 - Fetch-state rendering
+
+:::caution Using version `0.3.51` or earlier?
+Please refer to the [**migration guide**](../Migrations/v0.x).
+:::

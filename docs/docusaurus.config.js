@@ -66,14 +66,21 @@ const config = {
         },
         items: [
           {
-            href: "https://github.com/ryfylke-react-as/rtk-query-loader",
-            label: "GitHub",
+            href: "https://codesandbox.io/s/rtk-query-loader-1-0-0-demo-forked-du3936?file=/src/loaders/pokemonLoader.tsx",
+            label: "Demo",
             position: "right",
           },
           {
             href: "https://www.npmjs.com/package/@ryfylke-react/rtk-query-loader",
             label: "NPM",
             position: "right",
+            className: "icon-npm",
+          },
+          {
+            href: "https://github.com/ryfylke-react-as/rtk-query-loader",
+            label: "GitHub",
+            position: "right",
+            className: "icon-github",
           },
         ],
       },
