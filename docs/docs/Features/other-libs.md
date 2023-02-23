@@ -1,6 +1,14 @@
+---
+sidebar_position: 4
+---
+
 # Use with other libraries
 
-You can technically use RTK Query Loader with most other similar query-fetching libraries. This is possible through the use of resolvers.
+You can use RTK Query Loader with most other similar query-fetching libraries. This is possible through the use of _resolvers_.
+
+:::note
+Although `rtk-query-loader` was build with `@reduxjs/toolkit` in mind, the underlying principles can be applied to any similar data loading solution. [Read more about how RTK Query Loader works under the hood](../Advanced/under-the-hood.md).
+:::
 
 ## Tanstack Query
 
