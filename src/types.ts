@@ -77,7 +77,9 @@ export type ResolveDataShape<
     ? { queries: Q }
     : { queries: Q; payload: E }
   : E extends never
-  ? { queries: Q; deferredQueries: D }
+  ? D extends never
+    ? { queries: Q }
+    : { queries: Q; deferredQueries: D }
   : { queries: Q; deferredQueries: D; payload: E };
 
 /** Use: `(...args: OptionalGenericArg<T>) => void;`
@@ -118,10 +120,10 @@ export type CreateUseLoaderArgs<
   ) => R;
 };
 
-export type UseLoader<A, R> = (
-  ...args: OptionalGenericArg<A>
-) => UseQueryResult<R>;
-
+export type UseLoader<A, R, Q extends _Q, D extends _D, E> = {
+  (...args: OptionalGenericArg<A>): UseQueryResult<R>;
+  original_args: CreateUseLoaderArgs<Q, D, E, R, A>;
+};
 export type ComponentWithLoaderData<
   P extends Record<string, any>,
   R extends unknown
@@ -212,9 +214,9 @@ export type CreateLoaderArgs<
 
 export type CreateLoader<
   P extends unknown,
-  Q extends _Q,
-  D extends _D,
-  E extends _E,
+  Q extends _Q = never,
+  D extends _D = never,
+  E extends _E = never,
   R extends unknown = MakeDataRequired<Q>,
   A = never
 > = (
@@ -230,7 +232,7 @@ export type Loader<
   A = never
 > = {
   /** A hook that runs all queries and returns aggregated result */
-  useLoader: UseLoader<A, R>;
+  useLoader: UseLoader<A, R, Q, D, E>;
   /** Generates an argument for the `queries` based on component props */
   queriesArg?: (props: P) => A;
   /** Determines what to render while loading (with no data to fallback on) */
@@ -266,32 +268,7 @@ export type Loader<
     Ab = A
   >(
     newLoader: Partial<CreateLoaderArgs<Pb, Qb, Db, Eb, Rb, Ab>>
-  ) => Loader<
-    Pb,
-    Rb,
-    Qb extends Q
-      ? Db extends D
-        ? Eb extends E
-          ? Q
-          : Qb
-        : Qb
-      : Qb,
-    Qb extends Q
-      ? Db extends D
-        ? Eb extends E
-          ? D
-          : Db
-        : Db
-      : Db,
-    Qb extends Q
-      ? Db extends D
-        ? Eb extends E
-          ? E
-          : Eb
-        : Eb
-      : Eb,
-    Ab
-  >;
+  ) => Loader<Pb, Rb, Qb, Db, Eb, Ab>;
   /** The component to use to switch between rendering the different query states. */
   LoaderComponent: Component<CustomLoaderProps>;
 };

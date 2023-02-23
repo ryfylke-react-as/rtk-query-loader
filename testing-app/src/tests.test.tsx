@@ -542,5 +542,76 @@ describe("withLoader", () => {
         expect(screen.getByText("loaded-deferred")).toBeVisible()
       );
     });
+
+    test("Can extend many times", async () => {
+      const Component = withLoader(
+        (props, loader) => {
+          return (
+            <div>
+              <div>{loader.queries.pokemon.data.name}</div>
+              <button
+                onClick={() => loader.payload.setName("error")}
+              >
+                error
+              </button>
+            </div>
+          );
+        },
+        createLoader({
+          onLoading: () => <div>Loading</div>,
+        })
+          .extend({
+            useQueries: () => {
+              const [name, setName] = useState("charizard");
+              return {
+                queries: {
+                  pokemon: useGetPokemonByNameQuery(name),
+                },
+                payload: {
+                  name,
+                  setName,
+                },
+              };
+            },
+          })
+          .extend({
+            onLoading: () => <div>Extended Loading</div>,
+          })
+          .extend({
+            onError: () => <div>Extended Error</div>,
+          })
+      );
+
+      render(<Component />);
+      expect(screen.getByText("Extended Loading")).toBeVisible();
+      await waitFor(() =>
+        expect(screen.getByText("charizard")).toBeVisible()
+      );
+      await userEvent.click(screen.getByRole("button"));
+      await waitFor(() =>
+        expect(screen.getByText("Extended Error")).toBeVisible()
+      );
+    });
+
+    test("Can extend with only transform", async () => {
+      const Component = withLoader(
+        (props, pokemon) => {
+          return <div>{pokemon.name}</div>;
+        },
+        createLoader({
+          useQueries: () => ({
+            queries: {
+              pokemon: useGetPokemonByNameQuery("charizard"),
+            },
+          }),
+        }).extend({
+          transform: (data) => data.queries.pokemon.data,
+        })
+      );
+      render(<Component />);
+      await waitFor(() =>
+        expect(screen.getByText("charizard")).toBeVisible()
+      );
+    });
   });
 });

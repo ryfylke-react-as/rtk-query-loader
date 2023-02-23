@@ -14,7 +14,7 @@ export const createUseLoader = <
   A = never
 >(
   createUseLoaderArgs: Types.CreateUseLoaderArgs<Q, D, E, R, A>
-): Types.UseLoader<A, R> => {
+): Types.UseLoader<A, R, Q, D, E> => {
   const useLoader = (...args: Types.OptionalGenericArg<A>) => {
     const loaderRes = createUseLoaderArgs.useQueries(...args);
     const queriesList = loaderRes.queries
@@ -46,6 +46,8 @@ export const createUseLoader = <
 
     return aggregatedQuery as Types.UseQueryResult<R>;
   };
+
+  useLoader.original_args = createUseLoaderArgs;
   return useLoader;
 };
 
@@ -81,8 +83,8 @@ export const createLoader = <
       createLoaderArgs.loaderComponent ?? RTKLoader,
     extend: function <
       Qb extends Types._Q,
-      Db extends Types._D = Types._D,
-      Eb extends Types._E = Types._E,
+      Db extends Types._D,
+      Eb extends Types._E,
       Pb extends unknown = P,
       Rb = Qb extends unknown
         ? R
@@ -112,6 +114,13 @@ export const createLoader = <
       if (useQueries) {
         const newUseLoader = createUseLoader({
           useQueries,
+          transform,
+        });
+        extendedLoader.useLoader = newUseLoader;
+      } else if (transform) {
+        const newUseLoader = createUseLoader({
+          useQueries:
+            extendedLoader.useLoader.original_args.useQueries,
           transform,
         });
         extendedLoader.useLoader = newUseLoader;
