@@ -21,5 +21,5 @@ If you are using version `0.3.51` or earlier, please refer to the [**migration g
 :::
 
 :::tip Getting Started
-Get started with our recommended best practises by following the [**Quick guide**](/Quick%20guide).
+Get started with our recommended best practises by following the [**Quick guide**](/Quick%20guide), or looking at a [simple example](./examples.md).
 :::

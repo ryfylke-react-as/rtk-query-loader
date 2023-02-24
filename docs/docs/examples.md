@@ -4,6 +4,8 @@ sidebar_position: 3
 
 # Simple example
 
+_TL;DR_
+
 ```tsx {10-23,26-35}
 import {
   withLoader,
@@ -41,3 +43,5 @@ const UserRoute = withLoader((props, loader) => {
   );
 }, userRouteLoader);
 ```
+
+Follow our quick guide for some recommendations and best practises.
