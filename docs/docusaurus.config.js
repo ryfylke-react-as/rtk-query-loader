@@ -9,7 +9,8 @@ const config = {
   title: "rtk-query-loader",
   tagline: "Component loaders for RTK Query",
   favicon: "img/logo.png",
-
+  // Algolia search config
+  // themes: ["@docusaurus/theme-search-algolia"],
   // Set the production url of your site here
   url: "https://your-docusaurus-test-site.com",
   // Set the /<baseUrl>/ pathname under which your site is served
@@ -56,6 +57,7 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      // algolia: {},
       // Replace with your project's social card
       image: "img/docusaurus-social-card.jpg",
       navbar: {
@@ -66,14 +68,21 @@ const config = {
         },
         items: [
           {
-            href: "https://github.com/ryfylke-react-as/rtk-query-loader",
-            label: "GitHub",
+            href: "https://codesandbox.io/s/rtk-query-loader-1-0-0-demo-forked-du3936?file=/src/loaders/pokemonLoader.tsx",
+            label: "Demo",
             position: "right",
           },
           {
             href: "https://www.npmjs.com/package/@ryfylke-react/rtk-query-loader",
             label: "NPM",
             position: "right",
+            className: "icon-npm",
+          },
+          {
+            href: "https://github.com/ryfylke-react-as/rtk-query-loader",
+            label: "GitHub",
+            position: "right",
+            className: "icon-github",
           },
         ],
       },

@@ -28,17 +28,23 @@ import {
 } from "@ryfylke-react/rtk-query-loader";
 
 const loader = createLoader({
-  queries: () => {
+  useQueries: () => {
     const pokemon = useGetPokemon();
     const currentUser = useGetCurrentUser();
-    return [pokemon, currentUser] as const;
+
+    return {
+      queries: {
+        pokemon,
+        currentUser,
+      },
+    };
   },
   onLoading: () => <div>Loading pokemon...</div>,
 });
 
-const Pokemon = withLoader((props, queries) => {
-  const pokemon = queries[0].data;
-  const currentUser = queries[1].data;
+const Pokemon = withLoader((props, loader) => {
+  const pokemon = loader.queries.pokemon.data;
+  const currentUser = loader.queries.currentUser.data;
 
   return (
     <div>
@@ -89,4 +95,5 @@ What if we could instead "join" these queries into one, and then just return ear
 - [x] Easy to write re-usable loaders that can be abstracted away from the components
 
 ## [Documentation](https://rtk-query-loader.ryfylke.dev)
+
 ## [Quick Guide](https://rtk-query-loader.ryfylke.dev/Quick%20Guide/)

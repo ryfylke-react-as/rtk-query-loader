@@ -8,21 +8,29 @@ Say you have a query that takes a long time to resolve. You want to put it in th
 
 ## Example
 
-```typescript {3-7}
+```typescript {3-13}
 const loader = createLoader({
-  queries: () => [useImportantQuery()] as const,
-  deferredQueries: () => [useSlowQuery()] as const,
-  transform: (queries, deferred) => ({
-    important: queries[0].data,
-    slow: deferred[0].data,
+  useQueries: () => {
+    const importantQuery = useImportantQuery();
+    const slowQuery = useSlowQuery();
+
+    return {
+      queries: {
+        importantQuery,
+      },
+      deferredQueries: {
+        slowQuery,
+      },
+    };
+  },
+  transform: (loader) => ({
+    important: loader.queries.importantQuery.data, // ImportantQueryResponse
+    slow: loader.deferredQueries.slowQuery.data, // SlowQueryResponse | undefined
   }),
 });
 ```
 
-Deferred queries are not automatically passed to the output of the loader, you have to use the `transform` argument (and it's second argument) to expose the queries for the consumers. The format of how you transform it is not important, but it is the only way to _get_ the deferred query result out of the loader.
-
 Deferred queries
 
 - Do not affect the loading state
-- Are only exposed through `transform`
 - Cause the component to rerender when fulfilled
