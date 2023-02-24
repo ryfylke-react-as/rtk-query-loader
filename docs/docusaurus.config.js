@@ -10,7 +10,7 @@ const config = {
   tagline: "Component loaders for RTK Query",
   favicon: "img/logo.png",
   // Algolia search config
-  themes: ["@docusaurus/theme-search-algolia"],
+  // themes: ["@docusaurus/theme-search-algolia"],
   // Set the production url of your site here
   url: "https://your-docusaurus-test-site.com",
   // Set the /<baseUrl>/ pathname under which your site is served
@@ -57,6 +57,7 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      // algolia: {},
       // Replace with your project's social card
       image: "img/docusaurus-social-card.jpg",
       navbar: {
