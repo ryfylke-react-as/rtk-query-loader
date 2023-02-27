@@ -82,18 +82,21 @@ export const createLoader = <
     LoaderComponent:
       createLoaderArgs.loaderComponent ?? RTKLoader,
     extend: function <
-      Qb extends Types._Q,
-      Db extends Types._D,
-      Eb extends Types._E,
-      Pb extends unknown = P,
-      Rb = Qb extends unknown
+      Qb extends Types._Q = Q,
+      Db extends Types._D = D,
+      Eb extends Types._E = E,
+      Rb extends unknown = Types.AllEql<
+        Q,
+        Qb,
+        D,
+        Db,
+        E,
+        Eb
+      > extends true
         ? R
-        : Types.ResolveDataShape<
-            Types.MakeDataRequired<Qb>,
-            Db,
-            Eb
-          >,
-      Ab extends unknown = A
+        : Types.ResolveLoadedDataShape<Qb, Db, Eb>,
+      Pb extends unknown = P,
+      Ab = A
     >({
       useQueries,
       transform,

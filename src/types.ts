@@ -2,6 +2,22 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { ReactElement } from "react";
 
+export type AllNever<Q, D, E, R = never> =
+  | Q
+  | D
+  | E
+  | R extends never
+  ? true
+  : false;
+
+export type AllEql<Q, Qb, D, Db, E, Eb> = Q extends Qb
+  ? D extends Db
+    ? E extends Eb
+      ? true
+      : false
+    : false
+  : false;
+
 /** Result of a RTK useQuery hook */
 export type UseQueryResult<T> = {
   // Base query state
@@ -39,9 +55,9 @@ export type UseQueryResult<T> = {
 };
 
 /** _X are types that are extended from in the generics */
-export type _Q = Record<string, UseQueryResult<unknown>>;
-export type _D = Record<string, UseQueryResult<unknown>>;
-export type _E = unknown;
+export type _Q = Record<string, UseQueryResult<unknown>> | never;
+export type _D = Record<string, UseQueryResult<unknown>> | never;
+export type _E = unknown | never;
 export type _P = Record<string, unknown>;
 export type _R = unknown;
 
@@ -50,7 +66,7 @@ export type MakeDataRequired<T extends _Q> = {
   [K in keyof T]: T[K] & { data: NonNullable<T[K]["data"]> };
 };
 
-export type DataShape<
+export type DataShapeInput<
   Q extends _Q,
   D extends _D,
   E extends _E
@@ -82,6 +98,12 @@ export type ResolveDataShape<
     : { queries: Q; deferredQueries: D }
   : { queries: Q; deferredQueries: D; payload: E };
 
+export type ResolveLoadedDataShape<
+  Q extends _Q,
+  D extends _D,
+  E extends _E
+> = ResolveDataShape<MakeDataRequired<Q>, D, E>;
+
 /** Use: `(...args: OptionalGenericArg<T>) => void;`
  * Allows either `T` or `none` for the parameter
  */
@@ -92,7 +114,7 @@ export type LoaderTransformFunction<
   D extends _D,
   E extends _E,
   R extends unknown
-> = (data: ResolveDataShape<MakeDataRequired<Q>, D, E>) => R;
+> = (data: ResolveLoadedDataShape<Q, D, E>) => R;
 
 export type CreateUseLoaderArgs<
   Q extends _Q,
@@ -113,11 +135,9 @@ export type CreateUseLoaderArgs<
    */
   useQueries: (
     ...args: OptionalGenericArg<A>
-  ) => DataShape<Q, D, E>;
+  ) => DataShapeInput<Q, D, E>;
   /** Transforms the output of the queries */
-  transform?: (
-    data: ResolveDataShape<MakeDataRequired<Q>, D, E>
-  ) => R;
+  transform?: (data: ResolveLoadedDataShape<Q, D, E>) => R;
 };
 
 export type UseLoader<A, R, Q extends _Q, D extends _D, E> = {
@@ -188,7 +208,7 @@ export type CreateLoaderArgs<
   Q extends _Q,
   D extends _D,
   E extends _E,
-  R extends unknown = MakeDataRequired<Q>,
+  R extends unknown,
   A = never
 > = Partial<CreateUseLoaderArgs<Q, D, E, R, A>> & {
   /** Generates an argument for the `queries` based on component props */
@@ -226,9 +246,9 @@ export type CreateLoader<
 export type Loader<
   P extends unknown,
   R extends unknown,
-  Q extends _Q,
-  D extends _D,
-  E extends _E,
+  Q extends _Q = never,
+  D extends _D = never,
+  E extends _E = never,
   A = never
 > = {
   /** A hook that runs all queries and returns aggregated result */
@@ -255,16 +275,10 @@ export type Loader<
     Qb extends _Q = Q,
     Db extends _D = D,
     Eb extends _E = E,
+    Rb extends unknown = AllEql<Q, Qb, D, Db, E, Eb> extends true
+      ? R
+      : ResolveLoadedDataShape<Qb, Db, Eb>,
     Pb extends unknown = P,
-    Rb extends unknown = ResolveDataShape<
-      Qb,
-      Db,
-      Eb
-    > extends never
-      ? R extends never
-        ? Q
-        : R
-      : ResolveDataShape<MakeDataRequired<Qb>, Db, Eb>,
     Ab = A
   >(
     newLoader: Partial<CreateLoaderArgs<Pb, Qb, Db, Eb, Rb, Ab>>
