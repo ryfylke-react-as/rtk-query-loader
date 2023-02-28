@@ -549,6 +549,7 @@ describe("withLoader", () => {
           return (
             <div>
               <div>{loader.queries.pokemon.data.name}</div>
+              <div>{loader.foobar}</div>
               <button
                 onClick={() => loader.payload.setName("error")}
               >
@@ -575,18 +576,27 @@ describe("withLoader", () => {
             },
           })
           .extend({
-            onLoading: () => <div>Extended Loading</div>,
+            onLoading: () => <div>Extended Loading One</div>,
           })
           .extend({
             onError: () => <div>Extended Error</div>,
           })
+          .extend({
+            transform: (data) => ({ ...data, foobar: "foobar" }),
+          })
+          .extend({
+            onLoading: () => <div>Extended Loading Two</div>,
+          })
       );
 
       render(<Component />);
-      expect(screen.getByText("Extended Loading")).toBeVisible();
+      expect(
+        screen.getByText("Extended Loading Two")
+      ).toBeVisible();
       await waitFor(() =>
         expect(screen.getByText("charizard")).toBeVisible()
       );
+      expect(screen.getByText("foobar")).toBeVisible();
       await userEvent.click(screen.getByRole("button"));
       await waitFor(() =>
         expect(screen.getByText("Extended Error")).toBeVisible()

@@ -3,23 +3,37 @@ import { RTKLoader } from "./RTKLoader";
 import * as Types from "./types";
 
 export const createUseLoader = <
-  Q extends Types._Q,
-  D extends Types._D,
-  E extends Types._E,
-  R extends unknown = Types.ResolveDataShape<
-    Types.MakeDataRequired<Q>,
-    D,
-    E
+  TQueries extends Types._TQueries,
+  TDeferred extends Types._TDeferred,
+  TPayload extends Types._TPayload,
+  TReturn extends unknown = Types.ResolveDataShape<
+    Types.MakeDataRequired<TQueries>,
+    TDeferred,
+    TPayload
   >,
-  A = never
+  TArg = never
 >(
-  createUseLoaderArgs: Types.CreateUseLoaderArgs<Q, D, E, R, A>
-): Types.UseLoader<A, R, Q, D, E> => {
-  const useLoader = (...args: Types.OptionalGenericArg<A>) => {
+  createUseLoaderArgs: Types.CreateUseLoaderArgs<
+    TQueries,
+    TDeferred,
+    TPayload,
+    TReturn,
+    TArg
+  >
+): Types.UseLoader<
+  TArg,
+  TReturn,
+  TQueries,
+  TDeferred,
+  TPayload
+> => {
+  const useLoader = (
+    ...args: Types.OptionalGenericArg<TArg>
+  ) => {
     const loaderRes = createUseLoaderArgs.useQueries(...args);
     const queriesList = loaderRes.queries
       ? Object.keys(loaderRes.queries).map(
-          (key) => (loaderRes.queries as Q)[key]
+          (key) => (loaderRes.queries as TQueries)[key]
         )
       : [];
     const aggregatedQuery = aggregateToQuery(queriesList);
@@ -28,9 +42,9 @@ export const createUseLoader = <
       const data = createUseLoaderArgs.transform
         ? createUseLoaderArgs.transform(
             loaderRes as Types.ResolveDataShape<
-              Types.MakeDataRequired<Q>,
-              D,
-              E
+              Types.MakeDataRequired<TQueries>,
+              TDeferred,
+              TPayload
             >
           )
         : loaderRes;
@@ -41,10 +55,10 @@ export const createUseLoader = <
         data,
         currentData: data,
         originalArgs: args,
-      } as Types.UseQueryResult<R>;
+      } as Types.UseQueryResult<TReturn>;
     }
 
-    return aggregatedQuery as Types.UseQueryResult<R>;
+    return aggregatedQuery as Types.UseQueryResult<TReturn>;
   };
 
   useLoader.original_args = createUseLoaderArgs;
@@ -52,27 +66,48 @@ export const createUseLoader = <
 };
 
 export const createLoader = <
-  P extends unknown,
-  Q extends Types._Q,
-  D extends Types._D,
-  E extends Types._E,
-  R extends unknown = Types.ResolveDataShape<
-    Types.MakeDataRequired<Q>,
-    D,
-    E
+  TProps extends unknown,
+  TQueries extends Types._TQueries = never,
+  TDeferred extends Types._TDeferred = never,
+  TPayload extends Types._TPayload = never,
+  TReturn extends unknown = Types.ResolveDataShape<
+    Types.MakeDataRequired<TQueries>,
+    TDeferred,
+    TPayload
   >,
-  A extends unknown = never
+  TArg extends unknown = never
 >(
-  createLoaderArgs: Types.CreateLoaderArgs<P, Q, D, E, R, A>
-): Types.Loader<P, R, Q, D, E, A> => {
+  createLoaderArgs: Types.CreateLoaderArgs<
+    TProps,
+    TQueries,
+    TDeferred,
+    TPayload,
+    TReturn,
+    TArg
+  >
+): Types.Loader<
+  TProps,
+  TReturn,
+  TQueries,
+  TDeferred,
+  TPayload,
+  TArg
+> => {
   const useLoader = createUseLoader({
     useQueries:
       createLoaderArgs.useQueries ??
-      (() => ({} as unknown as Q)),
+      (() => ({} as unknown as TQueries)),
     transform: createLoaderArgs.transform,
   });
 
-  const loader: Types.Loader<P, R, Q, D, E, A> = {
+  const loader: Types.Loader<
+    TProps,
+    TReturn,
+    TQueries,
+    TDeferred,
+    TPayload,
+    TArg
+  > = {
     useLoader,
     onLoading: createLoaderArgs.onLoading,
     onError: createLoaderArgs.onError,
@@ -82,34 +117,57 @@ export const createLoader = <
     LoaderComponent:
       createLoaderArgs.loaderComponent ?? RTKLoader,
     extend: function <
-      Qb extends Types._Q,
-      Db extends Types._D,
-      Eb extends Types._E,
-      Pb extends unknown = P,
-      Rb = Qb extends unknown
-        ? R
-        : Types.ResolveDataShape<
-            Types.MakeDataRequired<Qb>,
-            Db,
-            Eb
+      E_TQueries extends Types._TQueries = TQueries,
+      E_TDeferred extends Types._TDeferred = TDeferred,
+      E_TPayload extends Types._TPayload = TPayload,
+      E_TReturn extends unknown = Types.AllEql<
+        TQueries,
+        E_TQueries,
+        TDeferred,
+        E_TDeferred,
+        TPayload,
+        E_TPayload
+      > extends true
+        ? TReturn
+        : Types.ResolveLoadedDataShape<
+            E_TQueries,
+            E_TDeferred,
+            E_TPayload
           >,
-      Ab extends unknown = A
+      E_TProps extends unknown = TProps,
+      E_TArg = TArg
     >({
       useQueries,
       transform,
       ...loaderArgs
-    }: Partial<Types.CreateLoaderArgs<Pb, Qb, Db, Eb, Rb, Ab>>) {
-      const extendedLoader = {
+    }: Partial<
+      Types.CreateLoaderArgs<
+        E_TProps,
+        E_TQueries,
+        E_TDeferred,
+        E_TPayload,
+        E_TReturn,
+        E_TArg
+      >
+    >) {
+      const extendedLoader: Types.Loader<
+        E_TProps,
+        E_TReturn,
+        E_TQueries,
+        E_TDeferred,
+        E_TPayload,
+        E_TArg
+      > = {
         ...(this as unknown as Types.Loader<
-          Pb,
-          Rb,
-          Qb,
-          Db,
-          Eb,
-          Ab
+          E_TProps,
+          E_TReturn,
+          E_TQueries,
+          E_TDeferred,
+          E_TPayload,
+          E_TArg
         >),
         ...loaderArgs,
-      } as Types.Loader<Pb, Rb, Qb, Db, Eb, Ab>;
+      };
 
       if (useQueries) {
         const newUseLoader = createUseLoader({

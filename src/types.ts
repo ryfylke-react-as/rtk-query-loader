@@ -2,6 +2,30 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { ReactElement } from "react";
 
+export type AllNever<
+  TQueries,
+  TDeferred,
+  TPayload,
+  TReturn = never
+> = TQueries | TDeferred | TPayload | TReturn extends never
+  ? true
+  : false;
+
+export type AllEql<
+  TQueries,
+  E_TQueries,
+  TDeferred,
+  E_TDeferred,
+  TPayload,
+  E_TPayload
+> = TQueries extends E_TQueries
+  ? TDeferred extends E_TDeferred
+    ? TPayload extends E_TPayload
+      ? true
+      : false
+    : false
+  : false;
+
 /** Result of a RTK useQuery hook */
 export type UseQueryResult<T> = {
   // Base query state
@@ -39,48 +63,50 @@ export type UseQueryResult<T> = {
 };
 
 /** _X are types that are extended from in the generics */
-export type _Q = Record<string, UseQueryResult<unknown>>;
-export type _D = Record<string, UseQueryResult<unknown>>;
-export type _E = unknown;
-export type _P = Record<string, unknown>;
-export type _R = unknown;
+export type _TQueries =
+  | Record<string, UseQueryResult<unknown>>
+  | never;
+export type _TDeferred =
+  | Record<string, UseQueryResult<unknown>>
+  | never;
+export type _TPayload = unknown | never;
+export type _TProps = Record<string, unknown>;
+export type _TReturn = unknown;
 
-export type MakeDataRequired<T extends _Q> = {
+export type MakeDataRequired<T extends _TQueries> = {
   // @ts-ignore: TS2536: Type '"data"' cannot be used to index type 'T[K]'.
   [K in keyof T]: T[K] & { data: NonNullable<T[K]["data"]> };
 };
 
-export type DataShape<
-  Q extends _Q,
-  D extends _D,
-  E extends _E
+export type DataShapeInput<
+  TQueries extends _TQueries,
+  TDeferred extends _TDeferred,
+  TPayload extends _TPayload
 > = {
-  queries?: Q;
-  deferredQueries?: D;
-  payload?: E;
+  queries?: TQueries;
+  deferredQueries?: TDeferred;
+  payload?: TPayload;
 };
 
 export type ResolveDataShape<
-  Q extends _Q,
-  D extends _D,
-  E extends _E
-> = Q extends never
-  ? D extends never
-    ? E extends never
-      ? never
-      : { payload: E }
-    : E extends never
-    ? { deferredQueries: D }
-    : { deferredQueries: D; payload: E }
-  : D extends never
-  ? E extends never
-    ? { queries: Q }
-    : { queries: Q; payload: E }
-  : E extends never
-  ? D extends never
-    ? { queries: Q }
-    : { queries: Q; deferredQueries: D }
-  : { queries: Q; deferredQueries: D; payload: E };
+  TQueries extends _TQueries,
+  TDeferred extends _TDeferred,
+  TPayload extends _TPayload
+> = {
+  queries: TQueries extends never ? never : TQueries;
+  deferredQueries: TDeferred extends never ? never : TDeferred;
+  payload: TPayload extends never ? never : TPayload;
+};
+
+export type ResolveLoadedDataShape<
+  TQueries extends _TQueries,
+  TDeferred extends _TDeferred,
+  TPayload extends _TPayload
+> = ResolveDataShape<
+  MakeDataRequired<TQueries>,
+  TDeferred,
+  TPayload
+>;
 
 /** Use: `(...args: OptionalGenericArg<T>) => void;`
  * Allows either `T` or `none` for the parameter
@@ -88,18 +114,20 @@ export type ResolveDataShape<
 export type OptionalGenericArg<T> = T extends never ? [] : [T];
 
 export type LoaderTransformFunction<
-  Q extends _Q,
-  D extends _D,
-  E extends _E,
-  R extends unknown
-> = (data: ResolveDataShape<MakeDataRequired<Q>, D, E>) => R;
+  TQueries extends _TQueries,
+  TDeferred extends _TDeferred,
+  TPayload extends _TPayload,
+  TReturn extends unknown
+> = (
+  data: ResolveLoadedDataShape<TQueries, TDeferred, TPayload>
+) => TReturn;
 
 export type CreateUseLoaderArgs<
-  Q extends _Q,
-  D extends _D,
-  E extends _E,
-  R extends _R,
-  A = never
+  TQueries extends _TQueries,
+  TDeferred extends _TDeferred,
+  TPayload extends _TPayload,
+  TReturn extends _TReturn,
+  TArg = never
 > = {
   /** Should return a list of RTK useQuery results.
    * Example:
@@ -112,53 +140,84 @@ export type CreateUseLoaderArgs<
    * ```
    */
   useQueries: (
-    ...args: OptionalGenericArg<A>
-  ) => DataShape<Q, D, E>;
+    ...args: OptionalGenericArg<TArg>
+  ) => DataShapeInput<TQueries, TDeferred, TPayload>;
   /** Transforms the output of the queries */
   transform?: (
-    data: ResolveDataShape<MakeDataRequired<Q>, D, E>
-  ) => R;
+    data: ResolveLoadedDataShape<TQueries, TDeferred, TPayload>
+  ) => TReturn;
 };
 
-export type UseLoader<A, R, Q extends _Q, D extends _D, E> = {
-  (...args: OptionalGenericArg<A>): UseQueryResult<R>;
-  original_args: CreateUseLoaderArgs<Q, D, E, R, A>;
+export type UseLoader<
+  TArg,
+  TReturn,
+  TQueries extends _TQueries,
+  TDeferred extends _TDeferred,
+  TPayload
+> = {
+  (...args: OptionalGenericArg<TArg>): UseQueryResult<TReturn>;
+  original_args: CreateUseLoaderArgs<
+    TQueries,
+    TDeferred,
+    TPayload,
+    TReturn,
+    TArg
+  >;
 };
 export type ComponentWithLoaderData<
-  P extends Record<string, any>,
-  R extends unknown
-> = (props: P, loaderData: R) => ReactElement;
+  TProps extends Record<string, any>,
+  TReturn extends unknown
+> = (props: TProps, loaderData: TReturn) => ReactElement;
 
 /** Use: `InferLoaderData<typeof loader>`. Returns the return-value of the given loader's aggregated query. */
 export type InferLoaderData<T> = T extends Loader<
-  any,
-  infer X,
-  any,
-  any,
-  any,
-  any
+  any | never,
+  infer InferA,
+  any | never,
+  any | never,
+  any | never,
+  any | never
 >
-  ? X
-  : T extends Loader<never, infer Y, any, any, any, any>
-  ? Y
-  : T extends Loader<any, infer Z, never, any, any, any>
-  ? Z
-  : T extends Loader<any, infer W, any, any, any, never>
-  ? W
-  : "could not parse";
+  ? InferA
+  : T extends Loader<any, infer InferB, never, any, any, any>
+  ? InferB
+  : T extends Loader<any, infer InferC, never, never, any, any>
+  ? InferC
+  : T extends Loader<any, infer InferD, never, never, never, any>
+  ? InferD
+  : T extends Loader<
+      any,
+      infer InferE,
+      never,
+      never,
+      never,
+      never
+    >
+  ? InferE
+  : T extends Loader<any, infer InferF, any, never, never, never>
+  ? InferF
+  : T extends Loader<any, infer InferG, any, any, never, never>
+  ? InferG
+  : T extends Loader<any, infer InferH, any, any, any, never>
+  ? InferH
+  : T extends Loader<any, infer InferI, any, never, any, any>
+  ? InferI
+  : T extends Loader<any, infer InferJ, any, never, never, any>
+  ? InferJ
+  : never;
 
-export type Component<P extends Record<string, any>> = (
-  props: P
+export type Component<TProps extends Record<string, any>> = (
+  props: TProps
 ) => ReactElement;
 
 export type WhileFetchingArgs<
-  P extends unknown,
-  R extends unknown
+  TProps extends unknown,
+  TReturn extends unknown
 > = {
   /** Will be prepended before the component while the query is fetching */
-  prepend?: (props: P, data?: R) => ReactElement;
+  prepend?: (props: TProps, data?: TReturn) => ReactElement;
   /** Will be appended after the component while the query is fetching */
-  append?: (props: P, data?: R) => ReactElement;
+  append?: (props: TProps, data?: TReturn) => ReactElement;
 };
 
 export type CustomLoaderProps<T = unknown> = {
@@ -184,91 +243,140 @@ export type CustomLoaderProps<T = unknown> = {
 };
 
 export type CreateLoaderArgs<
-  P extends unknown,
-  Q extends _Q,
-  D extends _D,
-  E extends _E,
-  R extends unknown = MakeDataRequired<Q>,
-  A = never
-> = Partial<CreateUseLoaderArgs<Q, D, E, R, A>> & {
+  TProps extends unknown,
+  TQueries extends _TQueries,
+  TDeferred extends _TDeferred,
+  TPayload extends _TPayload,
+  TReturn extends unknown,
+  TArg = never
+> = Partial<
+  CreateUseLoaderArgs<
+    TQueries,
+    TDeferred,
+    TPayload,
+    TReturn,
+    TArg
+  >
+> & {
   /** Generates an argument for the `queries` based on component props */
-  queriesArg?: (props: P) => A;
+  queriesArg?: (props: TProps) => TArg;
   /** Determines what to render while loading (with no data to fallback on) */
-  onLoading?: (props: P) => ReactElement;
+  onLoading?: (props: TProps) => ReactElement;
   /** Determines what to render when query fails. */
   onError?: (
-    props: P,
+    props: TProps,
     error: FetchBaseQueryError | SerializedError,
     joinedQuery: UseQueryResult<undefined>
   ) => ReactElement;
   /** @deprecated Using onFetching might result in loss of internal state. Use `whileFetching` instead, or pass the query to the component */
   onFetching?: (
-    props: P,
+    props: TProps,
     renderBody: () => ReactElement
   ) => ReactElement;
   /** Determines what to render besides success-result while query is fetching. */
-  whileFetching?: WhileFetchingArgs<P, R>;
+  whileFetching?: WhileFetchingArgs<TProps, TReturn>;
   /** The component to use to switch between rendering the different query states. */
   loaderComponent?: Component<CustomLoaderProps>;
 };
 
 export type CreateLoader<
-  P extends unknown,
-  Q extends _Q = never,
-  D extends _D = never,
-  E extends _E = never,
-  R extends unknown = MakeDataRequired<Q>,
-  A = never
+  TProps extends unknown,
+  TQueries extends _TQueries = never,
+  TDeferred extends _TDeferred = never,
+  TPayload extends _TPayload = never,
+  TReturn extends unknown = MakeDataRequired<TQueries>,
+  TArg = never
 > = (
-  args: CreateLoaderArgs<P, Q, D, E, R, A>
-) => Loader<P, R, Q, D, E, A>;
+  args: CreateLoaderArgs<
+    TProps,
+    TQueries,
+    TDeferred,
+    TPayload,
+    TReturn,
+    TArg
+  >
+) => Loader<
+  TProps,
+  TReturn,
+  TQueries,
+  TDeferred,
+  TPayload,
+  TArg
+>;
 
 export type Loader<
-  P extends unknown,
-  R extends unknown,
-  Q extends _Q,
-  D extends _D,
-  E extends _E,
-  A = never
+  TProps extends unknown,
+  TReturn extends unknown,
+  TQueries extends _TQueries = never,
+  TDeferred extends _TDeferred = never,
+  TPayload extends _TPayload = never,
+  TArg = never
 > = {
   /** A hook that runs all queries and returns aggregated result */
-  useLoader: UseLoader<A, R, Q, D, E>;
+  useLoader: UseLoader<
+    TArg,
+    TReturn,
+    TQueries,
+    TDeferred,
+    TPayload
+  >;
   /** Generates an argument for the `queries` based on component props */
-  queriesArg?: (props: P) => A;
+  queriesArg?: (props: TProps) => TArg;
   /** Determines what to render while loading (with no data to fallback on) */
-  onLoading?: (props: P) => ReactElement;
+  onLoading?: (props: TProps) => ReactElement;
   /** Determines what to render when query fails. */
   onError?: (
-    props: P,
+    props: TProps,
     error: SerializedError | FetchBaseQueryError,
     joinedQuery: UseQueryResult<undefined>
   ) => ReactElement;
   /** @deprecated Using onFetching might result in loss of internal state. Use `whileFetching` instead, or pass the query to the component */
   onFetching?: (
-    props: P,
+    props: TProps,
     renderBody: () => ReactElement
   ) => ReactElement;
   /** Determines what to render besides success-result while query is fetching. */
-  whileFetching?: WhileFetchingArgs<P, R>;
+  whileFetching?: WhileFetchingArgs<TProps, TReturn>;
   /** Returns a new `Loader` extended from this `Loader`, with given overrides. */
   extend: <
-    Qb extends _Q = Q,
-    Db extends _D = D,
-    Eb extends _E = E,
-    Pb extends unknown = P,
-    Rb extends unknown = ResolveDataShape<
-      Qb,
-      Db,
-      Eb
-    > extends never
-      ? R extends never
-        ? Q
-        : R
-      : ResolveDataShape<MakeDataRequired<Qb>, Db, Eb>,
-    Ab = A
+    E_TQueries extends _TQueries = TQueries,
+    E_TDeferred extends _TDeferred = TDeferred,
+    E_TPayload extends _TPayload = TPayload,
+    E_TReturn extends unknown = AllEql<
+      TQueries,
+      E_TQueries,
+      TDeferred,
+      E_TDeferred,
+      TPayload,
+      E_TPayload
+    > extends true
+      ? TReturn
+      : ResolveLoadedDataShape<
+          E_TQueries,
+          E_TDeferred,
+          E_TPayload
+        >,
+    E_TProps extends unknown = TProps,
+    E_TArg = TArg
   >(
-    newLoader: Partial<CreateLoaderArgs<Pb, Qb, Db, Eb, Rb, Ab>>
-  ) => Loader<Pb, Rb, Qb, Db, Eb, Ab>;
+    newLoader: Partial<
+      CreateLoaderArgs<
+        E_TProps,
+        E_TQueries,
+        E_TDeferred,
+        E_TPayload,
+        E_TReturn,
+        E_TArg
+      >
+    >
+  ) => Loader<
+    E_TProps,
+    E_TReturn,
+    E_TQueries,
+    E_TDeferred,
+    E_TPayload,
+    E_TArg
+  >;
   /** The component to use to switch between rendering the different query states. */
   LoaderComponent: Component<CustomLoaderProps>;
 };
@@ -296,11 +404,14 @@ export type CreateQueryReducerAction<T extends unknown> =
       };
     };
 
+export type ConsumerProps<T extends Record<string, unknown>> =
+  Record<string, unknown> & T;
+
 /************************************************/
 /*  Legacy/unused, for backwards compatibility  */
 /************************************************/
 export type WithLoaderArgs<
-  P extends unknown,
-  R extends unknown,
-  A = never
-> = Loader<P, R, _Q, _Q, unknown, A>;
+  TProps extends unknown,
+  TReturn extends unknown,
+  TArg = never
+> = Loader<TProps, TReturn, _TQueries, _TQueries, unknown, TArg>;

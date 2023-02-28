@@ -4,29 +4,45 @@ import React from "react";
 import * as Types from "./types";
 
 export const withLoader = <
-  P extends Record<string, any>,
-  R extends unknown,
-  Q extends Types._Q,
-  D extends Types._D,
-  E extends Types._E,
-  A = never
+  TProps extends Record<string, any>,
+  TReturn extends unknown,
+  TQueries extends Types._TQueries,
+  TDeferred extends Types._TDeferred,
+  TPayload extends Types._TPayload,
+  TArg = never
 >(
-  Component: Types.ComponentWithLoaderData<P, R>,
-  loader: Types.Loader<P, R, Q, D, E, A>
-): Types.Component<P> => {
-  let CachedComponent: Types.ComponentWithLoaderData<P, R>;
-  const LoadedComponent = (props: P) => {
+  Component: Types.ComponentWithLoaderData<TProps, TReturn>,
+  loader: Types.Loader<
+    TProps,
+    TReturn,
+    TQueries,
+    TDeferred,
+    TPayload,
+    TArg
+  >
+): Types.Component<TProps> => {
+  let CachedComponent: Types.ComponentWithLoaderData<
+    TProps,
+    TReturn
+  >;
+  const LoadedComponent = (props: TProps) => {
     const useLoaderArgs = [];
     if (loader.queriesArg) {
       useLoaderArgs.push(loader.queriesArg(props));
     }
     const query = loader.useLoader(
-      ...(useLoaderArgs as Types.OptionalGenericArg<A>)
+      ...(useLoaderArgs as Types.OptionalGenericArg<TArg>)
     );
     if (!CachedComponent) {
       CachedComponent = React.forwardRef(
-        Component as React.ForwardRefRenderFunction<R, P>
-      ) as unknown as Types.ComponentWithLoaderData<P, R>;
+        Component as React.ForwardRefRenderFunction<
+          TReturn,
+          TProps
+        >
+      ) as unknown as Types.ComponentWithLoaderData<
+        TProps,
+        TReturn
+      >;
     }
 
     const onLoading = loader.onLoading?.(props);
@@ -42,7 +58,7 @@ export const withLoader = <
         }
       : undefined;
 
-    const onSuccess = (data: R) => (
+    const onSuccess = (data: TReturn) => (
       <CachedComponent {...props} ref={data} />
     );
 
@@ -62,7 +78,7 @@ export const withLoader = <
     const onFetching = loader?.onFetching?.(
       props,
       query.data
-        ? () => onSuccess(query.data as R)
+        ? () => onSuccess(query.data as TReturn)
         : () => <React.Fragment />
     );
 
