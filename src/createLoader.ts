@@ -67,9 +67,9 @@ export const createUseLoader = <
 
 export const createLoader = <
   TProps extends unknown,
-  TQueries extends Types._TQueries = never,
-  TDeferred extends Types._TDeferred = never,
-  TPayload extends Types._TPayload = never,
+  TQueries extends Types._TQueries,
+  TDeferred extends Types._TDeferred,
+  TPayload extends Types._TPayload,
   TReturn extends unknown = Types.ResolveDataShape<
     Types.MakeDataRequired<TQueries>,
     TDeferred,
