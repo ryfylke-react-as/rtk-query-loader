@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Create a base loader
+# 1. Create a base loader
 
 A `Loader` can control the loading, fetch and error state views for consumer components.
 

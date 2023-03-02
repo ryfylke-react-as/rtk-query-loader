@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Extend the base loader
+# 2. Extend the base loader
 
 Extend from the base loader so that you inherit the sensible defaults. You can overwrite these at any point.
 

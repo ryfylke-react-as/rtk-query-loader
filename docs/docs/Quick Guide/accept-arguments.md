@@ -1,0 +1,53 @@
+---
+sidebar_position: 4
+---
+
+# 4. Arguments for your loader
+
+If you want the loader to take an argument, all you have to do is to add a `queriesArg`:
+
+```tsx {5-7,10-12}
+import { ConsumerProps } from "@ryfylke-react/rtk-query-loader";
+
+// This means that any component that has props that extend this
+// type can consume the loader using `withLoader`
+type UserRouteLoaderProps = ConsumerProps<{
+  userId: string;
+}>;
+
+export const userRouteLoader = baseLoader.extend({
+  queriesArg: (props: UserRouteLoaderProps) => props.userId,
+  // type is now inferred from queriesArg return
+  useQueries: (userId) => {
+    const user = useGetUserQuery(userId);
+    const posts = useGetPostsByUser(userId);
+
+    return {
+      queries: {
+        user,
+        posts,
+      },
+    };
+  },
+});
+```
+
+:::tip
+`ConsumerProps<T>` simply means that the consumer component's props should have _atleast_ the properties of `T`.
+
+```typescript
+type ConsumerProps<T extends Record<string, unknown>> = Record<
+  string,
+  unknown
+> &
+  T;
+```
+
+:::
+
+```typescript
+<UserRoute userId="1234" />
+// → queriesArg({ userId: "1234" })
+// → "1234"
+// → loader.useQueries("1234")
+```
