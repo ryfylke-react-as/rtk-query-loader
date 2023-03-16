@@ -5,21 +5,27 @@ slug: /
 
 # RTK Query Loader
 
-Lets you create loaders for use with [RTK Query](https://redux-toolkit.js.org/rtk-query/overview).
+> Create _loaders_ for your React components.
 
-- [x] **Reusable**
-- [x] **Extendable**
-- [x] **Transformable**
-- [x] **Type-safe**
+🔗 **Extendable**
+💫 **Transformable**
+♻️ **Reusable**
+✅ **Properly typed**
+
+You write your components, as if the data has already loaded.
+
+## Install
 
 ```shell
 npm i @ryfylke-react/rtk-query-loader
 ```
 
-:::caution These docs are for version 1.0.0 and up
-If you are using version `0.3.51` or earlier, please refer to the [**migration guide**](./Migrations/v0.x).
-:::
+## Playground
 
-:::tip Getting Started
-Get started with our recommended best practises by following the [**Quick guide**](/Quick%20guide), or looking at a [simple example](./examples.md).
-:::
+<iframe 
+    src="https://codesandbox.io/embed/ryfylke-react-rtk-query-loader-demo-du3936?codemirror=1&fontsize=14&hidenavigation=1&module=%2Fsrc%2Fpokemon%2FPokemon.tsx&theme=dark"
+    style={{width: "100%", height: 600, marginBottom: "1rem"}}
+    title="@ryfylke-react/rtk-query-loader Demo"
+    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+></iframe>

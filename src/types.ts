@@ -146,6 +146,7 @@ export type CreateUseLoaderArgs<
   transform?: (
     data: ResolveLoadedDataShape<TQueries, TDeferred, TPayload>
   ) => TReturn;
+  config?: LoaderConfig;
 };
 
 export type UseLoader<
@@ -170,40 +171,27 @@ export type ComponentWithLoaderData<
 > = (props: TProps, loaderData: TReturn) => ReactElement;
 
 /** Use: `InferLoaderData<typeof loader>`. Returns the return-value of the given loader's aggregated query. */
-export type InferLoaderData<T> = T extends Loader<
-  any | never,
-  infer InferA,
-  any | never,
-  any | never,
-  any | never,
-  any | never
->
-  ? InferA
-  : T extends Loader<any, infer InferB, never, any, any, any>
-  ? InferB
-  : T extends Loader<any, infer InferC, never, never, any, any>
-  ? InferC
-  : T extends Loader<any, infer InferD, never, never, never, any>
-  ? InferD
-  : T extends Loader<
-      any,
-      infer InferE,
-      never,
-      never,
-      never,
-      never
-    >
-  ? InferE
-  : T extends Loader<any, infer InferF, any, never, never, never>
-  ? InferF
-  : T extends Loader<any, infer InferG, any, any, never, never>
-  ? InferG
-  : T extends Loader<any, infer InferH, any, any, any, never>
-  ? InferH
-  : T extends Loader<any, infer InferI, any, never, any, any>
-  ? InferI
-  : T extends Loader<any, infer InferJ, any, never, never, any>
-  ? InferJ
+export type InferLoaderData<T> = T extends
+  | Loader<any, infer R, never, any, any, any>
+  | Loader<any, infer R, never, never, any, any>
+  | Loader<any, infer R, never, never, never, any>
+  | Loader<any, infer R, never, never, never, never>
+  | Loader<any, infer R, any, never, never, never>
+  | Loader<any, infer R, any, any, never, never>
+  | Loader<any, infer R, any, any, any, never>
+  | Loader<any, infer R, any, any, any, any>
+  | Loader<any, infer R, any, never, never, any>
+  | Loader<any, infer R, any, never, never, never>
+  | Loader<any, infer R, any, never, any, any>
+  | Loader<any, infer R, any, any, never, any>
+  | Loader<any, infer R, any, any, any, never>
+  | Loader<any, infer R, any, any, any, any>
+  | Loader<any, infer R, never, any, any, any>
+  | Loader<any, infer R, never, any, any, never>
+  | Loader<any, infer R, never, any, never, any>
+  | Loader<any, infer R, never, any, never, never>
+  | Loader<any, infer R, never, any, any, never>
+  ? R
   : never;
 
 export type Component<TProps extends Record<string, any>> = (
@@ -238,8 +226,18 @@ export type CustomLoaderProps<T = unknown> = {
   ) => JSX.Element;
   /** What the loader requests be rendered while loading data */
   onLoading?: React.ReactElement;
+  config?: LoaderConfig;
   /** The joined query for the loader */
   query: UseQueryResult<T>;
+};
+
+export type DeferredConfig = {
+  shouldThrowError?: boolean;
+};
+
+export type LoaderConfig = {
+  deferred?: DeferredConfig;
+  loaderComponent?: Component<CustomLoaderProps>;
 };
 
 export type CreateLoaderArgs<
@@ -275,7 +273,8 @@ export type CreateLoaderArgs<
   ) => ReactElement;
   /** Determines what to render besides success-result while query is fetching. */
   whileFetching?: WhileFetchingArgs<TProps, TReturn>;
-  /** The component to use to switch between rendering the different query states. */
+  config?: LoaderConfig;
+  /** @deprecated Use `config.loaderComponent` */
   loaderComponent?: Component<CustomLoaderProps>;
 };
 
@@ -337,6 +336,7 @@ export type Loader<
   ) => ReactElement;
   /** Determines what to render besides success-result while query is fetching. */
   whileFetching?: WhileFetchingArgs<TProps, TReturn>;
+  config?: LoaderConfig;
   /** Returns a new `Loader` extended from this `Loader`, with given overrides. */
   extend: <
     E_TQueries extends _TQueries = TQueries,

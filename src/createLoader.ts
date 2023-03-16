@@ -2,6 +2,21 @@ import { aggregateToQuery } from "./aggregateToQuery";
 import { RTKLoader } from "./RTKLoader";
 import * as Types from "./types";
 
+const mergeConfig = (
+  original: Types.LoaderConfig,
+  extended: Types.LoaderConfig
+): Types.LoaderConfig => {
+  if (!original) return extended;
+  return {
+    ...original,
+    ...extended,
+    deferred: {
+      ...original.deferred,
+      ...extended.deferred,
+    },
+  };
+};
+
 export const createUseLoader = <
   TQueries extends Types._TQueries,
   TDeferred extends Types._TDeferred,
@@ -37,6 +52,21 @@ export const createUseLoader = <
         )
       : [];
     const aggregatedQuery = aggregateToQuery(queriesList);
+    if (createUseLoaderArgs.config?.deferred?.shouldThrowError) {
+      if (loaderRes.deferredQueries) {
+        const deferredQueriesList = Object.keys(
+          loaderRes.deferredQueries
+        ).map(
+          (key) => (loaderRes.deferredQueries as TDeferred)[key]
+        );
+        if (deferredQueriesList.some((q) => q.isError)) {
+          aggregatedQuery.isError = true;
+          aggregatedQuery.error = deferredQueriesList.find(
+            (q) => q.isError
+          )?.error;
+        }
+      }
+    }
 
     if (aggregatedQuery.isSuccess || queriesList.length === 0) {
       const data = createUseLoaderArgs.transform
@@ -98,6 +128,7 @@ export const createLoader = <
       createLoaderArgs.useQueries ??
       (() => ({} as unknown as TQueries)),
     transform: createLoaderArgs.transform,
+    config: createLoaderArgs.config,
   });
 
   const loader: Types.Loader<
@@ -114,8 +145,11 @@ export const createLoader = <
     onFetching: createLoaderArgs.onFetching,
     whileFetching: createLoaderArgs.whileFetching,
     queriesArg: createLoaderArgs.queriesArg,
+    config: createLoaderArgs.config,
     LoaderComponent:
-      createLoaderArgs.loaderComponent ?? RTKLoader,
+      createLoaderArgs.config?.loaderComponent ??
+      createLoaderArgs.loaderComponent ??
+      RTKLoader,
     extend: function <
       E_TQueries extends Types._TQueries = TQueries,
       E_TDeferred extends Types._TDeferred = TDeferred,
@@ -150,6 +184,26 @@ export const createLoader = <
         E_TArg
       >
     >) {
+      const original = this as unknown as Types.Loader<
+        E_TProps,
+        E_TReturn,
+        E_TQueries,
+        E_TDeferred,
+        E_TPayload,
+        E_TArg
+      >;
+      const mergedConfig = mergeConfig(
+        createLoaderArgs.config ?? {},
+        original.config ?? {}
+      );
+      // For backwards support of `loaderComponent
+      if (
+        !mergedConfig.loaderComponent &&
+        loaderArgs.loaderComponent
+      ) {
+        mergedConfig.loaderComponent =
+          loaderArgs.loaderComponent;
+      }
       const extendedLoader: Types.Loader<
         E_TProps,
         E_TReturn,
@@ -158,21 +212,16 @@ export const createLoader = <
         E_TPayload,
         E_TArg
       > = {
-        ...(this as unknown as Types.Loader<
-          E_TProps,
-          E_TReturn,
-          E_TQueries,
-          E_TDeferred,
-          E_TPayload,
-          E_TArg
-        >),
+        ...original,
         ...loaderArgs,
+        config: mergedConfig,
       };
 
       if (useQueries) {
         const newUseLoader = createUseLoader({
           useQueries,
           transform,
+          config: mergedConfig,
         });
         extendedLoader.useLoader = newUseLoader;
       } else if (transform) {
@@ -180,6 +229,7 @@ export const createLoader = <
           useQueries:
             extendedLoader.useLoader.original_args.useQueries,
           transform,
+          config: mergedConfig,
         });
         extendedLoader.useLoader = newUseLoader;
       }

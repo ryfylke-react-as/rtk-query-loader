@@ -30,7 +30,22 @@ const loader = createLoader({
 });
 ```
 
-Deferred queries
+## Configure
 
-- Do not affect the loading state
-- Cause the component to rerender when fulfilled
+> **New in version 1.0.3**
+
+You can pass a `Config` to your `Loader`s:
+
+```typescript {4-8}
+const loader = createLoader({
+    useQueries: () => ({...}),
+    onError: () => (...),
+    config: {
+        deferred: {
+            shouldThrowError: true,
+        },
+    }
+})
+```
+
+- `shouldThrowError` - Determines whether or not `deferredQueries` should send the component to the `onError` view if one of the deferred queries end up in a error state.

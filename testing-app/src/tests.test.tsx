@@ -203,7 +203,7 @@ describe("withLoader", () => {
     };
 
     const loader = createLoader({
-      loaderComponent: CustomLoader,
+      config: { loaderComponent: CustomLoader },
       useQueries: () => ({
         queries: {
           charizard: useGetPokemonByNameQuery("charizard"),
@@ -216,6 +216,33 @@ describe("withLoader", () => {
         <div>{loaderData.queries.charizard.data.name}</div>
       ),
       loader
+    );
+    render(<Component />);
+    expect(screen.getByText("Custom loader!")).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText("charizard")).toBeVisible()
+    );
+  });
+
+  test("loaderComponent is backwards compatible", async () => {
+    const CustomLoader = (props: CustomLoaderProps) => {
+      if (props.query.isSuccess && props.query.data) {
+        return props.onSuccess(props.query.data);
+      }
+      return <div>Custom loader!</div>;
+    };
+    const Component = withLoader(
+      (_, loaderData) => (
+        <div>{loaderData.queries.charizard.data.name}</div>
+      ),
+      createLoader({
+        loaderComponent: CustomLoader,
+        useQueries: () => ({
+          queries: {
+            charizard: useGetPokemonByNameQuery("charizard"),
+          },
+        }),
+      })
     );
     render(<Component />);
     expect(screen.getByText("Custom loader!")).toBeVisible();
@@ -287,6 +314,52 @@ describe("withLoader", () => {
     await waitFor(() =>
       expect(screen.getByText("charizard")).toBeVisible()
     );
+  });
+
+  test("Normally, deferred queries do not throw", async () => {
+    const Component = withLoader(
+      (props, data) => {
+        return <div>Hello</div>;
+      },
+      createLoader({
+        useQueries: () => ({
+          deferredQueries: {
+            charizard: useGetPokemonByNameQuery("error"),
+          },
+        }),
+      })
+    );
+    render(<Component />);
+    await waitFor(
+      () => new Promise((res) => setTimeout(res, 200))
+    );
+    expect(screen.getByText("Hello")).toBeVisible();
+  });
+
+  test("Deferred queries throw error when configured to", async () => {
+    const Component = withLoader(
+      (props, data) => {
+        return <div>Hello</div>;
+      },
+      createLoader({
+        useQueries: () => ({
+          deferredQueries: {
+            charizard: useGetPokemonByNameQuery("error"),
+          },
+        }),
+        config: {
+          deferred: {
+            shouldThrowError: true,
+          },
+        },
+        onError: () => <div>Error</div>,
+      })
+    );
+    render(<Component />);
+    await waitFor(
+      () => new Promise((res) => setTimeout(res, 200))
+    );
+    expect(screen.getByText("Error")).toBeVisible();
   });
 
   test("Loaders with no queries render immediately", () => {
@@ -619,6 +692,52 @@ describe("withLoader", () => {
         })
       );
       render(<Component />);
+      await waitFor(() =>
+        expect(screen.getByText("charizard")).toBeVisible()
+      );
+    });
+
+    test("Can partially extend config", async () => {
+      const CustomLoader = (props: CustomLoaderProps) => {
+        if (props.query.isError) {
+          return <div>Custom error!</div>;
+        }
+        if (props.query.isSuccess && props.query.data) {
+          return props.onSuccess(props.query.data);
+        }
+        return <div>Custom loader!</div>;
+      };
+
+      const loader = createLoader({
+        config: {
+          loaderComponent: CustomLoader,
+          deferred: { shouldThrowError: true },
+        },
+        useQueries: () => ({
+          queries: {
+            charizard: useGetPokemonByNameQuery("charizard"),
+          },
+          deferredQueries: {
+            charizard: useGetPokemonByNameQuery("error"),
+          },
+        }),
+      }).extend({
+        config: {
+          deferred: { shouldThrowError: false },
+        },
+      });
+
+      const Component = withLoader(
+        (_, loaderData) => (
+          <div>{loaderData.queries.charizard.data.name}</div>
+        ),
+        loader
+      );
+      render(<Component />);
+
+      // We expect that the custom loader is rendered,
+      // But that the deferredQuery does not cause component to render error view
+      expect(screen.getByText("Custom loader!")).toBeVisible();
       await waitFor(() =>
         expect(screen.getByText("charizard")).toBeVisible()
       );

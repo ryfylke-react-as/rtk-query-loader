@@ -1,0 +1,152 @@
+---
+sidebar_position: 3
+---
+
+import TOCInline from "@theme/TOCInline";
+
+# Examples
+
+This page contains a collection of examples that cover typical use cases for the library.
+
+<TOCInline toc={toc} />
+
+## React Router (route loader)
+
+By utilizing `useParams` from `react-router-dom` we can create a loader that will load data based on the route parameters.
+
+```tsx
+import {
+  withLoader,
+  createLoader,
+} from "@ryfylke-react/rtk-query-loader";
+import { useParams, Redirect } from "react-router-dom";
+// ...
+
+const userRouteLoader = createLoader({
+  useQueries: () => {
+    const { userId } = useParams();
+    const userQuery = useGetUserQuery(userId, {
+      skip: userId ? false : true,
+    });
+
+    return {
+      queries: {
+        userQuery,
+      },
+    };
+  },
+  onLoading: (props) => {
+    const { userId } = useParams();
+    if (!userId) {
+      return <Redirect to="/users" />;
+    }
+    return <PageSkeleton />;
+  },
+  onError: (props, error) => <ErrorView error={error} />,
+});
+```
+
+## Reusable loader
+
+We can also create a reusable loader that can be used with multiple components.
+
+```tsx
+import {
+  withLoader,
+  createLoader,
+  ConsumerProps,
+} from "@ryfylke-react/rtk-query-loader";
+
+type UserLoaderProps = {
+  userId: string;
+};
+
+const userLoader = createLoader<UserLoaderProps>({
+  queriesArg: (props: UserLoaderProps) => props.userId,
+  useQueries: (userId) => {
+    const userQuery = useGetUserQuery(userId);
+
+    return {
+      queries: {
+        userQuery,
+      },
+    };
+  },
+  onLoading: (props) => <PageSkeleton />,
+  onError: (props, error) => <ErrorView error={error} />,
+});
+```
+
+You can now use the `userLoader` in any component whos props extend `UserLoaderProps`.
+
+### Consumer 1
+
+```tsx title="UserProfile.tsx"
+import { userLoader } from "../loaders";
+
+type UserProfileProps = {
+  userId: string;
+  // ... other props
+};
+
+export const UserProfile = withLoader(
+  (props: UserProfileProps, data) => {
+    return <>...</>;
+  },
+  userLoader
+);
+```
+
+### Consumer 2
+
+```tsx title="UserProfile.tsx"
+import { userLoader } from "../loaders";
+
+type InlineUserDetailsProps = {
+  userId: string;
+  dir: "row" | "column";
+  // ... other props
+};
+
+export const InlineUserDetails = withLoader(
+  (props: InlineUserDetailsProps, data) => {
+    return <>...</>;
+  },
+  userLoader
+);
+```
+
+## Stateful loader
+
+You can also create loaders that contain state.
+
+```tsx
+const loader = createLoader({
+  useQueries: () => {
+    const [name, setName] = useState("charizard");
+    const debouncedName = useDebounce(name, 200);
+    const pokemon = useGetPokemon(debouncedName);
+    return {
+      queries: {
+        pokemon,
+      },
+      payload: {
+        name,
+        setName,
+      },
+    };
+  },
+});
+
+const Consumer = withLoader((props, data) => {
+  return (
+    <div>
+      <input
+        value={data.payload.name}
+        onChange={(e) => data.payload.setName(e.target.value)}
+      />
+      <div>AP: {data.queries.pokemon.data.ability_power}</div>
+    </div>
+  );
+}, loader);
+```

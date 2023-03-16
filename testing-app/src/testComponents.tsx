@@ -112,6 +112,7 @@ const fetchTestBaseLoader = createLoader({
 });
 
 type FetchTestLoader = InferLoaderData<
+  //  ^?
   typeof fetchTestBaseLoader
 >;
 
