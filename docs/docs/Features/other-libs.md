@@ -72,3 +72,7 @@ The output format will obviously be a bit different, but in this example you hav
 ## Other libraries
 
 If you are interested in creating resolvers for other libraries, you can [edit this page](https://github.com/ryfylke-react-as/rtk-query-loader/tree/main/docs/docs/Advanced/other-libs.md) and then [submit a pull request](https://github.com/ryfylke-react-as/rtk-query-loader/compare) on GitHub to share your resolver here, as an npm package, or with the code embedded directly in the docs.
+
+## Use with promises
+
+If you want to use RTK Query Loader with promises, you can read more about that on the [`useCreateQuery` reference page](../Reference/use-create-query.md).
