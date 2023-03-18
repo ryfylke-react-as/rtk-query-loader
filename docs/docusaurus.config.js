@@ -6,7 +6,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "rtk-query-loader",
+  title: "RTK Query Loader",
   tagline: "Component loaders for RTK Query",
   favicon: "img/logo.png",
   // Algolia search config
@@ -60,12 +60,12 @@ const config = {
       algolia: {
         apiKey: "de2dbeeabd923dae2dbb67bfaebf0072",
         appId: "1NCL1FSCF8",
-        indexName: "rtk-query-loader",
+        indexName: "RTK Query Loader",
       },
       // Replace with your project's social card
       image: "img/docusaurus-social-card.jpg",
       navbar: {
-        title: "rtk-query-loader",
+        title: "RTK Query Loader",
         logo: {
           alt: "Ryfylke React Logo",
           src: "img/logo.png",
@@ -93,7 +93,7 @@ const config = {
       footer: {
         style: "dark",
         links: [],
-        copyright: `Open source / GPL-3.0 License`,
+        copyright: `Open source / GPL-3.0 License <br> Made with ❤️ by <a style="color:white" href="https://ryfylke.dev">Ryfylke React</a>`,
       },
       prism: {
         theme: lightCodeTheme,

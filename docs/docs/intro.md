@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 slug: /
+title: Introduction
 ---
 
 # RTK Query Loader

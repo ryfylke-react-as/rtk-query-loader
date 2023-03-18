@@ -12,7 +12,7 @@ import { baseLoader } from "./baseLoader";
 export const userRouteLoader = baseLoader.extend({});
 ```
 
-You can pass any argument from [`createLoader`](/Exports/create-loader) into [`Loader.extend`](/Features/extending).
+You can pass any argument from [`createLoader`](/Reference/create-loader) into [`Loader.extend`](/Features/extending).
 
 :::info Separation of concerns
 Its up to you how much you want to separate logic here. Some examples would be...

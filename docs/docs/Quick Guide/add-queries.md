@@ -6,7 +6,7 @@ sidebar_position: 3
 
 You can now start to add queries to your extended loaders.
 
-The `useQueries` argument of [createLoader](/Exports/create-loader) is a _hook_, which means that [the rules of hooks](https://reactjs.org/docs/hooks-rules.html) apply. This gives you the super-power of utilizing other hooks inside of your loader.
+The `useQueries` argument of [createLoader](/Reference/create-loader) is a _hook_, which means that [the rules of hooks](https://reactjs.org/docs/hooks-rules.html) apply. This gives you the super-power of utilizing other hooks inside of your loader.
 
 ```tsx title="/src/loaders/userRouteLoader.tsx" {6-15}
 import { baseLoader } from "./baseLoader";

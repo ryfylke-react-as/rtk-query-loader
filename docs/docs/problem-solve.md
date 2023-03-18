@@ -4,17 +4,62 @@ sidebar_position: 2
 
 # What problem does this solve?
 
-Handling the loading and error state of components that depend on external data can be very tedious,
-especially when you are managing multiple queries. RTK Query Loader aims to help you solve these issues by letting you create composable loaders that you can move out of the presentational components.
+**Handling the loading and error state of components that depend on external data can be tedious,
+especially when you are managing multiple queries.**
+
+### Example
+
+This component requires some data. There are 26 lines of code that are **just** concerned with ensuring that the data is present before rendering the _actual_ component.
+
+```typescript {2-28}
+const Component = () => {
+  const pokemonQuery = useGetPokemon("charizard");
+  const userQuery = useGetCurrentUser();
+  const userStatsQuery = useGetUserStats();
+
+  if (
+    pokemonQuery.isLoading ||
+    userQuery.isLoading ||
+    userStatsQuery.isLoading
+  ) {
+    return <LoadingView />;
+  }
+
+  if (
+    pokemonQuery.isError ||
+    userQuery.isError ||
+    userStatsQuery.isError
+  ) {
+    return (
+      <ErrorView
+        error={
+          pokemonQuery.error ??
+          userQuery.error ??
+          userStatsQuery.error
+        }
+      />
+    );
+  }
+  // Finally, you can write the actual component...
+};
+```
+
+RTK Query Loader lets you **move all of this logic out of the component**, and also make it _reusable_ and _composable_, so that other components can reuse that loader and have access to the same data.
 
 - [x] Isolate the data-loading code away from the presentational components
-- [x] Increased type certainty
+- [x] Increase type certainty
   - 🔥 Way less optional chaining in your components
   - 🔥 You write the components as if the data is already present
 - [x] Composability
   - ♻️ Extend existing loaders
   - ♻️ Overwrite only select properties
-- [x] Full control
+- [x] You're still fully in control
   - 🛠️ Loading/error states
   - 🛠️ Custom loader-component
-  - 🛠️ Control defer behaviour
+  - 🛠️ Configure the behavior of your loaders
+
+## Alternatives
+
+If you are using a Suspense-enabled framework, or any form of server-side rendering that can feed your components with data, then that would be a more optimal approach. [Remix](https://remix.run/docs/en/1.14.3/route/loader) has the concept of loaders built in, and NextJS is suspense enabled.
+
+If you are, however, building an SPA, or not using Next or Remix, then this package can be a great way for you gain the concept of loaders without moving to server-side rendering.

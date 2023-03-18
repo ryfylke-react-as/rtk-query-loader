@@ -4,9 +4,16 @@ sidebar_position: 4
 
 # useCreateQuery
 
-#### **Warning**: This API is experimental and might change.
+Lets you use any function that returns a promise to load your component.
 
-Lets you use any function that returns a promise in your loader as if it was an RTK useQuery.
+## Arguments
+
+`useCreateQuery` takes two arguments:
+
+- The first argument is a function that returns a promise.
+- The second argument is a dependency array. Whenever a value in this array changes, the query is re-run.
+
+## Example usage
 
 ```typescript
 import {

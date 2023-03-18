@@ -4,11 +4,7 @@ sidebar_position: 6
 
 # aggregateToQuery
 
-Aggregated a set of `UseQueryResult` into a single query.
-
-:::caution
-`aggregateToQuery` does not add any `data` to the resulting query. You will have to do that manually afterwards.
-:::
+Aggregates a set of `UseQueryResult` into a single query.
 
 ```typescript
 import {
@@ -27,3 +23,7 @@ const query: UseQueryResult<unknown> = {
   data: queries.map((query) => query.data),
 };
 ```
+
+:::caution
+`aggregateToQuery` does not add any `data` to the resulting query. You will have to do that manually afterwards.
+:::
