@@ -40,7 +40,14 @@ const Component = () => {
       />
     );
   }
-  // Finally, you can write the actual component...
+  // Finally...
+  return (
+    <ComponentWithData
+      pokemon={pokemonQuery.data}
+      user={userQuery.data}
+      userStats={userStatsQuery.data}
+    />
+  );
 };
 ```
 
