@@ -11,7 +11,7 @@ How does `rtk-query-loader` work _under the hood_?
 
 ### Can't I just build this myself?
 
-Yes you can, the concept itself is quite simple. But making it properly type-safe can be difficult, and this package has been thoroughly tested and thought out. And we do offer some killer [features](../Features/index.md).
+Yes you can, the concept itself is quite simple. But making it properly type-safe can be difficult, and this package has been thoroughly tested and thought out. And we do offer some killer [features](../Features/index.mdx).
 
 ## Virtual DOM
 
