@@ -3,6 +3,7 @@
 
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+require("dotenv").config();
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -12,15 +13,15 @@ const config = {
   // Algolia search config
   // themes: ["@docusaurus/theme-search-algolia"],
   // Set the production url of your site here
-  url: "https://your-docusaurus-test-site.com",
+  url: "https://rtk-query-loader.ryfylke.dev",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: "facebook", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
+  organizationName: "ryfylke-react-as", // Usually your GitHub org/user name.
+  projectName: "rtk-query-loader", // Usually your repo name.
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
@@ -40,8 +41,6 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
             "https://github.com/ryfylke-react-as/rtk-query-loader/tree/main/docs/",
           routeBasePath: "/",
@@ -58,9 +57,9 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       algolia: {
-        apiKey: "747dfe4bf013ad89eadcb3a83eb4d70e",
+        apiKey: process.env.ALGOLIA_API_KEY,
         appId: "1NCL1FSCF8",
-        indexName: "RTK Query Loader",
+        indexName: "rtk-query-loader",
       },
       // Replace with your project's social card
       image: "img/docusaurus-social-card.jpg",
