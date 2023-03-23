@@ -58,7 +58,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       algolia: {
-        apiKey: "de2dbeeabd923dae2dbb67bfaebf0072",
+        apiKey: "747dfe4bf013ad89eadcb3a83eb4d70e",
         appId: "1NCL1FSCF8",
         indexName: "RTK Query Loader",
       },
