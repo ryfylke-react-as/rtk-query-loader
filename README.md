@@ -1,19 +1,19 @@
-# @ryfylke-react/rtk-query-loader
-
 ![ryfrea-rtk-query-loader](https://user-images.githubusercontent.com/1190770/233955284-a7da801e-ff3f-4fdc-9808-8f1e5a829012.png)
 
 ![npm](https://img.shields.io/npm/v/@ryfylke-react/rtk-query-loader?color=gray&style=flat-square)
 ![npm type definitions](https://img.shields.io/npm/types/@ryfylke-react/rtk-query-loader?color=gray&label=%20&logoColor=gray)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/@ryfylke-react/rtk-query-loader@latest?style=flat-square)
 
-Lets you create loaders that contain multiple RTK queries.
+RTK Query Loader lets you create query loaders for your React components. 
+
+> Made for use with RTK Query, but can also be used with React Query and more.
 
 - [Live demo / Playground](https://codesandbox.io/s/rtk-query-loader-demo-42tubp)
 - [NPM](https://www.npmjs.com/package/@ryfylke-react/rtk-query-loader)
 - [Documentation](https://rtk-query-loader.ryfylke.dev/)
 - [Quick Start](https://rtk-query-loader.ryfylke.dev/Quick%20Guide/)
 
-## **Usage**
+## Install
 
 ```bash
 yarn add @ryfylke-react/rtk-query-loader
@@ -21,6 +21,16 @@ yarn add @ryfylke-react/rtk-query-loader
 npm i @ryfylke-react/rtk-query-loader
 ```
 
+## Features
+
+- [x] **Flexible**: You can extend and inherit existing loaders to create new ones.
+- [x] **Transformable**: Combine and transform the data from your loaders to your desired format.
+- [x] **Query Agnostic**: Can be used with RTK Query, Tanstack Query, JS promises, [and more...](https://rtk-query-loader.ryfylke.dev/Features/other-libs)
+- [x] **Configurable**: Exposes important configuration options, all of which are inheritable.
+
+You can read more about the features @ [the docs](https://rtk-query-loader.ryfylke.dev/Features/).
+
+## Example 
 A simple example of a component using rtk-query-loader:
 
 ```tsx
