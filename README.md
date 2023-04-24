@@ -4,9 +4,9 @@
 ![npm type definitions](https://img.shields.io/npm/types/@ryfylke-react/rtk-query-loader?color=gray&label=%20&logoColor=gray)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/@ryfylke-react/rtk-query-loader@latest?style=flat-square)
 
-RTK Query Loader lets you create query loaders for your React components. 
+**RTK Query Loader lets you create query loaders for your React components.** 
 
-> Made for use with RTK Query, but can also be used with React Query and more.
+> Made for use with RTK Query, but is also [query-agnostic](#features).
 
 - [Live demo / Playground](https://codesandbox.io/s/rtk-query-loader-demo-42tubp)
 - [NPM](https://www.npmjs.com/package/@ryfylke-react/rtk-query-loader)
