@@ -1,4 +1,4 @@
-![ryfrea-rtk-query-loader](https://user-images.githubusercontent.com/1190770/233955284-a7da801e-ff3f-4fdc-9808-8f1e5a829012.png)
+![RTK Query Loader](https://user-images.githubusercontent.com/1190770/233955284-a7da801e-ff3f-4fdc-9808-8f1e5a829012.png)
 
 ![npm](https://img.shields.io/npm/v/@ryfylke-react/rtk-query-loader?color=gray&style=flat-square)
 ![npm type definitions](https://img.shields.io/npm/types/@ryfylke-react/rtk-query-loader?color=gray&label=%20&logoColor=gray)
