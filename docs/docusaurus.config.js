@@ -91,8 +91,60 @@ const config = {
       },
       footer: {
         style: "dark",
-        links: [],
-        copyright: `Open source / GPL-3.0 License <br> Made with ❤️ by <a style="color:white" href="https://ryfylke.dev">Ryfylke React</a>`,
+        links: [
+          {
+            title: "Docs",
+            items: [
+              {
+                label: "Introduction",
+                to: "/",
+              },
+              {
+                label: "Quick guide",
+                to: "/Quick Guide",
+              },
+              {
+                label: "Examples",
+                to: "/examples",
+              },
+              {
+                label: "Features",
+                to: "/Features",
+              },
+              {
+                label: "Reference",
+                to: "/Reference",
+              },
+            ],
+          },
+          {
+            title: "Resources",
+            items: [
+              {
+                label: "GitHub",
+                href: "https://github.com/ryfylke-react-as/rtk-query-loader",
+              },
+              {
+                label: "NPM",
+                href: "https://www.npmjs.com/package/@ryfylke-react/rtk-query-loader",
+              },
+              {
+                label: "Demo (CodeSandbox)",
+                href: "https://codesandbox.io/s/rtk-query-loader-1-0-0-demo-forked-du3936?file=/src/loaders/pokemonLoader.tsx",
+              },
+            ],
+          },
+          {
+            title: "More from Ryfylke React",
+            items: [
+              {
+                label: "Ryfylke React Toast",
+                href: "https://toast.ryfylke.dev",
+              },
+            ],
+          },
+        ],
+        copyright: `<hr />Open source / GPL-3.0 License <br> Made with ❤️ by <a style="color:white" href="https://ryfylke.dev">Ryfylke React</a>`,
       },
       prism: {
         theme: lightCodeTheme,
