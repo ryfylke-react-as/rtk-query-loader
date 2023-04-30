@@ -85,6 +85,11 @@ const config = {
             href: "https://github.com/ryfylke-react-as/rtk-query-loader",
             label: "GitHub",
             position: "right",
+          },
+          {
+            href: "https://github.com/ryfylke-react-as/rtk-query-loader",
+            label: "GitHub",
+            position: "right",
             className: "icon-github",
           },
         ],
@@ -140,6 +145,10 @@ const config = {
               {
                 label: "Ryfylke React Toast",
                 href: "https://toast.ryfylke.dev",
+              },
+              {
+                label: "More",
+                href: "https://open-source.ryfylke.dev",
               },
             ],
           },

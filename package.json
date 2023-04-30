@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/ryfylke-react-as/rtk-query-loader/issues"
   },
-  "homepage": "https://github.com/ryfylke-react-as/rtk-query-loader#readme",
+  "homepage": "https://rtk-query-loader.ryfylke.dev",
   "devDependencies": {
     "@types/react": "^18.0.21",
     "@reduxjs/toolkit": "^1.6.2",

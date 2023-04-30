@@ -29,7 +29,7 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
-.icon-npm {
+/* .icon-npm {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -50,7 +50,7 @@
 .icon-npm:hover::after,
 .icon-npm:focus::after {
   border: 1px solid currentColor;
-}
+} */
 
 .icon-github {
   display: flex;
