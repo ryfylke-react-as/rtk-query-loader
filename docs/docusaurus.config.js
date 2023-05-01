@@ -62,7 +62,7 @@ const config = {
         indexName: "rtk-query-loader",
       },
       // Replace with your project's social card
-      image: "img/ryfrea-social-card.jpg",
+      image: "img/ryfrea-social-card.png",
       navbar: {
         title: "RTK Query Loader",
         logo: {
