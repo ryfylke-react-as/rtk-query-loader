@@ -127,3 +127,11 @@
   height: var(--size) !important;
   margin-left: 8px;
 }
+
+.navbar {
+  background: linear-gradient(350deg, #e2e2f3, rgb(239 254 239));
+}
+
+[data-theme="dark"] .navbar {
+  background: linear-gradient(350deg, #1b1b1d, #262b2e);
+}
