@@ -1,6 +1,6 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
-import React from "react";
+import * as React from "react";
 import * as Types from "./types";
 
 export const withLoader = <
@@ -11,7 +11,10 @@ export const withLoader = <
   TPayload extends Types._TPayload,
   TArg = never
 >(
-  Component: Types.ComponentWithLoaderData<TProps, TReturn>,
+  Component: Types.ComponentWithLoaderData<
+    TProps,
+    Types.Unwrap<TReturn>
+  >,
   loader: Types.Loader<
     TProps,
     TReturn,
@@ -35,7 +38,7 @@ export const withLoader = <
     );
     if (!CachedComponent) {
       CachedComponent = React.forwardRef(
-        Component as React.ForwardRefRenderFunction<
+        Component as unknown as React.ForwardRefRenderFunction<
           TReturn,
           TProps
         >

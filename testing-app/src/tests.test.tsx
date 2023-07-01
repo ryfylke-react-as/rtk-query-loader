@@ -4,6 +4,7 @@ import { createLoader } from "../../src/createLoader";
 import { _testCreateUseCreateQuery } from "../../src/createQuery";
 import { CustomLoaderProps } from "../../src/types";
 import { withLoader } from "../../src/withLoader";
+import { _testLoad } from "../../src/AwaitLoader";
 import {
   useGetPokemonByNameQuery,
   useGetPokemonsQuery,
@@ -27,6 +28,7 @@ const { useState } = React;
 
 // We do this to avoid two conflicting versions of React
 const useCreateQuery = _testCreateUseCreateQuery(React);
+const AwaitLoader = _testLoad(React);
 
 describe("aggregateToQuery", () => {
   test("It aggregates query status", async () => {
@@ -97,27 +99,129 @@ describe("useCreateQuery", () => {
       expect(screen.getByText("error-message")).toBeVisible()
     );
   });
+  test("You can refetch the query", async () => {
+    let count = 0;
+    const Component = withLoader(
+      (props, queries) => {
+        return (
+          <div>
+            {queries.queries.q.isFetching ? "fetch" : "success"}{" "}
+            <button onClick={queries.queries.q.refetch}>
+              refetch
+            </button>
+            <div>{queries.queries.q.data.count}</div>
+          </div>
+        );
+      },
+      createLoader({
+        useQueries: () => ({
+          queries: {
+            q: useCreateQuery(async () => {
+              count++;
+              await new Promise((resolve) =>
+                setTimeout(resolve, 300)
+              );
+              return {
+                name: "charizard",
+                count,
+              };
+            }),
+          },
+        }),
+        onLoading: () => <div>Loading</div>,
+      })
+    );
+    render(<Component />);
+    expect(screen.getByText("Loading")).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText("success")).toBeVisible()
+    );
+    expect(screen.getByText("1")).toBeVisible();
+    await userEvent.click(screen.getByText("refetch"));
+
+    await waitFor(() =>
+      expect(screen.getByText("fetch")).toBeVisible()
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText("success")).toBeVisible()
+    );
+    expect(screen.getByText("2")).toBeVisible();
+  });
+});
+
+describe("<AwaitLoader />", () => {
+  test("Renders loading state until data is available", async () => {
+    const loader = createLoader({
+      useQueries: () => ({
+        queries: {
+          charizard: useGetPokemonByNameQuery("charizard"),
+        },
+      }),
+      onLoading: () => <div>Loading</div>,
+    });
+    const Component = () => {
+      return (
+        <div>
+          <AwaitLoader
+            loader={loader}
+            render={(data) => (
+              <div>{data.queries.charizard.data.name}</div>
+            )}
+          />
+        </div>
+      );
+    };
+    render(<Component />);
+
+    expect(screen.getByText("Loading")).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText("charizard")).toBeVisible()
+    );
+  });
+
+  test("Will pass arguments properly", async () => {
+    const loader = createLoader({
+      queriesArg: (props: { name: string }) => props.name,
+      useQueries: (name) => ({
+        queries: {
+          charizard: useGetPokemonByNameQuery(name),
+        },
+      }),
+      onLoading: () => <div>Loading</div>,
+    });
+    const Component = () => {
+      return (
+        <div>
+          <AwaitLoader
+            loader={loader}
+            render={(data) => (
+              <div>{data.queries.charizard.data.name}</div>
+            )}
+            args={{
+              name: "charizard",
+            }}
+          />
+        </div>
+      );
+    };
+    render(<Component />);
+
+    expect(screen.getByText("Loading")).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText("charizard")).toBeVisible()
+    );
+  });
 });
 
 describe("withLoader", () => {
-  test("withLoader properly renders loading state until data is available", async () => {
+  test("Renders loading state until data is available", async () => {
     render(<SimpleLoadedComponent />);
     expect(screen.getByText("Loading")).toBeVisible();
     await waitFor(() =>
       expect(screen.getByText("charizard: 9")).toBeVisible()
     );
     expect(screen.getByText("pikachu")).toBeVisible();
-  });
-
-  test("Loader passes props through queriesArg to queries", async () => {
-    render(<LoadPokemon name="charizard" />);
-    await waitFor(() =>
-      expect(
-        screen.getByText(
-          'Loaded: "charizard", props: "charizard"'
-        )
-      ).toBeVisible()
-    );
   });
 
   test("onError renders when applicable", async () => {
@@ -316,6 +420,17 @@ describe("withLoader", () => {
     );
   });
 
+  test("Loaders with no queries render immediately", () => {
+    const Component = withLoader(
+      () => <div>Success</div>,
+      createLoader({})
+    );
+    render(<Component />);
+    expect(screen.getByText("Success")).toBeVisible();
+  });
+});
+
+describe("createLoader", () => {
   test("Normally, deferred queries do not throw", async () => {
     const Component = withLoader(
       (props, data) => {
@@ -362,15 +477,6 @@ describe("withLoader", () => {
     expect(screen.getByText("Error")).toBeVisible();
   });
 
-  test("Loaders with no queries render immediately", () => {
-    const Component = withLoader(
-      () => <div>Success</div>,
-      createLoader({})
-    );
-    render(<Component />);
-    expect(screen.getByText("Success")).toBeVisible();
-  });
-
   test("Can send static payload to loader", async () => {
     const Component = withLoader(
       (_, loader) => {
@@ -386,6 +492,17 @@ describe("withLoader", () => {
     );
     render(<Component />);
     expect(screen.getByText("bar")).toBeVisible();
+  });
+
+  test("Loader passes props through queriesArg to queries", async () => {
+    render(<LoadPokemon name="charizard" />);
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          'Loaded: "charizard", props: "charizard"'
+        )
+      ).toBeVisible()
+    );
   });
 
   describe(".extend()", () => {

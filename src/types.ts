@@ -2,6 +2,10 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { ReactElement } from "react";
 
+export type Unwrap<T> = {
+  [K in keyof T]: T[K];
+} & {};
+
 export type AllNever<
   TQueries,
   TDeferred,
@@ -86,6 +90,14 @@ export type DataShapeInput<
   queries?: TQueries;
   deferredQueries?: TDeferred;
   payload?: TPayload;
+  /** This should be specified at the **top level** of `createLoader` or `extend` */
+  onLoading?: never;
+  /** This should be specified at the **top level** of `createLoader` or `extend` */
+  onError?: never;
+  /** This should be specified at the **top level** of `createLoader` or `extend` */
+  onFetching?: never;
+  /** This should be specified at the **top level** of `createLoader` or `extend` */
+  whileFetching?: never;
 };
 
 export type ResolveDataShape<
@@ -387,9 +399,15 @@ export type CreateQueryGetter<T extends unknown> =
 export type CreateQueryReducerAction<T extends unknown> =
   | {
       type: "load";
+      payload: {
+        refetch: () => void;
+      };
     }
   | {
       type: "fetch";
+      payload: {
+        refetch: () => void;
+      };
     }
   | {
       type: "error";

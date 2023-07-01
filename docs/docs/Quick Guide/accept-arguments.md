@@ -51,3 +51,17 @@ type ConsumerProps<T extends Record<string, unknown>> = Record<
 // → "1234"
 // → loader.useQueries("1234")
 ```
+
+## When using `<Load />`
+
+You should pass the expected _props_ to the `arg` prop when using `<Load />`.
+
+```tsx
+<Load
+    loader={loader}
+    render={(data) => (...)}
+    args={{
+        userId: "1234",
+    }}
+/>
+```

@@ -18,3 +18,4 @@ export type {
   WithLoaderArgs,
 } from "./types";
 export { withLoader } from "./withLoader";
+export { AwaitLoader } from "./AwaitLoader";

@@ -6,7 +6,7 @@ sidebar_position: 5
 
 Helper for typing your expected consumer props for the loader.
 
-```typescript
+```typescript {1-3,6}
 type PokemonLoaderProps = ConsumerProps<{
   name: string;
 }>;

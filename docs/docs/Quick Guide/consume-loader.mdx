@@ -7,12 +7,16 @@ import TabItem from "@theme/TabItem";
 
 # 5. Consume the loader
 
+You can consume a loader using one of the following methods:
+
 <Tabs groupId="method" queryString>
-  <Tab label="Using withLoader" value="withLoader" default>
+  <Tab label="withLoader" value="withLoader" default>
 
 A convenient wrapper that ensures that the component is only rendered when it has data.
 
-This is definitely the preferred and optimal way to consume the loaders.
+:::info
+This is the recommended and optimal way to consume the loaders.
+:::
 
 ```tsx {8-26}
 import { withLoader } from "@ryfylke-react/rtk-query-loader";
@@ -43,10 +47,52 @@ export const UserRoute = withLoader((props: Props, loader) => {
 }, userRouteLoader);
 ```
 
+<ul>
+  <li>
+    <a
+      href="https://codesandbox.io/s/ryfylke-react-rtk-query-loader-withloader-example-pzgqkf?file=/src/App.tsx"
+      target="_blank"
+    >
+      Live example on CodeSandbox
+    </a>
+  </li>
+</ul>
+
   </Tab>
-  <Tab label="Using useLoader" value="useLoader" default>
+
+  <Tab label="<AwaitLoader>" value="load">
+
+If you prefer not using higher order components, or want to use the loader in a more conditional way, you can use the &lt;`AwaitLoader` /&gt; component.
+
+```tsx {6-18}
+import { AwaitLoader } from "@ryfylke-react/rtk-query-loader";
+import { userRouteLoader } from "./baseLoader";
+
+const UserRoute = () => {
+  return (
+    <AwaitLoader
+      loader={userRouteLoader}
+      render={({ queries }) => (
+        <article>
+          <header>
+            <h2>{queries.user.data.name}</h2>
+          </header>
+          <main>
+            {queries.posts.data.map((post) => (...))}
+          </main>
+        </article>
+      )}
+    />
+  );
+};
+```
+
+  </Tab>
+  <Tab label="useLoader" value="useLoader">
 
 Every `Loader` contains an actual hook that you can call to run all the queries and aggregate their statuses as if they were just one joined query.
+
+This is convenient if you want to simply use the data, but not the loading and error states of the loader.
 
 ```tsx {3,9}
 import { userRouteLoader } from "./baseLoader";
@@ -70,5 +116,9 @@ const UserRoute = (props: Props) => {
 };
 ```
 
+<ul>
+<li>
+<a href="https://codesandbox.io/s/ryfylke-react-rtk-query-loader-useloader-example-qysfvt?file=/src/App.tsx" target="_blank">
+Live example on Codesandbox</a></li></ul>
   </Tab>
 </Tabs>

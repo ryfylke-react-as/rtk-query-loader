@@ -4,6 +4,12 @@ import * as Types from "./types";
 type ReactType = typeof React;
 let R = React;
 
+let requestIdCount = 0;
+const requestIdGenerator = () => {
+  requestIdCount += 1;
+  return `usecreatequery-${requestIdCount}`;
+};
+
 /**
  * Creates a query from an async getter function.
  *
@@ -18,6 +24,8 @@ export const useCreateQuery = <T extends unknown>(
   getter: Types.CreateQueryGetter<T>,
   dependencies?: any[]
 ): Types.UseQueryResult<T> => {
+  const safeDependencies = dependencies ?? [];
+  const requestId = R.useRef(requestIdGenerator()).current;
   const [state, dispatch] = R.useReducer(
     (
       state: Types.UseQueryResult<T>,
@@ -32,6 +40,8 @@ export const useCreateQuery = <T extends unknown>(
             isFetching: false,
             isLoading: true,
             isUninitialized: false,
+            startedTimeStamp: Date.now(),
+            refetch: action.payload.refetch,
           };
         case "fetch":
           return {
@@ -41,6 +51,8 @@ export const useCreateQuery = <T extends unknown>(
             isError: false,
             isFetching: true,
             isUninitialized: false,
+            startedTimeStamp: Date.now(),
+            refetch: action.payload.refetch,
           };
         case "success":
           return {
@@ -51,6 +63,8 @@ export const useCreateQuery = <T extends unknown>(
             isUninitialized: false,
             isSuccess: true,
             data: action.payload.data,
+            currentData: action.payload.data,
+            fulfilledTimeStamp: Date.now(),
           };
         case "error":
           return {
@@ -61,6 +75,7 @@ export const useCreateQuery = <T extends unknown>(
             isUninitialized: false,
             isError: true,
             error: action.payload.error,
+            fulfilledTimeStamp: Date.now(),
           };
         default:
           return state;
@@ -78,18 +93,13 @@ export const useCreateQuery = <T extends unknown>(
       error: undefined,
       endpointName: "",
       fulfilledTimeStamp: 0,
-      originalArgs: undefined,
-      requestId: "",
+      originalArgs: safeDependencies,
+      requestId,
       startedTimeStamp: 0,
     }
   );
 
-  R.useEffect(() => {
-    if (state.data === undefined) {
-      dispatch({ type: "load" });
-    } else {
-      dispatch({ type: "fetch" });
-    }
+  const runQuery = (overrideInitialized?: boolean) => {
     const fetchData = async () => {
       try {
         const data = await getter();
@@ -99,8 +109,19 @@ export const useCreateQuery = <T extends unknown>(
       }
     };
 
+    dispatch({
+      type: overrideInitialized
+        ? "fetch"
+        : state.isUninitialized
+        ? "load"
+        : "fetch",
+      payload: { refetch: () => runQuery(true) },
+    });
+
     fetchData();
-  }, [...(dependencies ?? [])]);
+  };
+
+  R.useEffect(() => runQuery(), safeDependencies);
 
   return state;
 };
