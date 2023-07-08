@@ -7,7 +7,24 @@ import TabItem from "@theme/TabItem";
 
 # 5. Consume the loader
 
-You can consume a loader using one of the following methods:
+## Picking the right method
+
+We recommend consuming the loader with either `withLoader` or `AwaitLoader`.
+
+- Use `withLoader` if you want to use the loader to affect the whole component.
+- Use `AwaitLoader` if you want to use the loader in a more conditional way, or if you only want a small section of your component to start loading data, after the rest of the component has rendered.
+
+You could also use `useLoader`, which is the hook that `withLoader` and `AwaitLoader` use under the hood. This will simply return the aggregated queries of the loader, and is useful if you want to use the data, but **not the loading and error states of the loader**.
+
+<img
+  src={require("./rtk-query-loader-chart.png").default}
+  alt="Chart showing differences between AwaitLoader and withLoader"
+  style={{ maxWidth: 500 }}
+/>
+
+## Examples
+
+Select a tab below to see an example of how you would consume the loader using that specific method.
 
 <Tabs groupId="method" queryString>
   <Tab label="withLoader" value="withLoader" default>
@@ -61,6 +78,8 @@ export const UserRoute = withLoader((props: Props, loader) => {
   </Tab>
 
   <Tab label="<AwaitLoader>" value="load">
+
+> **New in version 1.0.4**
 
 If you prefer not using higher order components, or want to use the loader in a more conditional way, you can use the &lt;`AwaitLoader` /&gt; component.
 

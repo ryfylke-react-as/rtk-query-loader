@@ -1,22 +1,22 @@
 ---
-sidebar_position: 1
+sidebar_position: 3
 ---
 
-# withLoader
+# `withLoader()`
 
-Consumes a `Loader`.
+Wraps a component and provides it with a given `Loader`'s data. Renders the appropriate load/fetch/error states of the loader, and finally the given component when data is loaded successfully.
 
 ## Arguments
 
-`withLoader` takes two arguments.
-
-```typescript
-type Argument1 = (props: P, loaderData: R) => ReactElement;
-type Argument2 = Loader;
-```
+`withLoader` takes two arguments
 
 - The first argument is a component, but with an extra parameter for the loaded data.
-- The second argument is a `Loader` (returned from `createLoader`)
+- The second argument is a `Loader` (returned from [`createLoader`](./create-loader.md))
+
+```typescript
+type Arg1 = (props: P, loaderData: R) => ReactElement;
+type Arg2 = Loader;
+```
 
 ## Example usage
 

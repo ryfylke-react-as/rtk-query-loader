@@ -1,0 +1,92 @@
+---
+sidebar_position: 4
+---
+
+# 4. Arguments for your loader
+
+If you want the loader to take an argument, all you have to do is to add a `queriesArg`:
+
+```tsx {5-7,10-12}
+import { ConsumerProps } from "@ryfylke-react/rtk-query-loader";
+
+// This means that any component that has props that extend this
+// type can consume the loader using `withLoader`
+type UserRouteLoaderProps = ConsumerProps<{
+  userId: string;
+}>;
+
+export const userRouteLoader = baseLoader.extend({
+  queriesArg: (props: UserRouteLoaderProps) => props.userId,
+  // type is now inferred from queriesArg return
+  useQueries: (userId) => {
+    const user = useGetUserQuery(userId);
+    const posts = useGetPostsByUser(userId);
+
+    return {
+      queries: {
+        user,
+        posts,
+      },
+    };
+  },
+});
+```
+
+## Data flow
+
+The transformation layer between the useQueries hook and the loader is the `queriesArg` function. It takes the component's props and returns the argument that should be passed to the useQueries hook. This is nessecary to be able to consume the loader in a type-safe way.
+
+<img
+  src={require("./queriesArg.png").default}
+  alt="queriesArg"
+  style={{ maxWidth: "100%" }}
+/>
+
+## When using `<AwaitLoader />`
+
+You should pass the expected _props_ to the `arg` prop when using `<AwaitLoader />`.
+
+```tsx
+<AwaitLoader
+    loader={loader}
+    render={(data) => (...)}
+    args={{
+        userId: "1234",
+    }}
+/>
+```
+
+## Properly typing the `queriesArg` function
+
+You can use the `ConsumerProps<T>` utility type to type the `queriesArg` function.
+
+```tsx
+import {
+  ConsumerProps,
+  createLoader,
+} from "@ryfylke-react/rtk-query-loader";
+
+type UserRouteLoaderProps = ConsumerProps<{
+  userId: string;
+}>;
+
+const loader = createLoader({
+  queriesArg: (props: UserRouteLoaderProps) => props.userId,
+  // ...
+});
+```
+
+The type utility will ensure that the type can be extended by the consumer components. This means that the following types are both valid for the definition above:
+
+```ts
+// This is valid ✅
+type Props_1 = {
+  userId: string;
+};
+
+// This is also valid ✅
+type Props_2 = {
+  userId: string;
+  someOtherProp: string;
+};
+```

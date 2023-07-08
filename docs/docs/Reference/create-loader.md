@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# createLoader
+# `createLoader()`
 
 Creates a `Loader`.
 

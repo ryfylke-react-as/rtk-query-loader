@@ -21,6 +21,34 @@ You write your components, as if the data has already loaded.
 npm i @ryfylke-react/rtk-query-loader
 ```
 
+## Example
+
+```tsx
+type Props = {
+  name: string;
+};
+
+// Creating a loader
+const loader = createLoader({
+  queriesArg: (props: Props) => props.name,
+  useQueries: (name) => ({
+    queries: {
+      pokemon: useGetPokemonQuery(name),
+    },
+  }),
+});
+
+// Consuming the loader
+const Pokemon = withLoader((props, { queries }) => {
+  return (
+    <article>
+      <h1>{queries.pokemon.data.name}</h1>
+      <div>{/* ... */}</div>
+    </article>
+  );
+});
+```
+
 ## Playground
 
 <iframe 

@@ -1,8 +1,8 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 ---
 
-# ConsumerProps
+# `ConsumerProps<>`
 
 Helper for typing your expected consumer props for the loader.
 

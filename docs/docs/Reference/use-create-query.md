@@ -1,8 +1,8 @@
 ---
-sidebar_position: 4
+sidebar_position: 2
 ---
 
-# useCreateQuery
+# `useCreateQuery()`
 
 Lets you use any function that returns a promise to load your component.
 

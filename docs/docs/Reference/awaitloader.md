@@ -1,8 +1,10 @@
 ---
-sidebar_position: 7
+sidebar_position: 5
 ---
 
-# AwaitLoader
+# `<AwaitLoader />`
+
+> **New in version 1.0.4**
 
 AwaitLoader is a component that consumes a loader and then renders the proper load/fetch/error states, and `props.render` on success.
 

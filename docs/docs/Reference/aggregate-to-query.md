@@ -1,8 +1,8 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 ---
 
-# aggregateToQuery
+# `aggregateToQuery()`
 
 Aggregates a set of `UseQueryResult` into a single query.
 

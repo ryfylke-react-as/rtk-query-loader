@@ -1,8 +1,8 @@
 ---
-sidebar_position: 3
+sidebar_position: 5
 ---
 
-# InferLoaderData
+# `InferLoaderData<>`
 
 Returns the return type of a given `Loader`:
 
