@@ -6,6 +6,8 @@ sidebar_position: 2
 
 You can transform the queries to any format you'd like.
 
+## Example
+
 ```ts
 const notTransformed = createLoader({
   useQueries: () => ({

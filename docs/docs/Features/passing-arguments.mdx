@@ -1,0 +1,82 @@
+# Passing arguments
+
+You can setup loaders so that they can be used with arguments. How you pass the arguments depends on how you use the loader.
+
+You set this up using the `queriesArg` argument. This is a function that takes the consumer's expected props and returns the argument that should be passed to the useQueries hook.
+
+```tsx
+const loader = createLoader({
+  queriesArg: (props: { userId: string }) => props.userId,
+  useQueries: (userId) => {
+    // userId is automatically inferred as string
+    const user = useGetUserQuery(userId);
+
+    return {
+      queries: {
+        user,
+      },
+    };
+  },
+});
+```
+
+## Data flow
+
+The transformation layer between the useQueries hook and the loader is the `queriesArg` function.
+
+It takes the component's props and returns the argument that should be passed to the useQueries hook. This is nessecary to be able to consume the loader in a type-safe way through withLoader.
+
+<img
+  src={require("../Quick Guide/queriesArg.png").default}
+  alt="queriesArg"
+  style={{ maxWidth: "100%" }}
+/>
+
+## When using `<AwaitLoader />`
+
+You should pass the expected _props_ to the `arg` prop when using `<AwaitLoader />`.
+
+```tsx
+<AwaitLoader
+    loader={loader}
+    render={(data) => (...)}
+    args={{
+        userId: "1234",
+    }}
+/>
+```
+
+## Properly typing the `queriesArg` function
+
+You can use the `ConsumerProps<T>` utility type to type the `queriesArg` function.
+
+```tsx
+import {
+  ConsumerProps,
+  createLoader,
+} from "@ryfylke-react/rtk-query-loader";
+
+type UserRouteLoaderProps = ConsumerProps<{
+  userId: string;
+}>;
+
+const loader = createLoader({
+  queriesArg: (props: UserRouteLoaderProps) => props.userId,
+  // ...
+});
+```
+
+The type utility will ensure that the type can be extended by the consumer components. This means that the following types are both valid for the definition above:
+
+```ts
+// This is valid ✅
+type Props_1 = {
+  userId: string;
+};
+
+// This is also valid ✅
+type Props_2 = {
+  userId: string;
+  someOtherProp: string;
+};
+```

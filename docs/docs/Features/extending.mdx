@@ -1,0 +1,72 @@
+---
+sidebar_position: 1
+---
+
+# Extend
+
+You can **extend** existing `Loader`s. This lets you inherit and overwrite properties from an existing `Loader`.
+
+## Example
+
+```tsx
+const parentLoader = createLoader({
+    onLoading: () => <div>Loading...</div>
+});
+
+const childLoader = parentLoader.extend({
+    useQueries: () => ({...}),
+    onError: () => <div>Error</div>,
+}).extend({
+    transform: () => ({...}),
+}).extend({
+    onLoading: () => <div>Overwritten loading...</div>,
+});
+```
+
+## Separation of concerns
+
+Its up to you how much you want to separate logic here. Some examples would be...
+
+- Co-locating loaders in a shared folder
+- Co-locating loaders in same file as component
+- Co-locating loaders in same directory but in a separate file from the component
+
+I personally prefer to keep the loaders close to the component, either in a file besides it or directly in the file itself, and then keep a base loader somewhere else to extend from.
+
+## Creating a loader hierarchy
+
+You can extend from any loader, including loaders that have already been extended. This allows you to create a hierarchy of loaders that can be used to share logic between components.
+
+<img
+  src={require("../Quick Guide/extend-loader.png").default}
+  alt="Loader hierarchy illustration"
+/>
+
+## Tips
+
+:::caution `.extend` will not merge what two separate `useQueries` returns.
+For example, you cannot _just_ inherit the deferredQueries, you must either inherit or overwrite the whole `useQueries` argument.
+:::
+
+:::tip Reusable transformers
+You can extend as many times as you'd like. You can use this feature to easily inject reusable snippets, like transformers.
+
+```typescript
+type QueryRecord = Record<string, UseQueryResult<unknown>>;
+
+export const transformData = {
+  transform: (data: {
+    queries: QueryRecord;
+    deferredQueries: QueryRecord;
+    payload: unknown;
+  }) => {
+    // handle transformation in generic way
+  },
+};
+```
+
+```typescript
+const loader = createLoader({...}).extend(transformData);
+```
+
+:::
