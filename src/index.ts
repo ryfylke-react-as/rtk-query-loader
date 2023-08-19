@@ -7,6 +7,15 @@ export type {
   ComponentWithLoaderData,
   ConsumerProps,
   CreateUseLoaderArgs,
+  CreateLoaderArgs,
+  DeferredConfig,
+  LoaderConfig,
+  _TDeferred,
+  _TPayload,
+  _TQueries,
+  _TProps,
+  _TReturn,
+  MakeDataRequired,
   CustomLoaderProps,
   DataShapeInput,
   InferLoaderData,
@@ -19,3 +28,4 @@ export type {
 } from "./types";
 export { withLoader } from "./withLoader";
 export { AwaitLoader } from "./AwaitLoader";
+export { useCreateLoader } from "./useCreateLoader";

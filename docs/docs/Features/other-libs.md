@@ -12,6 +12,8 @@ Although `rtk-query-loader` was build with `@reduxjs/toolkit` in mind, the under
 
 ## Tanstack Query
 
+[See example on CodeSandbox](https://codesandbox.io/s/tanstack-query-rtk-query-loader-example-6393w2)
+
 ```typescript
 import {
   useQuery,

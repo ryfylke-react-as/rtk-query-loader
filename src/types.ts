@@ -155,9 +155,12 @@ export type CreateUseLoaderArgs<
     ...args: OptionalGenericArg<TArg>
   ) => DataShapeInput<TQueries, TDeferred, TPayload>;
   /** Transforms the output of the queries */
-  transform?: (
-    data: ResolveLoadedDataShape<TQueries, TDeferred, TPayload>
-  ) => TReturn;
+  transform?: LoaderTransformFunction<
+    TQueries,
+    TDeferred,
+    TPayload,
+    TReturn
+  >;
   config?: LoaderConfig;
 };
 
