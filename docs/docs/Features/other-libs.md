@@ -24,7 +24,7 @@ import {
 const tanstackResolver = <T extends unknown>(
   query: TanstackUseQueryResult<T>
 ): UseQueryResult<T> & {
-  orignal_query: TanstackUseQueryResult<T>;
+  original_query: TanstackUseQueryResult<T>;
 } => ({
   isLoading: query.isLoading,
   isFetching: query.isFetching,
