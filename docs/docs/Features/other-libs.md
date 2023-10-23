@@ -15,6 +15,7 @@ Although `rtk-query-loader` was build with `@reduxjs/toolkit` in mind, the under
 [See example on CodeSandbox](https://codesandbox.io/s/tanstack-query-rtk-query-loader-example-6393w2)
 
 ```typescript
+import { useQueryResult } from "@ryfylke-react/rtk-query-loader";
 import {
   useQuery,
   UseQueryResult as TanstackUseQueryResult,
@@ -70,6 +71,61 @@ const loader = createLoader({
 ```
 
 The output format will obviously be a bit different, but in this example you have access to the original query at the `.original_query` property.
+
+## SWR
+
+```typescript
+import { UseQueryResult } from "@ryfylke-react/rtk-query-loader";
+import useSWR, { SWRResponse, Key } from "swr";
+
+const swrResolver = <TRes>(res: SWRResponse<TRes>): UseQueryResult<TRes> => {
+  const q = {
+    data: res.data,
+    isError: res.error ? true : false,
+    isLoading: res.isLoading,
+    isFetching: res.isLoading && res.data !== undefined,
+    isSuccess: res.data ? (res.error ? false : true) : false,
+    startedTimeStamp: new Date().getTime(),
+    isUninitialized: !res.isLoading && !res.data,
+    refetch: () => {
+      res.mutate();
+    },
+    currentData: res.data,
+    endpointName: "unknown",
+    originalArgs: "unknown",
+    requestId: "unknown",
+    error: res.error,
+    fulfilledTimeStamp: new Date().getTime()
+  };
+  console.log(q);
+  return q;
+};
+
+export const useSWRQuery = <TRes, TArgs extends Key>(
+  key: TArgs,
+  fetcher: (args: TArgs) => Promise<TRes>
+) => {
+  return swrResolver(useSWR(key, fetcher));
+};
+```
+
+This is how you would use it:
+
+```typescript
+import { useTanstackQuery } from "../loader-resolvers";
+
+const loader = createLoader({
+  useQueries: (pokemonName?: string) => {
+    const pokemon = useSWRQuery(pokemonName ?? "charizard", getPokemon);
+
+    return {
+      queries: {
+        pokemon,
+      },
+    };
+  },
+});
+```
 
 ## Other libraries
 
