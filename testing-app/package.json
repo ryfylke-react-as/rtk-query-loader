@@ -17,7 +17,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "test": "react-scripts test"
+    "test": "react-scripts test",
+    "trace": "tsc --generateTrace trace --incremental false"
   },
   "eslintConfig": {
     "extends": [

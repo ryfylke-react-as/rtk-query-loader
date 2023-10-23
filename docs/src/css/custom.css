@@ -15,6 +15,7 @@
   --ifm-color-primary-lightest: #3cad6e;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-alert-border-left-width: 3px;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -134,4 +135,51 @@
 
 [data-theme="dark"] .navbar {
   background: linear-gradient(350deg, #1b1b1d, #262b2e);
+}
+/* 
+.card,
+.alert,
+div.theme-code-block,
+.pagination-nav__link,
+.menu__link,
+.menu__caret,
+.menu__list-item-collapsible {
+  border-radius: 0;
+} */
+
+.pagination-nav__link {
+  .pagination-nav__sublabel {
+    font-size: 0.75em;
+    margin-bottom: 0.55rem;
+  }
+}
+
+hr {
+  background-color: var(--ifm-blockquote-border-color);
+}
+
+[data-theme="dark"] {
+  .alert {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+  }
+  .alert--warning {
+    --ifm-alert-background-color: rgb(133 91 28 / 35%);
+  }
+  .alert--success {
+    --ifm-alert-background-color: rgb(10 101 10 / 36%);
+  }
+  .alert--info {
+    --ifm-alert-background-color: rgb(45 95 110 / 46%);
+  }
+  .alert--secondary {
+    --ifm-alert-background-color: rgb(72 71 71 / 27%);
+  }
+  .footer--dark {
+    background: #121213;
+
+    hr {
+      background: #333;
+    }
+  }
 }

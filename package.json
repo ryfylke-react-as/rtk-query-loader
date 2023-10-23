@@ -10,7 +10,8 @@
     "build:esm": "tsc",
     "build:cjs": "tsc --module commonjs --outDir dist/cjs",
     "prepare": "yarn build",
-    "setup-link": "npm link && cd testing-app && npm link @ryfylke-react/rtk-query-loader"
+    "setup-link": "npm link && cd testing-app && npm link @ryfylke-react/rtk-query-loader",
+    "trace": "tsc --generateTrace trace --incremental false"
   },
   "repository": {
     "type": "git",
