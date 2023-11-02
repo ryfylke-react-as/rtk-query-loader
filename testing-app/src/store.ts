@@ -18,7 +18,7 @@ export type Pokemons = {
 export const someApi = createApi({
   reducerPath: "pokemonApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/",
+    baseUrl: "https://google.com/",
   }),
   endpoints: (builder) => ({
     getPokemonByName: builder.query<Pokemon, string>({

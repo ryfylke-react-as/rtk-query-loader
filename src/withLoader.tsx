@@ -91,9 +91,7 @@ export const withLoader = <
       <LoaderComponent
         onFetching={onFetching}
         whileFetching={whileFetching}
-        onSuccess={
-          onSuccess as (data: unknown) => React.ReactElement
-        }
+        onSuccess={onSuccess as (data: unknown) => JSX.Element}
         onError={onError}
         onLoading={onLoading}
         query={query}

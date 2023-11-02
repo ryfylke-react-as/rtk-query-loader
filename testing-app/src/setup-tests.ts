@@ -6,11 +6,23 @@ import "@testing-library/jest-dom";
 import { setupServer } from "msw/node";
 import { handlers } from "./mocks";
 import { someApi, store } from "./store";
+import {
+  beforeEach,
+  beforeAll,
+  afterAll,
+  afterEach,
+} from "vitest";
 
 const server = setupServer(...handlers);
-beforeAll(() => server.listen());
-beforeEach(() => store.dispatch(someApi.util.resetApiState()));
-afterEach(() => server.resetHandlers());
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: "error" });
+});
+beforeEach(() => {
+  store.dispatch(someApi.util.resetApiState());
+});
+afterEach(() => {
+  server.resetHandlers();
+});
 afterAll(() => {
   server.close();
 });

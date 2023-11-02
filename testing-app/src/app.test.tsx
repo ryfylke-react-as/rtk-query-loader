@@ -18,11 +18,12 @@ import {
   TestAggregateComponent,
 } from "./testComponents";
 import {
-  render,
   screen,
   waitFor,
   waitForElementToBeRemoved,
-} from "./utils";
+} from "@testing-library/react";
+import { render } from "./utils";
+import { expect, describe, test } from "vitest";
 
 const { useState } = React;
 

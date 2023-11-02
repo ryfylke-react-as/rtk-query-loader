@@ -1,6 +1,5 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
-import { ReactElement } from "react";
 
 export type Unwrap<T> = {
   [K in keyof T]: T[K];
@@ -183,7 +182,7 @@ export type UseLoader<
 export type ComponentWithLoaderData<
   TProps extends Record<string, any>,
   TReturn extends unknown
-> = (props: TProps, loaderData: TReturn) => ReactElement;
+> = (props: TProps, loaderData: TReturn) => JSX.Element;
 
 /** Use: `InferLoaderData<typeof loader>`. Returns the return-value of the given loader's aggregated query. */
 export type InferLoaderData<T> = T extends
@@ -211,36 +210,36 @@ export type InferLoaderData<T> = T extends
 
 export type Component<TProps extends Record<string, any>> = (
   props: TProps
-) => ReactElement;
+) => JSX.Element;
 
 export type WhileFetchingArgs<
   TProps extends unknown,
   TReturn extends unknown
 > = {
   /** Will be prepended before the component while the query is fetching */
-  prepend?: (props: TProps, data?: TReturn) => ReactElement;
+  prepend?: (props: TProps, data?: TReturn) => JSX.Element;
   /** Will be appended after the component while the query is fetching */
-  append?: (props: TProps, data?: TReturn) => ReactElement;
+  append?: (props: TProps, data?: TReturn) => JSX.Element;
 };
 
 export type CustomLoaderProps<T = unknown> = {
   /** What the loader requests be rendered while fetching data */
-  onFetching?: React.ReactElement;
+  onFetching?: JSX.Element;
   /** What the loader requests be rendered while fetching data */
   whileFetching?: {
     /** Should be appended to the success result while fetching */
-    append?: React.ReactElement;
+    append?: JSX.Element;
     /** Should be prepended to the success result while fetching */
-    prepend?: React.ReactElement;
+    prepend?: JSX.Element;
   };
   /** What the loader requests be rendered when data is available */
-  onSuccess: (data: T) => React.ReactElement;
+  onSuccess: (data: T) => JSX.Element;
   /** What the loader requests be rendered when the query fails */
   onError?: (
     error: SerializedError | FetchBaseQueryError
   ) => JSX.Element;
   /** What the loader requests be rendered while loading data */
-  onLoading?: React.ReactElement;
+  onLoading?: JSX.Element;
   config?: LoaderConfig;
   /** The joined query for the loader */
   query: UseQueryResult<T>;
@@ -274,18 +273,18 @@ export type CreateLoaderArgs<
   /** Generates an argument for the `queries` based on component props */
   queriesArg?: (props: TProps) => TArg;
   /** Determines what to render while loading (with no data to fallback on) */
-  onLoading?: (props: TProps) => ReactElement;
+  onLoading?: (props: TProps) => JSX.Element;
   /** Determines what to render when query fails. */
   onError?: (
     props: TProps,
     error: FetchBaseQueryError | SerializedError,
     joinedQuery: UseQueryResult<undefined>
-  ) => ReactElement;
+  ) => JSX.Element;
   /** @deprecated Using onFetching might result in loss of internal state. Use `whileFetching` instead, or pass the query to the component */
   onFetching?: (
     props: TProps,
-    renderBody: () => ReactElement
-  ) => ReactElement;
+    renderBody: () => JSX.Element
+  ) => JSX.Element;
   /** Determines what to render besides success-result while query is fetching. */
   whileFetching?: WhileFetchingArgs<TProps, TReturn>;
   config?: LoaderConfig;
@@ -337,18 +336,18 @@ export type Loader<
   /** Generates an argument for the `queries` based on component props */
   queriesArg?: (props: TProps) => TArg;
   /** Determines what to render while loading (with no data to fallback on) */
-  onLoading?: (props: TProps) => ReactElement;
+  onLoading?: (props: TProps) => JSX.Element;
   /** Determines what to render when query fails. */
   onError?: (
     props: TProps,
     error: SerializedError | FetchBaseQueryError,
     joinedQuery: UseQueryResult<undefined>
-  ) => ReactElement;
+  ) => JSX.Element;
   /** @deprecated Using onFetching might result in loss of internal state. Use `whileFetching` instead, or pass the query to the component */
   onFetching?: (
     props: TProps,
-    renderBody: () => ReactElement
-  ) => ReactElement;
+    renderBody: () => JSX.Element
+  ) => JSX.Element;
   /** Determines what to render besides success-result while query is fetching. */
   whileFetching?: WhileFetchingArgs<TProps, TReturn>;
   config?: LoaderConfig;

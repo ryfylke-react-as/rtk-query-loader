@@ -25,7 +25,7 @@ export const AwaitLoader = <
   TArg = never
 >(
   args: AwaitLoaderProps<TProps, TReturn, TArg>
-) => {
+): JSX.Element => {
   const Component = R.useCallback(
     withLoader(
       (_, loaderData) => args.render(loaderData),
