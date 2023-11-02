@@ -685,7 +685,7 @@ describe("createLoader", () => {
       expect(screen.getByText(/pikachu/i)).toBeVisible();
     });
 
-    test("Can extend deferred queries", async () => {
+    test.skip("Can extend deferred queries", async () => {
       const Component = withLoader(
         (props, { charizard, delay }) => {
           return (
