@@ -815,7 +815,7 @@ describe("createLoader", () => {
       );
     });
 
-    test.skip("Can partially extend config", async () => {
+    test("Can partially extend config", async () => {
       const CustomLoader = (props: CustomLoaderProps) => {
         if (props.query.isError) {
           return <div>Custom error!</div>;
