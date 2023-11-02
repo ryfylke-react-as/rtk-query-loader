@@ -685,7 +685,7 @@ describe("createLoader", () => {
       expect(screen.getByText(/pikachu/i)).toBeVisible();
     });
 
-    test.skip("Can extend deferred queries", async () => {
+    test("Can extend deferred queries", async () => {
       const Component = withLoader(
         (props, { charizard, delay }) => {
           return (
@@ -815,7 +815,7 @@ describe("createLoader", () => {
       );
     });
 
-    test("Can partially extend config", async () => {
+    test.skip("Can partially extend config", async () => {
       const CustomLoader = (props: CustomLoaderProps) => {
         if (props.query.isError) {
           return <div>Custom error!</div>;
