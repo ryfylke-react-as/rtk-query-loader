@@ -1,13 +1,13 @@
-import { rest } from "msw";
+import { http, HttpResponse, delay } from "msw";
 
 const RESPONSE_DELAY = 100;
 
 export const handlers = [
-  rest.get("/pokemons", (req, res, c) => {
-    return res(
-      c.delay(RESPONSE_DELAY),
-      c.status(200),
-      c.json({
+  http.get("https://google.com/pokemons", async () => {
+    await delay(RESPONSE_DELAY);
+
+    return HttpResponse.json(
+      {
         results: [
           {
             name: "charizard",
@@ -16,24 +16,30 @@ export const handlers = [
             name: "pikachu",
           },
         ],
-      })
+      },
+      { status: 200 }
     );
   }),
-  rest.get("/pokemon/:name", (req, res, c) => {
-    if (req.params.name === "error") {
-      return res(c.delay(RESPONSE_DELAY), c.status(500));
+  http.get(
+    "https://google.com/pokemon/*",
+    async ({ request }) => {
+      const name = request.url.split("/").at(-1);
+      await delay(RESPONSE_DELAY);
+      if (name === "error") {
+        return HttpResponse.error();
+      }
+
+      if (name === "delay") {
+        await delay(100);
+      }
+
+      return HttpResponse.json(
+        {
+          name: name,
+          id: name?.length,
+        },
+        { status: 200 }
+      );
     }
-    const delay =
-      req.params.name === "delay"
-        ? RESPONSE_DELAY + 100
-        : RESPONSE_DELAY;
-    return res(
-      c.delay(delay),
-      c.status(200),
-      c.json({
-        name: req.params.name,
-        id: req.params.name.length,
-      })
-    );
-  }),
+  ),
 ];

@@ -27,7 +27,7 @@ You could also use `useLoader`, which is the hook that `withLoader` and `AwaitLo
 Select a tab below to see an example of how you would consume the loader using that specific method.
 
 <Tabs groupId="method" queryString>
-  <Tab label="withLoader" value="withLoader" default>
+  <TabItem label="withLoader" value="withLoader" default>
 
 A convenient wrapper that ensures that the component is only rendered when it has data.
 
@@ -75,9 +75,9 @@ export const UserRoute = withLoader((props: Props, loader) => {
   </li>
 </ul>
 
-  </Tab>
+  </TabItem>
 
-  <Tab label="<AwaitLoader>" value="load">
+  <TabItem label="<AwaitLoader>" value="load">
 
 > **New in version 1.0.4**
 
@@ -117,8 +117,8 @@ const UserRoute = () => {
   </li>
 </ul>
 
-  </Tab>
-  <Tab label="useLoader" value="useLoader">
+  </TabItem>
+  <TabItem label="useLoader" value="useLoader">
 
 Every `Loader` contains an actual hook that you can call to run all the queries and aggregate their statuses as if they were just one joined query.
 
@@ -148,7 +148,10 @@ const UserRoute = (props: Props) => {
 
 <ul>
 <li>
-<a href="https://codesandbox.io/s/ryfylke-react-rtk-query-loader-useloader-example-qysfvt?file=/src/App.tsx" target="_blank">
-Live example on Codesandbox</a></li></ul>
-  </Tab>
+
+[Live example on Codesandbox](https://codesandbox.io/s/ryfylke-react-rtk-query-loader-useloader-example-qysfvt?file=/src/App.tsx)
+
+</li>
+</ul>
+  </TabItem>
 </Tabs>
