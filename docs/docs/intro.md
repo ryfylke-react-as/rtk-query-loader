@@ -46,7 +46,7 @@ const Pokemon = withLoader((props, { queries }) => {
       <div>{/* ... */}</div>
     </article>
   );
-});
+}, loader);
 ```
 
 ## Playground
