@@ -23,6 +23,13 @@ export const handlers = [
     if (req.params.name === "error") {
       return res(c.delay(RESPONSE_DELAY), c.status(500));
     }
+    if (req.params.name === "unprocessable") {
+      return res(
+        c.delay(RESPONSE_DELAY),
+        c.status(422),
+        c.json({ some_json_data: "woop" })
+      );
+    }
     const delay =
       req.params.name === "delay"
         ? RESPONSE_DELAY + 100

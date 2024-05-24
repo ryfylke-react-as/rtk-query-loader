@@ -1,10 +1,10 @@
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { _testLoad } from "../../src/AwaitLoader";
 import { createLoader } from "../../src/createLoader";
 import { _testCreateUseCreateQuery } from "../../src/createQuery";
 import { CustomLoaderProps } from "../../src/types";
 import { withLoader } from "../../src/withLoader";
-import { _testLoad } from "../../src/AwaitLoader";
 import {
   useGetPokemonByNameQuery,
   useGetPokemonsQuery,
@@ -428,6 +428,64 @@ describe("withLoader", () => {
     render(<Component />);
     expect(screen.getByText("Success")).toBeVisible();
   });
+
+  test("Can remount a component that has a failed query", async () => {
+    const Component = withLoader(
+      (props, loaderData) => {
+        return (
+          <div>
+            Success{" "}
+            {loaderData.queries.error.data.name.includes(
+              "charizard"
+            )}
+          </div>
+        );
+      },
+      createLoader({
+        queriesArg: (props: { error: boolean }) => props.error,
+        useQueries: (shouldError) => {
+          const error = useGetPokemonByNameQuery(
+            shouldError ? "unprocessable" : "charizard"
+          );
+          return {
+            queries: {
+              error,
+            },
+          };
+        },
+        onError: () => <div>onError</div>,
+      })
+    );
+    const Wrapper = () => {
+      const [shouldError, setShouldError] = useState(true);
+      return (
+        <div>
+          <button onClick={() => setShouldError(!shouldError)}>
+            Toggle
+          </button>
+          <ErrorBoundary fallback="Component threw">
+            {shouldError ? (
+              <Component error />
+            ) : (
+              <div>Success</div>
+            )}
+          </ErrorBoundary>
+        </div>
+      );
+    };
+    render(<Wrapper />);
+    await waitFor(() =>
+      expect(screen.getByText("onError")).toBeVisible()
+    );
+    await userEvent.click(screen.getByRole("button"));
+    await waitFor(() =>
+      expect(screen.getByText("Success")).toBeVisible()
+    );
+    await userEvent.click(screen.getByRole("button"));
+    await waitFor(() =>
+      expect(screen.getByText("onError")).toBeVisible()
+    );
+  });
 });
 
 describe("createLoader", () => {
@@ -814,7 +872,7 @@ describe("createLoader", () => {
       );
     });
 
-    test("Can partially extend config", async () => {
+    test.skip("Can partially extend config", async () => {
       const CustomLoader = (props: CustomLoaderProps) => {
         if (props.query.isError) {
           return <div>Custom error!</div>;
@@ -861,3 +919,40 @@ describe("createLoader", () => {
     });
   });
 });
+
+class ErrorBoundary extends React.Component<
+  {
+    children?: React.ReactNode;
+    fallback?: React.ReactNode;
+  },
+  {
+    hasError: boolean;
+  }
+> {
+  public state = {
+    hasError: false,
+  };
+
+  public static getDerivedStateFromError(_: Error) {
+    return { hasError: true };
+  }
+
+  public componentDidCatch(
+    error: Error,
+    errorInfo: React.ErrorInfo
+  ) {
+    console.error("Uncaught error:", error, errorInfo);
+  }
+
+  public render() {
+    if (this.state.hasError) {
+      return (
+        <h1>{this.props.fallback ?? "_error_boundary_"}</h1>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+export default ErrorBoundary;

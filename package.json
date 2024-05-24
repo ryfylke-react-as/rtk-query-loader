@@ -23,10 +23,12 @@
   },
   "homepage": "https://rtk-query-loader.ryfylke.dev",
   "devDependencies": {
-    "@types/react": "^18.0.21",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
     "@reduxjs/toolkit": "^1.6.2",
     "react": "^18.2.0",
-    "tslib": "^2.4.0"
+    "tslib": "^2.4.0",
+    "typescript": "^5.4.5"
   },
   "peerDependencies": {
     "@reduxjs/toolkit": "^1.6.2"

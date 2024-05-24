@@ -193,9 +193,10 @@ export const createLoader = <
         E_TArg
       >;
       const mergedConfig = mergeConfig(
-        createLoaderArgs.config ?? {},
-        original.config ?? {}
+        original.config ?? {},
+        loaderArgs.config ?? {}
       );
+
       // For backwards support of `loaderComponent
       if (
         !mergedConfig.loaderComponent &&

@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import {
   createApi,
   fetchBaseQuery,
-} from "@reduxjs/toolkit/dist/query/react";
+} from "@reduxjs/toolkit/query/react";
 
 export type Pokemon = {
   id: number;

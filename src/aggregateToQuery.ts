@@ -4,7 +4,11 @@ export const aggregateToQuery = <JoinedResponse>(
   queries: readonly Types.UseQueryResult<unknown>[]
 ): Types.UseQueryResult<JoinedResponse> => {
   const isLoading = queries.some((query) => query.isLoading);
-  const isError = queries.some((query) => query.isError);
+  const isError = queries.some(
+    (query) =>
+      query.isError ||
+      (query.isFetching && query.error && !query.data)
+  );
   const isFetching = queries.some((query) => query.isFetching);
   const isUninitialized = queries.some(
     (query) => query.isUninitialized
