@@ -30,6 +30,53 @@ npm i @ryfylke-react/rtk-query-loader
 
 You can read more about the features @ [the docs](https://rtk-query-loader.ryfylke.dev/Features/).
 
+
+
+<details>
+    <summary> 🔬 We're also properly tested! (✓ 30/30)</summary>
+
+---
+
+  * **aggregateToQuery**  
+     * ✓ It aggregates query status (167 ms)
+  * **useCreateQuery**  
+     * ✓ It creates a query (107 ms)
+     * ✓ The query can throw error (108 ms)
+     * ✓ You can refetch the query (645 ms)
+  * **<AwaitLoader />**  
+     * ✓ Renders loading state until data is available (130 ms)
+     * ✓ Will pass arguments properly (129 ms)
+  * **withLoader**  
+     * ✓ Renders loading state until data is available (132 ms)
+     * ✓ onError renders when applicable (130 ms)
+     * ✓ onFetching renders when applicable (319 ms)
+     * ✓ Internal state won't reset when using whileFetching (272 ms)
+     * ✓ Internal state will reset when using onFetching (271 ms)
+     * ✓ Can use custom loader component (129 ms)
+     * ✓ loaderComponent is backwards compatible (121 ms)
+     * ✓ Can defer some queries (231 ms)
+     * ✓ Can defer all queries (130 ms)
+     * ✓ Loaders with no queries render immediately (4 ms)
+     * ✓ Can remount a component that has a failed query (161 ms)
+  * **createLoader**  
+     * ✓ Normally, deferred queries do not throw (205 ms)
+     * ✓ Deferred queries throw error when configured to (209 ms)
+     * ✓ Can send static payload to loader (7 ms)
+     * ✓ Loader passes props through queriesArg to queries (128 ms)
+     * **.extend()**  
+        * ✓ Can extend onLoading (5 ms)
+        * ✓ Can extend onError (128 ms)
+        * ✓ Can extend onFetching (156 ms)
+        * ✓ Can extend whileFetching (133 ms)
+        * ✓ Can extend queries (122 ms)
+        * ✓ Can extend deferred queries (230 ms)
+        * ✓ Can extend many times (282 ms)
+        * ✓ Can extend with only transform (133 ms)
+        * ✓ Can partially extend config (138 ms)
+      
+  ---
+</details>
+
 ## Example 
 A simple example of a component using rtk-query-loader:
 
