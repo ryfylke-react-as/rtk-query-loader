@@ -26,78 +26,22 @@ export const useCreateQuery = <T extends unknown>(
 ): Types.UseQueryResult<T> => {
   const safeDependencies = dependencies ?? [];
   const requestId = R.useRef(requestIdGenerator()).current;
-  const [state, dispatch] = R.useReducer(
-    (
-      state: Types.UseQueryResult<T>,
-      action: Types.CreateQueryReducerAction<T>
-    ) => {
-      switch (action.type) {
-        case "load":
-          return {
-            ...state,
-            isSuccess: false,
-            isError: false,
-            isFetching: false,
-            isLoading: true,
-            isUninitialized: false,
-            startedTimeStamp: Date.now(),
-            refetch: action.payload.refetch,
-          };
-        case "fetch":
-          return {
-            ...state,
-            isLoading: false,
-            isSuccess: false,
-            isError: false,
-            isFetching: true,
-            isUninitialized: false,
-            startedTimeStamp: Date.now(),
-            refetch: action.payload.refetch,
-          };
-        case "success":
-          return {
-            ...state,
-            isLoading: false,
-            isFetching: false,
-            isError: false,
-            isUninitialized: false,
-            isSuccess: true,
-            data: action.payload.data,
-            currentData: action.payload.data,
-            fulfilledTimeStamp: Date.now(),
-          };
-        case "error":
-          return {
-            ...state,
-            isLoading: false,
-            isSuccess: false,
-            isFetching: false,
-            isUninitialized: false,
-            isError: true,
-            error: action.payload.error,
-            fulfilledTimeStamp: Date.now(),
-          };
-        default:
-          return state;
-      }
-    },
-    {
-      isLoading: true,
-      isSuccess: false,
-      isError: false,
-      isFetching: false,
-      refetch: () => {},
-      isUninitialized: true,
-      currentData: undefined,
-      data: undefined,
-      error: undefined,
-      endpointName: "",
-      fulfilledTimeStamp: 0,
-      originalArgs: safeDependencies,
-      requestId,
-      startedTimeStamp: 0,
-    }
-  );
+  const [state, dispatch] = R.useReducer(reducer, {
+    isLoading: true,
+    isSuccess: false,
+    isError: false,
+    isFetching: false,
+    refetch: () => {},
+    isUninitialized: true,
+    currentData: undefined,
+    data: undefined,
+    error: undefined,
+    endpointName: "",
+    fulfilledTimeStamp: 0,
+    originalArgs: safeDependencies,
+    requestId,
+    startedTimeStamp: 0,
+  });
 
   const runQuery = (overrideInitialized?: boolean) => {
     const fetchData = async () => {
@@ -123,10 +67,65 @@ export const useCreateQuery = <T extends unknown>(
 
   R.useEffect(() => runQuery(), safeDependencies);
 
-  return state;
+  return state as Types.UseQueryResult<T>;
 };
 
 export const _testCreateUseCreateQuery = (react: any) => {
   R = react as ReactType;
   return useCreateQuery;
+};
+
+const reducer = <T>(
+  state: Types.UseQueryResult<T>,
+  action: Types.CreateQueryReducerAction<T>
+) => {
+  switch (action.type) {
+    case "load":
+      return {
+        ...state,
+        isSuccess: false,
+        isError: false,
+        isFetching: false,
+        isLoading: true,
+        isUninitialized: false,
+        startedTimeStamp: Date.now(),
+        refetch: action.payload.refetch,
+      };
+    case "fetch":
+      return {
+        ...state,
+        isLoading: false,
+        isSuccess: false,
+        isError: false,
+        isFetching: true,
+        isUninitialized: false,
+        startedTimeStamp: Date.now(),
+        refetch: action.payload.refetch,
+      };
+    case "success":
+      return {
+        ...state,
+        isLoading: false,
+        isFetching: false,
+        isError: false,
+        isUninitialized: false,
+        isSuccess: true,
+        data: action.payload.data,
+        currentData: action.payload.data,
+        fulfilledTimeStamp: Date.now(),
+      };
+    case "error":
+      return {
+        ...state,
+        isLoading: false,
+        isSuccess: false,
+        isFetching: false,
+        isUninitialized: false,
+        isError: true,
+        error: action.payload.error,
+        fulfilledTimeStamp: Date.now(),
+      };
+    default:
+      return state;
+  }
 };

@@ -52,6 +52,7 @@ export const createUseLoader = <
         )
       : [];
     const aggregatedQuery = aggregateToQuery(queriesList);
+
     if (createUseLoaderArgs.config?.deferred?.shouldThrowError) {
       if (loaderRes.deferredQueries) {
         const deferredQueriesList = Object.keys(
@@ -60,6 +61,7 @@ export const createUseLoader = <
           (key) => (loaderRes.deferredQueries as TDeferred)[key]
         );
         if (deferredQueriesList.some((q) => q.isError)) {
+          aggregatedQuery.isSuccess = false;
           aggregatedQuery.isError = true;
           aggregatedQuery.error = deferredQueriesList.find(
             (q) => q.isError
@@ -173,7 +175,7 @@ export const createLoader = <
     >({
       useQueries,
       transform,
-      ...loaderArgs
+      ...extendedArgs
     }: Partial<
       Types.CreateLoaderArgs<
         E_TProps,
@@ -194,17 +196,14 @@ export const createLoader = <
       >;
       const mergedConfig = mergeConfig(
         original.config ?? {},
-        loaderArgs.config ?? {}
+        extendedArgs.config ?? {}
       );
 
-      // For backwards support of `loaderComponent
-      if (
-        !mergedConfig.loaderComponent &&
-        loaderArgs.loaderComponent
-      ) {
-        mergedConfig.loaderComponent =
-          loaderArgs.loaderComponent;
-      }
+      backwardsSupportLoaderComponent(
+        mergedConfig,
+        extendedArgs
+      );
+
       const extendedLoader: Types.Loader<
         E_TProps,
         E_TReturn,
@@ -214,7 +213,7 @@ export const createLoader = <
         E_TArg
       > = {
         ...original,
-        ...loaderArgs,
+        ...extendedArgs,
         config: mergedConfig,
       };
 
@@ -233,6 +232,15 @@ export const createLoader = <
           config: mergedConfig,
         });
         extendedLoader.useLoader = newUseLoader;
+      } else if (extendedArgs.config) {
+        const newUseLoader = createUseLoader({
+          useQueries:
+            extendedLoader.useLoader.original_args.useQueries,
+          transform:
+            extendedLoader.useLoader.original_args.transform,
+          config: mergedConfig,
+        });
+        extendedLoader.useLoader = newUseLoader;
       }
 
       return extendedLoader;
@@ -241,3 +249,23 @@ export const createLoader = <
 
   return loader;
 };
+
+function backwardsSupportLoaderComponent(
+  mergedConfig: Types.LoaderConfig,
+  extendedArgs: Types.CreateLoaderArgs<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >
+) {
+  if (
+    !mergedConfig.loaderComponent &&
+    extendedArgs.loaderComponent
+  ) {
+    mergedConfig.loaderComponent = extendedArgs.loaderComponent;
+  }
+  return mergedConfig;
+}

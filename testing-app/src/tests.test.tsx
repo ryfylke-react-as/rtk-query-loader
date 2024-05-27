@@ -5,6 +5,7 @@ import { createLoader } from "../../src/createLoader";
 import { _testCreateUseCreateQuery } from "../../src/createQuery";
 import { CustomLoaderProps } from "../../src/types";
 import { withLoader } from "../../src/withLoader";
+import ErrorBoundary from "./components/ErrorBoundary";
 import {
   useGetPokemonByNameQuery,
   useGetPokemonsQuery,
@@ -872,7 +873,7 @@ describe("createLoader", () => {
       );
     });
 
-    test.skip("Can partially extend config", async () => {
+    test("Can partially extend config", async () => {
       const CustomLoader = (props: CustomLoaderProps) => {
         if (props.query.isError) {
           return <div>Custom error!</div>;
@@ -919,40 +920,3 @@ describe("createLoader", () => {
     });
   });
 });
-
-class ErrorBoundary extends React.Component<
-  {
-    children?: React.ReactNode;
-    fallback?: React.ReactNode;
-  },
-  {
-    hasError: boolean;
-  }
-> {
-  public state = {
-    hasError: false,
-  };
-
-  public static getDerivedStateFromError(_: Error) {
-    return { hasError: true };
-  }
-
-  public componentDidCatch(
-    error: Error,
-    errorInfo: React.ErrorInfo
-  ) {
-    console.error("Uncaught error:", error, errorInfo);
-  }
-
-  public render() {
-    if (this.state.hasError) {
-      return (
-        <h1>{this.props.fallback ?? "_error_boundary_"}</h1>
-      );
-    }
-
-    return this.props.children;
-  }
-}
-
-export default ErrorBoundary;

@@ -1,31 +1,31 @@
+export { AwaitLoader } from "./AwaitLoader";
+export { RTKLoader } from "./RTKLoader";
 export { aggregateToQuery } from "./aggregateToQuery";
 export { createLoader, createUseLoader } from "./createLoader";
 export { useCreateQuery } from "./createQuery";
-export { RTKLoader } from "./RTKLoader";
 export type {
   Component,
   ComponentWithLoaderData,
   ConsumerProps,
-  CreateUseLoaderArgs,
   CreateLoaderArgs,
-  DeferredConfig,
-  LoaderConfig,
-  _TDeferred,
-  _TPayload,
-  _TQueries,
-  _TProps,
-  _TReturn,
-  MakeDataRequired,
+  CreateUseLoaderArgs,
   CustomLoaderProps,
   DataShapeInput,
+  DeferredConfig,
   InferLoaderData,
   Loader,
+  LoaderConfig,
   LoaderTransformFunction,
+  MakeDataRequired,
   OptionalGenericArg,
   UseLoader,
   UseQueryResult,
   WithLoaderArgs,
+  _TDeferred,
+  _TPayload,
+  _TProps,
+  _TQueries,
+  _TReturn,
 } from "./types";
-export { withLoader } from "./withLoader";
-export { AwaitLoader } from "./AwaitLoader";
 export { useCreateLoader } from "./useCreateLoader";
+export { withLoader } from "./withLoader";
