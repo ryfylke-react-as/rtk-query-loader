@@ -2,6 +2,9 @@ import { SerializedError } from "@reduxjs/toolkit";
 import * as React from "react";
 import { CustomLoaderProps } from "./types";
 
+/**
+ * The default loader component for use with RTK Query Loader.
+ */
 export function RTKLoader<T>(
   props: CustomLoaderProps<T>
 ): React.ReactElement {

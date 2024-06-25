@@ -274,12 +274,15 @@ export type CreateLoaderArgs<
   /** Generates an argument for the `queries` based on component props */
   queriesArg?: (props: TProps) => TArg;
   /** Determines what to render while loading (with no data to fallback on) */
-  onLoading?: (props: TProps) => ReactElement;
+  onLoading?: (
+    props: TProps,
+    joinedQuery: UseQueryResult<TReturn>
+  ) => ReactElement;
   /** Determines what to render when query fails. */
   onError?: (
     props: TProps,
     error: FetchBaseQueryError | SerializedError,
-    joinedQuery: UseQueryResult<undefined>
+    joinedQuery: UseQueryResult<TReturn>
   ) => ReactElement;
   /** @deprecated Using onFetching might result in loss of internal state. Use `whileFetching` instead, or pass the query to the component */
   onFetching?: (
@@ -337,12 +340,15 @@ export type Loader<
   /** Generates an argument for the `queries` based on component props */
   queriesArg?: (props: TProps) => TArg;
   /** Determines what to render while loading (with no data to fallback on) */
-  onLoading?: (props: TProps) => ReactElement;
+  onLoading?: (
+    props: TProps,
+    joinedQuery: UseQueryResult<TReturn>
+  ) => ReactElement;
   /** Determines what to render when query fails. */
   onError?: (
     props: TProps,
     error: SerializedError | FetchBaseQueryError,
-    joinedQuery: UseQueryResult<undefined>
+    joinedQuery: UseQueryResult<TReturn>
   ) => ReactElement;
   /** @deprecated Using onFetching might result in loss of internal state. Use `whileFetching` instead, or pass the query to the component */
   onFetching?: (
@@ -352,7 +358,17 @@ export type Loader<
   /** Determines what to render besides success-result while query is fetching. */
   whileFetching?: WhileFetchingArgs<TProps, TReturn>;
   config?: LoaderConfig;
-  /** Returns a new `Loader` extended from this `Loader`, with given overrides. */
+  /**
+   * Creates a `loader` that can be used to fetch data and render error & loading states.
+   * @example
+   * const loader = baseLoader.extend({
+   *  queriesArg: (props) => props.userId,
+   *  useQueries: (userId) => {
+   *    const user = useGetUserQuery(userId);
+   *    return { queries: { user } };
+   *  },
+   * });
+   */
   extend: <
     E_TQueries extends _TQueries = TQueries,
     E_TDeferred extends _TDeferred = TDeferred,

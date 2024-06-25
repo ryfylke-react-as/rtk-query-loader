@@ -19,6 +19,18 @@ type AwaitLoaderProps<
       args: TProps;
     };
 
+/**
+ * @typedef AwaitLoaderProps
+ * @type {Object}
+ * @property {Types.Loader<TProps, TReturn, any, any, any, TArg>} loader The loader to use.
+ * @property {(data: TReturn) => React.ReactElement} render The render function to use.
+ * @property {TProps} args The arguments to pass to the loader.
+ */
+
+/**
+ * A component that awaits a loader and renders the data.
+ * @param {AwaitLoaderProps} args The arguments to pass to the loader. 
+ */
 export const AwaitLoader = <
   TProps extends Record<string, any>,
   TReturn extends unknown,

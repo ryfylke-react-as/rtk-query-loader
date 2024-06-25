@@ -3,6 +3,16 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import * as React from "react";
 import * as Types from "./types";
 
+/**
+ * A higher order component that wraps a component and provides it with a loader.
+ * @param Component The component to wrap with a loader. Second argument is the resolved loader data.
+ * @param loader The loader to use.
+ * @returns A component that will load the data and pass it to the wrapped component.
+ * @example
+ * const Component = withLoader((props, loaderData) => {
+ *  return <div>{loaderData.queries.user.name}</div>;
+ * }, loader);
+ */
 export const withLoader = <
   TProps extends Record<string, any>,
   TReturn extends unknown,
@@ -48,16 +58,12 @@ export const withLoader = <
       >;
     }
 
-    const onLoading = loader.onLoading?.(props);
+    const onLoading = loader.onLoading?.(props, query);
 
     const onError = loader.onError
       ? (error: SerializedError | FetchBaseQueryError) => {
           if (!loader.onError) return <React.Fragment />;
-          return loader.onError(
-            props,
-            error,
-            query as Types.UseQueryResult<undefined>
-          );
+          return loader.onError(props, error, query);
         }
       : undefined;
 

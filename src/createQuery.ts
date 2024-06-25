@@ -12,20 +12,20 @@ const requestIdGenerator = () => {
 
 /**
  * Creates a query from an async getter function.
- *
- * ```ts
+ * @param getter The async function to get the data.
+ * @param dependencies The dependency array to watch for changes.
+ * @example
  * const query = useCreateQuery(async () => {
- *  const response = await fetch("https://example.com");
+ *  const response = await fetch(`/users/${userId}`);
  *  return response.json();
- * });
- * ```
+ * }, [userId]);
  */
 export const useCreateQuery = <T extends unknown>(
   getter: Types.CreateQueryGetter<T>,
   dependencies?: any[]
 ): Types.UseQueryResult<T> => {
   const safeDependencies = dependencies ?? [];
-  const requestId = R.useRef(requestIdGenerator()).current;
+  const [requestId] = R.useState(() => requestIdGenerator());
   const [state, dispatch] = R.useReducer(reducer, {
     isLoading: true,
     isSuccess: false,

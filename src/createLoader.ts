@@ -97,6 +97,19 @@ export const createUseLoader = <
   return useLoader;
 };
 
+/**
+ * Creates a `loader` that can be used to fetch data and render error & loading states.
+ * @example
+ * const loader = createLoader({
+ *  queriesArg: (props) => props.userId,
+ *  useQueries: (userId) => {
+ *    const user = useGetUserQuery(userId);
+ *    return { queries: { user } };
+ *  },
+ *  onError: (error) => <ErrorView error={error} />,
+ *  onLoading: () => <LoadingView />,
+ * });
+ */
 export const createLoader = <
   TProps extends unknown,
   TQueries extends Types._TQueries,
